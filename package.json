@@ -1,0 +1,28 @@
+{
+  "name": "aliucord",
+  "version": "0.1.0",
+  "license": "OSL-3.0",
+  "scripts": {
+    "build": "rollup -c --configPlugin esbuild",
+    "dev": "npm run build -- -w",
+    "deploy": "adb push dist/Aliucord.js /sdcard/Aliucord-RN/Aliucord.js && adb shell am start -S -n com.rnhermesplayground/.MainActivity"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Aliucord/Aliucord-RN.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Aliucord/Aliucord-RN/issues"
+  },
+  "homepage": "https://aliucord.com",
+  "devDependencies": {
+    "@types/node": "^17.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "esbuild": "^0.14.9",
+    "eslint": "^8.5.0",
+    "eslint-plugin-react": "^7.28.0",
+    "rollup": "^2.62.0",
+    "rollup-plugin-esbuild": "^4.8.2"
+  }
+}
