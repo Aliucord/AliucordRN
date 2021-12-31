@@ -1,6 +1,9 @@
+import setUpReactDevTools from "./devtools/setUpReactDevTools";
 import { getModule } from "./metro";
 
 try {
+    setUpReactDevTools();
+
     const headerModule = getModule(m => m.Header, false);
     const headerComponent = headerModule.exports.Header;
     headerModule.exports = {
