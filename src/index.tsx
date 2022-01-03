@@ -1,7 +1,9 @@
+import setUpDebugWS from "./debug-ws/setUpDebugWS";
 import setUpReactDevTools from "./devtools/setUpReactDevTools";
 import { getModule } from "./metro";
 
 try {
+    setUpDebugWS();
     setUpReactDevTools();
 
     const headerModule = getModule(m => m.Header, false);
