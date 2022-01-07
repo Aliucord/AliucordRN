@@ -1,7 +1,5 @@
 import { defineConfig, Plugin } from "rollup";
 import esbuild from "rollup-plugin-esbuild";
-import commonjs from "@rollup/plugin-commonjs";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { spawn } from "child_process";
 import { platform } from "process";
 
@@ -11,9 +9,12 @@ export default defineConfig({
         { file: "dist/Aliucord.js", format: "cjs" },
     ],
     plugins: [
-        nodeResolve(),
-        commonjs(),
-        esbuild({ target: "es2015" }),
+        esbuild({
+            target: "es2015",
+            optimizeDeps: {
+                include: ["react-devtools-core"],
+            }
+        }),
         process.env.ROLLUP_WATCH ? autoDeploy() : undefined
     ]
 });
