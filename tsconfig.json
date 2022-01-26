@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "jsx": "react-native",
+    "strict": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node"
+  }
+}
