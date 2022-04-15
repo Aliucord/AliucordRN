@@ -221,22 +221,23 @@ export function patch<TThis, TResult, TArgs extends any[] = any[]>(
     name: string,
     patch: Patch<TThis, TResult, TArgs>
 ): Unpatch {
-    const method = resolveMethod(object, name);
+    const original = resolveMethod(object, name);
 
-    let patchInfo = method[patchInfoSym] as PatchInfo<TThis, TResult, TArgs>;
+    let patchInfo = original[patchInfoSym] as PatchInfo<TThis, TResult, TArgs>;
     if (!patchInfo) {
-        patchInfo = new PatchInfo(method);
-        // @ts-ignore
-        obj[methodName] = patchInfo.makeReplacementFunc();
-        // @ts-ignore
-        Object.assign(obj[methodName], method);
-        // @ts-ignore
-        Object.defineProperty(obj[methodName], patchInfoSym, {
+        patchInfo = new PatchInfo(original);
+
+        const replacement = patchInfo.makeReplacementFunc();
+        Object.assign(replacement, original);
+        Object.defineProperty(replacement, patchInfoSym, {
             value: patchInfo,
             enumerable: false,
             writable: true,
             configurable: true
         });
+
+        // @ts-ignore
+        obj[methodName] = replacement;
     }
 
     patchInfo.addPatch(patch);
