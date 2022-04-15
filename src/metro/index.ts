@@ -3,6 +3,7 @@ declare const modules: { [id: number]: any };
 
 export function getModule(filter: (module: any) => boolean, exports = true): any {
     const id = Object.keys(modules).map(i => Number(i)).find(i => {
+        if (i >= 966 && i <= 994) return false;
         let module: any;
         try {
             module = __r(i);
@@ -16,3 +17,5 @@ export function getModule(filter: (module: any) => boolean, exports = true): any
     const module = modules[id].publicModule;
     return exports ? module.exports : module;
 }
+
+export const getModuleById = __r;
