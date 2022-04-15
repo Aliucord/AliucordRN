@@ -1,24 +1,31 @@
 export class Logger {
-    module: string;
+    public module: string;
 
     constructor(module: string) {
         this.module = module;
     }
 
-    format(message: string) {
-        return `[${this.module}] ${message}`;
+    private _format(messages: any[]) {
+        if (messages.length === 0) return "";
+        let str = `[${this.module}]`;
+        for (const msg of messages) {
+            str += " ";
+            str += msg instanceof Error ? msg.stack ?? msg.message : String(msg);
+        }
+
+        return str;
     }
 
-    info(message: string) {
-        console.log(this.format(message));
+    info(...messages: any[]) {
+        console.info(this._format(messages));
     }
 
-    warn(message: string) {
-        console.warn(this.format(message));
+    warn(...messages: any[]) {
+        console.warn(this._format(messages));
     }
 
-    error(message: string | Error) {
-        console.error(this.format(message instanceof Error ? message.stack ?? message.message : message));
+    error(...messages: any[]) {
+        console.error(this._format(messages));
     }
 
     complexLog(object: any, name: string | undefined = undefined, indent = 0, log = this.info) {
