@@ -1,13 +1,8 @@
 export class Logger {
-    public module: string;
-
-    constructor(module: string) {
-        this.module = module;
-    }
+    public constructor(public tag: string) {}
 
     private _format(messages: any[]) {
-        if (messages.length === 0) return "";
-        let str = `[${this.module}]`;
+        let str = `[${this.tag}]`;
         for (const msg of messages) {
             str += " ";
             str += msg instanceof Error ? msg.stack ?? msg.message : String(msg);
