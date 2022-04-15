@@ -32,5 +32,6 @@
   },
   "dependencies": {
     "react-devtools-core": "^4.22.1"
-  }
+  },
+  "packageManager": "pnpm@6.32.7"
 }
