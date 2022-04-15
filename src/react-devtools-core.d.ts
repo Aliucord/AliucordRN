@@ -8,7 +8,6 @@ declare module "react-devtools-core" {
         retryConnectionDelay?: number,
         isAppActive?: () => boolean,
         websocket?: WebSocket
-    
     }
 
     export const connectToDevTools: (options: ConnectionOptions) => void;
