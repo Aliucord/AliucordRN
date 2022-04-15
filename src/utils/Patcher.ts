@@ -196,13 +196,12 @@ function resolveMethod(obj: any, methodName: string) {
     return method;
 }
 
-export function unpatch<TThis>(obj: TThis, methodName: string, patch: Patch<TThis, any, any>) {
+export function unpatch<TThis>(obj: TThis | any, methodName: string, patch: Patch<TThis, any, any>) {
     const func = resolveMethod(obj, methodName);
     const patchInfo = func[patchInfoSym] as PatchInfo<TThis, any, any>;
     if (patchInfo) {
         patchInfo.removePatch(patch);
         if (patchInfo.patchCount === 0) {
-            // @ts-ignore
             obj[methodName] = patchInfo.backup;
         }
     }
@@ -215,7 +214,6 @@ export function callOriginal(func: (...args: any[]) => any, thisObj: any, ...arg
     return original.call(thisObj, ...args);
 }
 
-// TODO support multiple patches either by chaining or a single hook executing everything - check which is better for JS
 export function patch<TThis, TResult, TArgs extends any[] = any[]>(
     object: TThis | any,
     name: string,
@@ -236,8 +234,7 @@ export function patch<TThis, TResult, TArgs extends any[] = any[]>(
             configurable: true
         });
 
-        // @ts-ignore
-        obj[methodName] = replacement;
+        object[name] = replacement;
     }
 
     patchInfo.addPatch(patch);
