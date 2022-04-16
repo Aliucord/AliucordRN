@@ -4,6 +4,7 @@
     "jsx": "react-native",
     "strict": true,
     "noImplicitAny": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "module": "ESNext"
   }
 }

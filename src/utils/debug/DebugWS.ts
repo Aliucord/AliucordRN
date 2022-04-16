@@ -11,7 +11,7 @@ export class DebugWS {
         this.socket = new WebSocket("ws://localhost:9090");
 
         this.socket.addEventListener("open", () => logger.info("Connected with debug websocket"));
-
+        this.socket.addEventListener("error", e => logger.error((e as any).message));
         this.socket.addEventListener("message", message => {
             try {
                 logger.info(eval(message.data));

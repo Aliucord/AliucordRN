@@ -11,19 +11,21 @@ export class Logger {
         return str;
     }
 
-    info(...messages: any[]) {
+    // Declared as fields so you can destructure without breaking `this`
+
+    info = (...messages: any[]) => {
         console.info(this._format(messages));
-    }
+    };
 
-    warn(...messages: any[]) {
+    warn = (...messages: any[]) => {
         console.warn(this._format(messages));
-    }
+    };
 
-    error(...messages: any[]) {
+    error = (...messages: any[]) => {
         console.error(this._format(messages));
-    }
+    };
 
-    complexLog(object: any, name: string | undefined = undefined, indent = 0, log = this.info) {
+    complexLog = (object: any, name: string | undefined = undefined, indent = 0, log = this.info) => {
         if (name !== undefined) {
             log("  ".repeat(indent) + name + ":");
             indent++;
@@ -41,5 +43,5 @@ export class Logger {
                 log(propertyText + error);
             }
         }
-    }
+    };
 }

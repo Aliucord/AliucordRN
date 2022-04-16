@@ -6,9 +6,7 @@ import { platform } from "process";
 
 export default defineConfig({
     input: "src/index.ts",
-    output: [
-        { file: "dist/Aliucord.js", format: "iife" },
-    ],
+    output: [{ file: "dist/Aliucord.js", format: "iife", inlineDynamicImports: true }],
     plugins: [
         esbuild({
             target: "es2015",
