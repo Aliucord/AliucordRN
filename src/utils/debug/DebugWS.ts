@@ -14,7 +14,7 @@ export class DebugWS {
         this.socket.addEventListener("error", e => logger.error((e as any).message));
         this.socket.addEventListener("message", message => {
             try {
-                logger.info(eval(message.data));
+                console.log(eval(message.data));
             } catch (e) {
                 logger.error(e as Error | string);
             }

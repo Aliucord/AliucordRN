@@ -1,3 +1,4 @@
+import * as Metro from "./metro";
 import { AliucordSettings } from "./ui/AliucordSettings";
 import { DebugWS } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
@@ -7,9 +8,13 @@ export class Aliucord {
 
     debugWS: DebugWS = new DebugWS();
 
+    Metro = Metro;
+
     async load() {
         try {
             this.logger.info("Loading...");
+
+            Metro._initMetro();
 
             this.debugWS.start();
 

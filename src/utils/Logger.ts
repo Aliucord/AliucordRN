@@ -1,5 +1,13 @@
+import { getByProps } from "../metro";
+
+const DiscordLogger = getByProps("setLogFn").default;
+
 export class Logger {
-    public constructor(public tag: string) {}
+    private discordLogger;
+
+    public constructor(public tag: string) {
+        this.discordLogger = new DiscordLogger(`Aliucord:${tag}`);
+    }
 
     private _format(messages: any[]) {
         let str = `[${this.tag}]`;
@@ -14,14 +22,17 @@ export class Logger {
     // Declared as fields so you can destructure without breaking `this`
 
     info = (...messages: any[]) => {
+        this.discordLogger.info(...messages);
         console.info(this._format(messages));
     };
 
     warn = (...messages: any[]) => {
+        this.discordLogger.warn(...messages);
         console.warn(this._format(messages));
     };
 
     error = (...messages: any[]) => {
+        this.discordLogger.error(...messages);
         console.error(this._format(messages));
     };
 
