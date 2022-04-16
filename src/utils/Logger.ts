@@ -25,14 +25,14 @@ export class Logger extends DiscordLogger {
         this.info = (...messages: any[]) => {
             info(...messages);
             this._formatErrors(messages);
-            console.log(`[${tag}]`);
+            console.info(`[${tag}]`);
             console.info(...messages);
         };
 
         this.warn = (...messages: any[]) => {
             warn(...messages);
             this._formatErrors(messages);
-            console.log(`[${tag}]`);
+            console.warn(`[${tag}]`);
             console.warn(...messages);
         };
 
@@ -46,14 +46,14 @@ export class Logger extends DiscordLogger {
         this.trace = (...messages: any[]) => {
             trace(...messages);
             this._formatErrors(messages);
-            console.log(`[${tag}]`);
+            console.trace(`[${tag}]`);
             console.trace(...messages);
         };
 
         this.verbose = (...messages: any[]) => {
             verbose(...messages);
             this._formatErrors(messages);
-            console.log(`[${tag}]`);
+            console.debug(`[${tag}]`);
             console.debug(...messages);
         };
     }
