@@ -57,7 +57,7 @@ export class Patch<TThis, TResult, TArgs extends any[]> {
 }
 
 class PatchInfo<TThis, TResult, TArgs extends any[]> {
-    public constructor(public readonly backup: (...args: TArgs) => TResult) {}
+    public constructor(public readonly backup: (...args: TArgs) => TResult) { }
 
     private readonly _patches = [] as Patch<TThis, TResult, TArgs>[];
 
@@ -82,7 +82,7 @@ class PatchInfo<TThis, TResult, TArgs extends any[]> {
     public makeReplacementFunc() {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const _this = this;
-        return function (this: TThis, ...args: TArgs) {
+        return function AliucordPatchFn(this: TThis, ...args: TArgs) {
             return _this._callback(this, ...args);
         };
     }
@@ -148,7 +148,7 @@ class PatchContext<TThis, TResult, TArgs extends any[]> {
         public readonly thisObject: TThis,
         public readonly args: TArgs,
         private readonly backup: (...args: TArgs) => TResult
-    ) {}
+    ) { }
 
     private _result: TResult | undefined;
     private _error: Error | undefined;
@@ -258,6 +258,10 @@ export function instead<TThis, TResult, TArgs extends any[] = any[]>(
     priority = PatchPriority.DEFAULT
 ): Unpatch {
     return patch(object, name, new Patch({ instead, priority }));
+}
+
+export function insteadDoNothing(object: any, name: string) {
+    return instead(object, name, () => void 0);
 }
 
 export function after<TThis, TResult, TArgs extends any[] = any[]>(

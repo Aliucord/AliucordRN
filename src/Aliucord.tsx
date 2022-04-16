@@ -2,6 +2,7 @@ import * as Metro from "./metro";
 import { AliucordSettings } from "./ui/AliucordSettings";
 import { DebugWS } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
+import * as CorePlugins from "./core-plugins/index";
 
 export class Aliucord {
     logger: Logger = new Logger("Aliucord");
@@ -15,6 +16,8 @@ export class Aliucord {
             this.logger.info("Loading...");
 
             Metro._initMetro();
+
+            CorePlugins.startAll();
 
             this.debugWS.start();
 

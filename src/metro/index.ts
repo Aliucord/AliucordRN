@@ -43,7 +43,7 @@ export function getByProps(exports: boolean | string, ...props: string[]): any {
     }
     const filter = (module: any) => {
         for (let i = 0, len = props.length; i < len; i++)
-            if (module[props[i]] === undefined) return false;
+            if (module[props[i]] === undefined && module.default?.[props[i]] === undefined) return false;
         return true;
     };
     return getModule(filter, exports);
@@ -85,7 +85,8 @@ export function getAllByProps(exports: boolean | string, ...props: string[]): an
     }
     const filter = (module: any) => {
         for (let i = 0, len = props.length; i < len; i++)
-            if (module[props[i]] === undefined) return false;
+            if (module[props[i]] === undefined && module.default?.[props[i]] === undefined)
+                return false;
         return true;
     };
     return getAll(filter, exports);

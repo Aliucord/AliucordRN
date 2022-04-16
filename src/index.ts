@@ -1,5 +1,4 @@
 import { Aliucord } from "./Aliucord";
 
-export const aliucord = new Aliucord();
+export const aliucord = window.Aliucord = new Aliucord();
 aliucord.load();
-window.Aliucord = aliucord;
