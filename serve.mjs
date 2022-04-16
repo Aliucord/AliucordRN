@@ -1,6 +1,7 @@
 import { createServer } from "http";
 import { readFile } from "fs";
 import { spawn } from "child_process";
+import { platform } from "process";
 
 // http-server exists but it is so bloated 😩
 
@@ -25,4 +26,4 @@ createServer((req, res) => {
     .listen(3000);
 
 spawn("adb", ["reverse", "tcp:3000", "tcp:3000"], { stdio: "inherit" });
-spawn("pnpm", ["dev"], { stdio: "inherit" });
+spawn(platform === "win32" ? "pnpm.cmd" : "pnpm", ["dev"], { stdio: "inherit" });
