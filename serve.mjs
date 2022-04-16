@@ -25,3 +25,4 @@ createServer((req, res) => {
     .listen(3000);
 
 spawn("adb", ["reverse", "tcp:3000", "tcp:3000"], { stdio: "inherit" });
+spawn("pnpm", ["dev"], { stdio: "inherit" });

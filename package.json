@@ -6,7 +6,7 @@
     "build": "rollup -c --configPlugin esbuild",
     "dev": "pnpm run build -- -w",
     "deploy": "adb shell am start -S -n com.discordrn/.MainActivity",
-    "serve": "pnpm dev & node serve.mjs"
+    "serve": "node serve.mjs"
   },
   "repository": {
     "type": "git",
