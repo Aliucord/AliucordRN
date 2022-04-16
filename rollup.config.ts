@@ -19,7 +19,11 @@ export default defineConfig({
         process.env.ROLLUP_WATCH ? autoDeploy() : undefined
     ],
     onwarn: (warning, next) => {
-        if (warning.code === "EVAL" || warning.code === "MISSING_NAME_OPTION_FOR_IIFE_EXPORT") return;
+        if (
+            warning.code === "EVAL" ||
+            warning.code === "MISSING_NAME_OPTION_FOR_IIFE_EXPORT" ||
+            warning.code === "CIRCULAR_DEPENDENCY"
+        ) return;
         next(warning);
     }
 });

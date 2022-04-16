@@ -2,57 +2,66 @@ import { getByProps } from "../metro";
 
 const DiscordLogger = getByProps("setLogFn").default;
 
-export class Logger {
-    private discordLogger;
+export class Logger extends DiscordLogger {
+    log: (...messages: any[]) => void;
+    info: (...messages: any[]) => void;
+    warn: (...messages: any[]) => void;
+    error: (...messages: any[]) => void;
+    trace: (...messages: any[]) => void;
+    verbose: (...messages: any[]) => void;
 
-    public constructor(public tag: string) {
-        this.discordLogger = new DiscordLogger(`Aliucord:${tag}`);
+    public constructor(tag: string) {
+        super(`Aliucord:${tag}`);
+
+        const { log, info, warn, error, trace, verbose } = this;
+        
+        this.log = (...messages: any[]) => {
+            log(...messages);
+            this._formatErrors(messages);
+            console.log(`[${tag}]`);
+            console.log(...messages);
+        };
+
+        this.info = (...messages: any[]) => {
+            info(...messages);
+            this._formatErrors(messages);
+            console.log(`[${tag}]`);
+            console.info(...messages);
+        };
+
+        this.warn = (...messages: any[]) => {
+            warn(...messages);
+            this._formatErrors(messages);
+            console.log(`[${tag}]`);
+            console.warn(...messages);
+        };
+
+        this.error = (...messages: any[]) => {
+            error(...messages);
+            this._formatErrors(messages);
+            console.error(`[${tag}]`);
+            console.error(...messages);
+        };
+
+        this.trace = (...messages: any[]) => {
+            trace(...messages);
+            this._formatErrors(messages);
+            console.log(`[${tag}]`);
+            console.trace(...messages);
+        };
+
+        this.verbose = (...messages: any[]) => {
+            verbose(...messages);
+            this._formatErrors(messages);
+            console.log(`[${tag}]`);
+            console.debug(...messages);
+        };
     }
 
-    private _format(messages: any[]) {
-        let str = `[${this.tag}]`;
-        for (const msg of messages) {
-            str += " ";
-            str += msg instanceof Error ? msg.stack ?? msg.message : String(msg);
+    private _formatErrors(messages: any[]) {
+        for (let i = 0, len = messages.length; i < len; i++) {
+            const msg = messages[i];
+            if (msg instanceof Error) messages[i] = msg.stack ?? msg.message;
         }
-
-        return str;
     }
-
-    // Declared as fields so you can destructure without breaking `this`
-
-    info = (...messages: any[]) => {
-        this.discordLogger.info(...messages);
-        console.info(this._format(messages));
-    };
-
-    warn = (...messages: any[]) => {
-        this.discordLogger.warn(...messages);
-        console.warn(this._format(messages));
-    };
-
-    error = (...messages: any[]) => {
-        this.discordLogger.error(...messages);
-        console.error(this._format(messages));
-    };
-
-    complexLog = (object: any, name: string | undefined = undefined, indent = 0, log = this.info) => {
-        if (name !== undefined) {
-            log("  ".repeat(indent) + name + ":");
-            indent++;
-        }
-        for (const propertyName in object) {
-            const propertyText = "  ".repeat(indent) + propertyName + ": ";
-            try {
-                const property = object[propertyName];
-                if (typeof property === "object") {
-                    this.complexLog(property, propertyName, indent, log);
-                } else {
-                    log(propertyText + property);
-                }
-            } catch (error) {
-                log(propertyText + error);
-            }
-        }
-    };
 }
