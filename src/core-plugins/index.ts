@@ -1,7 +1,9 @@
+import CommandHandler from "./CommandHandler";
 import NoTrack from "./NoTrack";
 import Plugin from "../entities/Plugin";
+import CoreCommands from "./CoreCommands";
 
-const plugins: Array<typeof Plugin> = [NoTrack];
+const plugins: Array<typeof Plugin> = [CommandHandler, CoreCommands, NoTrack];
 
 export function startAll() {
     for (const pluginClass of plugins) {
