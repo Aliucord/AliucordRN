@@ -10,58 +10,47 @@ export class Logger extends DiscordLogger {
     trace: (...messages: any[]) => void;
     verbose: (...messages: any[]) => void;
 
-    public constructor(tag: string) {
+    public constructor(public tag: string) {
         super(`Aliucord:${tag}`);
 
         const { log, info, warn, error, trace, verbose } = this;
         
         this.log = (...messages: any[]) => {
             log(...messages);
-            this._formatErrors(messages);
-            console.log(`[${tag}]`);
-            console.log(...messages);
+            this._log(console.log, messages);
         };
 
         this.info = (...messages: any[]) => {
             info(...messages);
-            this._formatErrors(messages);
-            console.info(`[${tag}]`);
-            console.info(...messages);
+            this._log(console.info, messages);
         };
 
         this.warn = (...messages: any[]) => {
             warn(...messages);
-            this._formatErrors(messages);
-            console.warn(`[${tag}]`);
-            console.warn(...messages);
+            this._log(console.warn, messages);
         };
 
         this.error = (...messages: any[]) => {
             error(...messages);
-            this._formatErrors(messages);
-            console.error(`[${tag}]`);
-            console.error(...messages);
+            this._log(console.error, messages);
         };
 
         this.trace = (...messages: any[]) => {
             trace(...messages);
-            this._formatErrors(messages);
-            console.trace(`[${tag}]`);
-            console.trace(...messages);
+            this._log(console.trace, messages);
         };
 
         this.verbose = (...messages: any[]) => {
             verbose(...messages);
-            this._formatErrors(messages);
-            console.debug(`[${tag}]`);
-            console.debug(...messages);
+            this._log(console.debug, messages);
         };
     }
 
-    private _formatErrors(messages: any[]) {
-        for (let i = 0, len = messages.length; i < len; i++) {
-            const msg = messages[i];
-            if (msg instanceof Error) messages[i] = msg.stack ?? msg.message;
+    private _log(log: (m: any) => void, messages: any[]) {
+        log(`[${this.tag}]`);
+        for (const msg of messages) {
+            if (msg instanceof Error) log(msg.stack ?? msg.message);
+            else log(msg);
         }
     }
 }

@@ -17,22 +17,22 @@
   },
   "homepage": "https://aliucord.com",
   "devDependencies": {
-    "@babel/core": "^7.16.12",
+    "@babel/core": "^7.17.9",
     "@babel/plugin-transform-classes": "^7.16.7",
-    "@rollup/plugin-babel": "^5.3.0",
-    "@types/node": "^17.0.5",
-    "@types/react": "^17.0.38",
-    "@typescript-eslint/eslint-plugin": "^5.8.1",
-    "@typescript-eslint/parser": "^5.8.1",
-    "esbuild": "^0.14.9",
-    "eslint": "^8.5.0",
-    "eslint-plugin-react": "^7.28.0",
-    "rollup": "^2.62.0",
-    "rollup-plugin-esbuild": "^4.8.2",
-    "typescript": "^4.5.5"
+    "@rollup/plugin-babel": "^5.3.1",
+    "@types/node": "^17.0.24",
+    "@types/react": "^17.0.39",
+    "@typescript-eslint/eslint-plugin": "^5.19.0",
+    "@typescript-eslint/parser": "^5.19.0",
+    "esbuild": "^0.14.36",
+    "eslint": "^8.13.0",
+    "eslint-plugin-react": "^7.29.4",
+    "rollup": "^2.70.2",
+    "rollup-plugin-esbuild": "^4.9.1",
+    "typescript": "^4.6.3"
   },
   "dependencies": {
-    "react-devtools-core": "^4.22.1"
+    "react-devtools-core": "^4.24.4"
   },
-  "packageManager": "pnpm@6.32.7"
+  "packageManager": "pnpm@6.32.8"
 }
