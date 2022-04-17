@@ -4,7 +4,7 @@ import { getByProps, i18n } from "../metro";
 
 export default class CoreCommands extends Plugin {
     start() {
-        const ClydeUtils = getByProps("sendBotMessage").default;
+        const ClydeUtils = getByProps("sendBotMessage");
         this.commands.registerCommand({
             name: "echo",
             description: "Creates Clyde message",

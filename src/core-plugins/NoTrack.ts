@@ -8,8 +8,8 @@ import { insteadDoNothing } from "../utils/Patcher";
 
 export default class NoTrack extends Plugin {
     public start() {
-        const Analytics = getByProps("getSuperPropertiesBase64", "track").default;
-        const Snitch = getByProps("submitLiveCrashReport").default;
+        const Analytics = getByProps("getSuperPropertiesBase64", "track");
+        const Snitch = getByProps("submitLiveCrashReport");
         const { AnalyticsActionHandlers } = getByProps("AnalyticsActionHandlers");
 
         insteadDoNothing(Analytics, "track");

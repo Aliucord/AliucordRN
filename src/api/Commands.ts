@@ -74,7 +74,7 @@ export interface CommandResult {
     tts?: boolean;
 }
 
-const SnowflakeUtils = getByProps("fromTimestamp").default;
+const SnowflakeUtils = getByProps("fromTimestamp");
 
 export class Commands {
     private static _idIncrementNum = Date.now();
