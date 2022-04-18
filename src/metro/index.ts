@@ -5,10 +5,20 @@ declare const modules: { [id: number]: any; };
 
 const logger = new Logger("Metro");
 
-export interface FilterOptions {
+/**
+ * This code may be a bit hard to follow but all it's doing is disallowing:
+ * 
+ * { default: true, exports: false }
+ * 
+ * because it's not possible to return *outside* 'exports' AND return *inside* 'default'
+ */
+type FilterOptions = {
     exports?: boolean;
-    default?: boolean;
-}
+    default?: false;
+} | {
+    exports?: true;
+    default?: true;
+};
 
 function isModuleBlacklisted(id: number) {
     if (id === 54 || id >= 966 && id <= 994) return true;
@@ -51,7 +61,6 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
     return null;
 }
 
-
 export function getByProps(...props: string[]): any;
 export function getByProps(...options: [...props: string[], options: FilterOptions]): any;
 export function getByProps(...options: [...props: string[], defaultExport: boolean]): any;
@@ -66,6 +75,14 @@ export function getByProps(...props: any[]) {
     };
 
     return getModule(filter, typeof options === "boolean" ? { default: options } : options);
+}
+
+export function getByDisplayName(displayName: string, options?: FilterOptions) {
+    return getModule(m => m.displayName === displayName, options);
+}
+
+export function getByStoreName(storeName: string, options?: FilterOptions) {
+    return getModule(m => m.getName?.() === storeName, options);
 }
 
 export const getById = __r;
@@ -124,11 +141,40 @@ export function getAllByProps(...props: any[]) {
 }
 
 // Common modules
+export let UserStore: any;
+export let GuildStore: any;
+export let ChannelStore: any;
+export let MessageStore: any;
+export let GuildMemberStore: any;
+export let SelectedChannelStore: any;
 
-export let React: typeof import("react");
+export let ModalActions: any;
+export let MessageActions: any;
+export let FluxDispatcher: any;
+export let FetchUserActions: any;
+export let ContextMenuActions: any;
+
+export let constants: any;
 export let i18n: any;
+export let Flux: any;
+export let React: typeof import("react");
 
 export function _initMetro() {
+    UserStore = getByStoreName("UserStore");
+    GuildStore = getByStoreName("GuildStore");
+    ChannelStore = getByStoreName("ChannelStore");
+    MessageStore = getByStoreName("MessageStore");
+    GuildMemberStore = getByStoreName("GuildMemberStore");
+    SelectedChannelStore = getByStoreName("SelectedChannelStore");
+
+    ModalActions = getByProps("closeModal");
+    MessageActions = getByProps("sendMessage");
+    FluxDispatcher = getByProps("dirtyDispatch");
+    FetchUserActions = getByProps("fetchProfile");
+    ContextMenuActions = getByProps("openContextMenu");
+
+    constants = getByProps("ActionTypes");
+    i18n = getByProps("Messages");
+    Flux = getByProps("connectStores");
     React = getByProps("createElement");
-    i18n = getModule(m => m.default?.Messages).default;
 }
