@@ -1,4 +1,4 @@
-declare const constants: {
+export default interface Constants {
     ACTIVITY_PLATFORM_TYPES: string[];
     ADYEN_PAYMENT_SOURCES: number[];
     ADYEN_RESULT_CODE_TYPES: {
@@ -8226,6 +8226,4 @@ declare const constants: {
         y: number;
         z: number;
     };
-};
-
-export default constants;
+}
