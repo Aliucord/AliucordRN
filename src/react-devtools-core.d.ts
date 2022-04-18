@@ -7,13 +7,13 @@ declare module "react-devtools-core" {
         resolveRNStyle?: (key: number) => Record<string, unknown>,
         retryConnectionDelay?: number,
         isAppActive?: () => boolean,
-        websocket?: WebSocket
-    }
+        websocket?: WebSocket;
+    };
 
     export const connectToDevTools: (options: ConnectionOptions) => void;
 
     const exports: {
-        connectToDevTools: (options: ConnectionOptions) => void
+        connectToDevTools: (options: ConnectionOptions) => void;
     };
     export default exports;
 }

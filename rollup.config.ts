@@ -1,8 +1,8 @@
-import { defineConfig, Plugin } from "rollup";
-import esbuild from "rollup-plugin-esbuild";
 import { babel } from "@rollup/plugin-babel";
 import { spawn } from "child_process";
 import { platform } from "process";
+import { defineConfig, Plugin } from "rollup";
+import esbuild from "rollup-plugin-esbuild";
 
 export default defineConfig({
     input: "src/index.ts",

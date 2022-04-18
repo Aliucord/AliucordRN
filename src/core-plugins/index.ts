@@ -1,7 +1,7 @@
-import CommandHandler from "./CommandHandler";
-import NoTrack from "./NoTrack";
 import Plugin from "../entities/Plugin";
+import CommandHandler from "./CommandHandler";
 import CoreCommands from "./CoreCommands";
+import NoTrack from "./NoTrack";
 
 const plugins: Array<typeof Plugin> = [CommandHandler, CoreCommands, NoTrack];
 

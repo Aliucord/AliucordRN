@@ -31,7 +31,7 @@ export class Patch<TThis, TResult, TArgs extends any[]> {
     public after: AfterPatchFn<TThis, TResult, TArgs>;
     public priority: number;
 
-    public constructor(data: Partial<Patch<TThis, TResult, TArgs>> & { instead?: InsteadFn<TThis, TResult, TArgs> }) {
+    public constructor(data: Partial<Patch<TThis, TResult, TArgs>> & { instead?: InsteadFn<TThis, TResult, TArgs>; }) {
         this.priority = data.priority ?? PatchPriority.DEFAULT;
         if (this.priority < PatchPriority.MIN || this.priority > PatchPriority.MAX) {
             throw new Error("Priority must be between PatchPriority.MIN and PatchPriority.MAX");
@@ -184,7 +184,7 @@ class PatchContext<TThis, TResult, TArgs extends any[]> {
     }
 }
 
-type AfterPatchContext<TThis, TResult, TArgs extends any[]> = PatchContext<TThis, TResult, TArgs> & { result: TResult };
+type AfterPatchContext<TThis, TResult, TArgs extends any[]> = PatchContext<TThis, TResult, TArgs> & { result: TResult; };
 
 function resolveMethod(obj: any, methodName: string) {
     if (obj == null) throw new Error("obj may not be null or undefined");

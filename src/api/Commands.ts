@@ -88,7 +88,7 @@ export class Commands {
 
     public static _commands: AliucordCommand[] = [];
 
-    public constructor(private plugin: string) {}
+    public constructor(private plugin: string) { }
 
     registerCommand(command: AliucordCommand) {
         command.id = Commands.generateId();

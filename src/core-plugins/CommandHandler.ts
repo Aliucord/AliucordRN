@@ -1,4 +1,4 @@
-import { Commands, ApplicationCommand, CommandSection } from "../api/Commands";
+import { ApplicationCommand, Commands, CommandSection } from "../api/Commands";
 import Plugin from "../entities/Plugin";
 import { getByProps } from "../metro";
 import { after } from "../utils/Patcher";
@@ -6,7 +6,7 @@ import { after } from "../utils/Patcher";
 export default class CommandHandler extends Plugin {
     start() {
         const commands = getByProps("getBuiltInCommands");
-        after<any, ApplicationCommand[], any>(commands, "getBuiltInCommands", context => [ ...context.result, ...Commands._commands ]);
+        after<any, ApplicationCommand[], any>(commands, "getBuiltInCommands", context => [...context.result, ...Commands._commands]);
 
         const discovery = getByProps("useApplicationCommandsDiscoveryState");
         after(discovery, "useApplicationCommandsDiscoveryState", context => {
@@ -16,7 +16,7 @@ export default class CommandHandler extends Plugin {
                 res.commands.push(...Commands._commands.filter(
                     command => !res.commands.some((cmd: ApplicationCommand) => cmd.name === command.name))
                 );
-                
+
                 res.discoverySections.push({
                     data: Commands._commands,
                     key: Commands._aliucordSection.id,

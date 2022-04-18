@@ -1,6 +1,6 @@
+import reactDevTools from "react-devtools-core";
 import { getModule } from "../../metro";
 import { Logger } from "../Logger";
-import reactDevTools from "react-devtools-core";
 
 const logger = new Logger("ReactDevTools");
 
@@ -15,7 +15,7 @@ export class ReactDevTools {
 
         this.socket = new WebSocket("ws://localhost:8097");
         this.socket.addEventListener("error", function (event: Event) {
-            logger.warn("Connection error: " + (event as Event & { message: string }).message);
+            logger.warn("Connection error: " + (event as Event & { message: string; }).message);
         });
 
         const viewConfig = getModule(m => m.uiViewClassName == "RCTView");

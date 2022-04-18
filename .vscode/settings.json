@@ -3,6 +3,7 @@
   "typescript.preferences.quoteStyle": "double",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
+  "files.insertFinalNewline": true,
   "editor.codeActionsOnSave": {
     "source.organizeImports": true,
   },
