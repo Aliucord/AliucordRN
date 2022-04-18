@@ -154,10 +154,10 @@ export let FluxDispatcher: any;
 export let FetchUserActions: any;
 export let ContextMenuActions: any;
 
-export let constants: any;
 export let i18n: any;
 export let Flux: any;
 export let React: typeof import("react");
+export let constants: typeof import('./constants').default;
 
 export function _initMetro() {
     UserStore = getByStoreName("UserStore");
