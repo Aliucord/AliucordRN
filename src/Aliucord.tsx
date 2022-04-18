@@ -1,9 +1,10 @@
 import { Commands } from "./api/Commands";
+import * as CorePlugins from "./core-plugins/index";
 import * as Metro from "./metro";
 import { AliucordSettings } from "./ui/AliucordSettings";
 import { DebugWS } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
-import * as CorePlugins from "./core-plugins/index";
+import * as Patcher from './utils/Patcher';
 
 export class Aliucord {
     logger = new Logger("Aliucord");
@@ -11,6 +12,7 @@ export class Aliucord {
 
     Commands = Commands;
     Metro = Metro;
+    Patcher = Patcher;
 
     async load() {
         try {
@@ -22,16 +24,6 @@ export class Aliucord {
 
             this.debugWS.start();
 
-            // Needs to be hardcoded instead of variable so this code is correcty
-            // detected as unreachable and not included in build.
-            // if (variable) still crashes
-            // eslint-disable-next-line no-constant-condition
-            if (false) {
-                // CAUSES CRASHES
-                // "lateinit property audioManager has not been initialized"
-                const { ReactDevTools } = await import("./utils/debug/ReactDevTools");
-                new ReactDevTools().connect();
-            }
 
             new AliucordSettings().patch();
         } catch (error) {
