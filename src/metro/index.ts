@@ -61,9 +61,11 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
     return null;
 }
 
-export function getByProps(...props: string[]): any;
-export function getByProps(...options: [...props: string[], options: FilterOptions]): any;
-export function getByProps(...options: [...props: string[], defaultExport: boolean]): any;
+type PropIntellisense<T extends string> = { [P in T]: any; } & Record<any, any>;
+
+export function getByProps<T extends string>(...props: T[]): PropIntellisense<T>;
+export function getByProps<T extends string>(...options: [...props: T[], options: FilterOptions]): PropIntellisense<T>;
+export function getByProps<T extends string>(...options: [...props: T[], defaultExport: boolean]): PropIntellisense<T>;
 export function getByProps(...props: any[]) {
     if (!props.length) return null;
 
@@ -124,9 +126,9 @@ export function getAll(filter: (module: any) => boolean, options?: FilterOptions
     return ret;
 }
 
-export function getAllByProps(...props: string[]): any[];
-export function getAllByProps(...options: [...props: string[], options: FilterOptions]): any[];
-export function getAllByProps(...options: [...props: string[], defaultExport: boolean]): any[];
+export function getAllByProps<T extends string>(...props: T[]): PropIntellisense<T>[];
+export function getAllByProps<T extends string>(...options: [...props: T[], options: FilterOptions]): PropIntellisense<T>[];
+export function getAllByProps<T extends string>(...options: [...props: T[], defaultExport: boolean]): PropIntellisense<T>[];
 export function getAllByProps(...props: any[]) {
     if (!props.length) return [];
 
@@ -173,8 +175,8 @@ export function _initMetro() {
     FetchUserActions = getByProps("fetchProfile");
     ContextMenuActions = getByProps("openContextMenu");
 
-    constants = getByProps("ActionTypes");
     i18n = getByProps("Messages");
     Flux = getByProps("connectStores");
-    React = getByProps("createElement");
+    React = getByProps("createElement") as any;
+    constants = getByProps("ActionTypes") as any;
 }
