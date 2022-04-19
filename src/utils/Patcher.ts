@@ -18,7 +18,7 @@ export type InsteadFn<TThis, TResult, TArgs extends any[]> = (
     ...args: TArgs
 ) => TResult;
 
-type Unpatch = () => void;
+export type Unpatch = () => void;
 
 export enum PatchPriority {
     MIN = 0,
@@ -26,13 +26,21 @@ export enum PatchPriority {
     MAX = 30
 }
 
+type PatchFns<TThis, TResult, TArgs extends any[]> = {
+    before?: BeforePatchFn<TThis, TResult, TArgs>,
+    instead?: InsteadFn<TThis, TResult, TArgs>,
+    after?: AfterPatchFn<TThis, TResult, TArgs>
+}
+
 export class Patch<TThis, TResult, TArgs extends any[]> {
     public before: BeforePatchFn<TThis, TResult, TArgs>;
     public after: AfterPatchFn<TThis, TResult, TArgs>;
-    public priority: number;
 
-    public constructor(data: Partial<Patch<TThis, TResult, TArgs>> & { instead?: InsteadFn<TThis, TResult, TArgs>; }) {
-        this.priority = data.priority ?? PatchPriority.DEFAULT;
+    public constructor(
+        data: PatchFns<TThis, TResult, TArgs>,
+        public readonly priority: number = PatchPriority.DEFAULT,
+        public readonly plugin?: string
+    ) {
         if (this.priority < PatchPriority.MIN || this.priority > PatchPriority.MAX) {
             throw new Error("Priority must be between PatchPriority.MIN and PatchPriority.MAX");
         }
@@ -57,9 +65,16 @@ export class Patch<TThis, TResult, TArgs extends any[]> {
 }
 
 class PatchInfo<TThis, TResult, TArgs extends any[]> {
-    public constructor(public readonly backup: (...args: TArgs) => TResult) { }
+    public constructor(public readonly backup: (...args: TArgs) => TResult, public readonly methodName: string) { }
 
     private readonly _patches = [] as Patch<TThis, TResult, TArgs>[];
+
+    private error(patch: Patch<TThis, TResult, TArgs>, type: "PrePatch" | "PostPatch", error: any) {
+        const message =
+            (patch.plugin ? `[${patch.plugin}] ` : "") +
+            (`Error during ${this.methodName} ${type}\n`);
+        logger.error(message, error);
+    }
 
     public get patchCount() {
         return this._patches.length;
@@ -99,7 +114,7 @@ class PatchInfo<TThis, TResult, TArgs extends any[]> {
                 const result = patches[idx].before(ctx, ...ctx.args);
                 if (result !== undefined) ctx.result = result;
             } catch (err: any) {
-                logger.error("Error while running PrePatch", err);
+                this.error(patches[idx], "PrePatch", err);
 
                 ctx.result = undefined;
                 ctx._returnEarly = false;
@@ -129,7 +144,7 @@ class PatchInfo<TThis, TResult, TArgs extends any[]> {
                 const result = patches[idx].after(ctx as AfterPatchContext<TThis, TResult, TArgs>, ...ctx.args);
                 if (result !== undefined) ctx.result = result;
             } catch (err: any) {
-                logger.error("Error while running PostPatch", err);
+                this.error(patches[idx], "PostPatch", err);
 
                 if (lastError !== null) {
                     ctx.error = lastError;
@@ -223,7 +238,7 @@ export function patch<TThis, TResult, TArgs extends any[] = any[]>(
 
     let patchInfo = original[patchInfoSym] as PatchInfo<TThis, TResult, TArgs>;
     if (!patchInfo) {
-        patchInfo = new PatchInfo(original);
+        patchInfo = new PatchInfo(original, name);
 
         const replacement = patchInfo.makeReplacementFunc();
         Object.assign(replacement, original);
@@ -246,18 +261,20 @@ export function before<TThis, TResult, TArgs extends any[] = any[]>(
     object: any,
     name: string,
     before: BeforePatchFn<TThis, TResult, TArgs>,
-    priority = PatchPriority.DEFAULT
+    priority = PatchPriority.DEFAULT,
+    plugin?: string
 ): Unpatch {
-    return patch(object, name, new Patch({ before, priority }));
+    return patch(object, name, new Patch({ before }, priority, plugin));
 }
 
 export function instead<TThis, TResult, TArgs extends any[] = any[]>(
     object: any,
     name: string,
     instead: InsteadFn<TThis, TResult, TArgs>,
-    priority = PatchPriority.DEFAULT
+    priority = PatchPriority.DEFAULT,
+    plugin?: string
 ): Unpatch {
-    return patch(object, name, new Patch({ instead, priority }));
+    return patch(object, name, new Patch({ instead }, priority, plugin));
 }
 
 export function insteadDoNothing(object: any, name: string) {
@@ -268,7 +285,8 @@ export function after<TThis, TResult, TArgs extends any[] = any[]>(
     object: any,
     name: string,
     after: AfterPatchFn<TThis, TResult, TArgs>,
-    priority = PatchPriority.DEFAULT
+    priority = PatchPriority.DEFAULT,
+    plugin?: string
 ): Unpatch {
-    return patch(object, name, new Patch({ after, priority }));
+    return patch(object, name, new Patch({ after }, priority, plugin));
 }
