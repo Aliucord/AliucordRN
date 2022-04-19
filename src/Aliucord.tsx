@@ -1,9 +1,10 @@
 import { Commands } from "./api/Commands";
+import * as CorePlugins from "./core-plugins/index";
 import * as Metro from "./metro";
 import { AliucordSettings } from "./ui/AliucordSettings";
 import { DebugWS } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
-import * as CorePlugins from "./core-plugins/index";
+import * as Patcher from './utils/Patcher';
 
 export class Aliucord {
     logger = new Logger("Aliucord");
@@ -11,6 +12,7 @@ export class Aliucord {
 
     Commands = Commands;
     Metro = Metro;
+    Patcher = Patcher;
 
     async load() {
         try {

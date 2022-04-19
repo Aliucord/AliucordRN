@@ -1,5 +1,5 @@
-import type { ReactElement, JSXElementConstructor } from "react";
-import { getModule, getByProps, React, i18n } from "../metro";
+import type { JSXElementConstructor, ReactElement } from "react";
+import { getByProps, getModule, i18n, React } from "../metro";
 import { after } from "../utils/Patcher";
 
 const UserSettingsOverviewWrapper = getModule(m => m.default?.name === "UserSettingsOverviewWrapper");
@@ -9,7 +9,7 @@ export class AliucordSettings {
     patch() {
         const { FormSection, FormRow } = getByProps("FormSection");
 
-        const unpatch = after<any, ReactElement, [props: { disableHeader: boolean }, ref: never]>(UserSettingsOverviewWrapper, "default", ({ result }) => {
+        const unpatch = after<any, ReactElement, [props: { disableHeader: boolean; }, ref: never]>(UserSettingsOverviewWrapper, "default", ({ result }) => {
             if (UserSettingsOverview !== undefined) {
                 return;
             }
@@ -18,7 +18,7 @@ export class AliucordSettings {
 
             UserSettingsOverview = result.type as JSXElementConstructor<any>;
 
-            after<any, ReactElement<{ children: ReactElement[] }>, []>(UserSettingsOverview.prototype, "render", ({ result }) => {
+            after<any, ReactElement<{ children: ReactElement[]; }>, []>(UserSettingsOverview.prototype, "render", ({ result }) => {
                 const children = result.props.children;
                 const nitroIndex = children.findIndex(x => x.props.title === i18n.Messages["PREMIUM_SETTINGS"]);
                 const nitro = children[nitroIndex];

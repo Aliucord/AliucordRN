@@ -14,7 +14,7 @@ export class Logger extends DiscordLogger {
         super(`Aliucord:${tag}`);
 
         const { log, info, warn, error, trace, verbose } = this;
-        
+
         this.log = (...messages: any[]) => {
             log(...messages);
             this._log(console.log, messages);
