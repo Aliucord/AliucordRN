@@ -21,3 +21,7 @@ jobs:
       run: pnpm install
     - name: Build aliucord
       run: pnpm build
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist/*
