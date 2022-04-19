@@ -1,0 +1,23 @@
+name: Node.js CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: pnpm/action-setup@v2
+    - name: Use Node.js 17
+      uses: actions/setup-node@v2
+      with:
+        node-version: 17
+        cache: 'pnpm'
+    - name: Install dependencies
+      run: pnpm install
+    - name: Build aliucord
+      run: pnpm build
