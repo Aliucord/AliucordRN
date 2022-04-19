@@ -6,7 +6,13 @@ import { platform } from "process";
 
 export default defineConfig({
     input: "src/index.ts",
-    output: [{ file: "dist/Aliucord.js", format: "iife", inlineDynamicImports: true }],
+    output: [{
+        file: "dist/Aliucord.js",
+        format: "iife",
+        inlineDynamicImports: true,
+        sourcemap: true,
+        sourcemapFile: "Aliucord.js.map"
+    }],
     plugins: [
         esbuild({
             target: "es2015",

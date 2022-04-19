@@ -7,9 +7,9 @@ import { platform } from "process";
 
 createServer((req, res) => {
     console.info("-> Received Request for", req.url);
-    if (req.url !== "/Aliucord.js") res.writeHead(404).end();
+    if (req.url !== "/Aliucord.js" && req.url !== "/Aliucord.js.map") res.writeHead(404).end();
     else {
-        readFile("dist/Aliucord.js", { encoding: "utf-8" }, (err, data) => {
+        readFile(`dist/${req.url}`, { encoding: "utf-8" }, (err, data) => {
             if (err) {
                 console.error(err);
                 res.writeHead(500);
