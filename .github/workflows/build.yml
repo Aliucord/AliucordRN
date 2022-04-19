@@ -10,7 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout main branch
+      uses: actions/checkout@master
+      with:
+        ref: main
+        path: src
+    - name: Checkout builds branch
+      uses: actions/checkout@master
+      with:
+        ref: builds
+        path: builds
     - uses: pnpm/action-setup@v2
     - name: Use Node.js 17
       uses: actions/setup-node@v2
@@ -18,10 +27,23 @@ jobs:
         node-version: 17
         cache: 'pnpm'
     - name: Install dependencies
-      run: pnpm install
+      run: cd main; pnpm install
     - name: Build aliucord
       run: pnpm build
-    - uses: actions/upload-artifact@v3
+    - name: Upload dist folder as artifact
+      uses: actions/upload-artifact@v3
+      if: ${{ always() && format('refs/heads/{0}', ) != github.ref }}
       with:
         name: dist
         path: dist/*
+    - name: Upload dist folder to builds branch
+      if: ${{ always() && format('refs/heads/{0}', ) == github.ref }}
+      run: |
+        cd $GITHUB_WORKSPACE/builds
+        cp ../src/dist/* .
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git pull
+        git add -A
+        git commit -m "Build $GITHUB_SHA"
+        git push
