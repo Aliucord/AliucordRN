@@ -30,6 +30,13 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
 
     for (const key in modules) {
         const id = Number(key);
+        
+        23
+        32
+        32
+        32
+        32
+        
 
         if (isModuleBlacklisted(id)) continue;
 
