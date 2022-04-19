@@ -49,5 +49,5 @@ jobs:
         git config --local user.name "GitHub Actions"
         git pull
         git add -A
-        git commit -m "Build $GITHUB_SHA"
+        git commit -m "Build $GITHUB_SHA" || true
         git push
