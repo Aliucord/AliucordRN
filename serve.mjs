@@ -5,16 +5,18 @@ import { platform } from "process";
 
 // http-server exists but it is so bloated 😩
 
+const whitelist = ["/Aliucord.js", "/Aliucord.js.map", "/Aliucord.js.bundle"];
+
 createServer((req, res) => {
     console.info("-> Received Request for", req.url);
-    if (req.url !== "/Aliucord.js" && req.url !== "/Aliucord.js.map") res.writeHead(404).end();
+    if (!whitelist.includes(req.url)) res.writeHead(404).end();
     else {
-        readFile(`dist/${req.url}`, { encoding: "utf-8" }, (err, data) => {
+        readFile(`dist${req.url}`, { encoding: "utf-8" }, (err, data) => {
             if (err) {
                 console.error(err);
                 res.writeHead(500);
             } else {
-                res.writeHead(200, { "Content-Type": "text/javascript" });
+                if (!req.url.endsWith(".bundle")) res.writeHead(200, { "Content-Type": "text/javascript" });
                 res.write(data);
             }
             res.end();

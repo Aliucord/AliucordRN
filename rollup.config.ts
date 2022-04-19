@@ -1,6 +1,7 @@
 import { defineConfig, Plugin } from "rollup";
 import esbuild from "rollup-plugin-esbuild";
 import { babel } from "@rollup/plugin-babel";
+import { hermes } from "rollup-plugin-hermes";
 import { spawn } from "child_process";
 import { platform } from "process";
 
@@ -22,6 +23,7 @@ export default defineConfig({
             }
         }),
         babel({ babelHelpers: "bundled", extensions: [".ts", ".tsx"] }),
+        hermes({ hermesPath: "node_modules/.pnpm/hermes-engine@0.11.0/node_modules/hermes-engine" }),
         process.env.ROLLUP_WATCH ? autoDeploy() : undefined
     ],
     onwarn: (warning, next) => {

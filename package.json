@@ -29,6 +29,7 @@
     "eslint-plugin-react": "^7.29.4",
     "rollup": "^2.70.2",
     "rollup-plugin-esbuild": "^4.9.1",
+    "rollup-plugin-hermes": "^0.11.1",
     "typescript": "^4.6.3"
   },
   "dependencies": {
