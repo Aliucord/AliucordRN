@@ -1,4 +1,5 @@
 import { Logger } from "../Logger";
+import { makeAsyncEval } from "../misc";
 import { before } from "../Patcher";
 
 const logger = new Logger("DebugWS");
@@ -12,9 +13,14 @@ export class DebugWS {
 
         this.socket.addEventListener("open", () => logger.info("Connected with debug websocket"));
         this.socket.addEventListener("error", e => logger.error((e as any).message));
-        this.socket.addEventListener("message", message => {
+        this.socket.addEventListener("message", async message => {
             try {
-                console.log(eval(message.data));
+                const { data } = message;
+                if (data.includes("await")) {
+                    console.log(await eval(makeAsyncEval(data)));
+                } else {
+                    console.log(eval(data));
+                }
             } catch (e) {
                 logger.error(e as Error | string);
             }

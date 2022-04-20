@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType } from "../api/Commands";
 import Plugin from "../entities/Plugin";
 import { getByProps, i18n } from "../metro";
+import { makeAsyncEval } from "../utils/misc";
 
 export default class CoreCommands extends Plugin {
     start() {
@@ -20,5 +21,39 @@ export default class CoreCommands extends Plugin {
                 ClydeUtils.sendBotMessage(ctx.channel.id, args[0].value);
             }
         });
+
+        this.commands.registerCommand({
+            name: "eval",
+            description: "Eval javascript",
+            options: [
+                {
+                    name: "code",
+                    description: "Code to eval. Async functions are not supported. Await is, however you must specify a return explicitly",
+                    required: true,
+                    type: ApplicationCommandOptionType.STRING
+                }
+            ],
+            execute: async (args, ctx) => {
+                try {
+                    const code = args[0].value as string;
+
+                    let result;
+                    if (code.includes("await")) {
+                        result = await eval(makeAsyncEval(code));
+                    } else {
+                        result = eval(code);
+                    }
+
+                    ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(String(result)));
+                } catch (err: any) {
+                    ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(err?.stack ?? err?.message ?? String(err)));
+                }
+            }
+        });
+    }
+
+    private codeblock(code: string) {
+        const ZWSP = "​";
+        return "```js\n" + code.replace(/`/g, "`" + ZWSP) + "```";
     }
 }

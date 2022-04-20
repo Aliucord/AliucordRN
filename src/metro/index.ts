@@ -1,4 +1,5 @@
 import { Logger } from "../utils/Logger";
+import type Constants from "./constants";
 
 declare const __r: (moduleId: number) => any;
 declare const modules: { [id: number]: any; };
@@ -6,11 +7,7 @@ declare const modules: { [id: number]: any; };
 const logger = new Logger("Metro");
 
 /**
- * This code may be a bit hard to follow but all it's doing is disallowing:
- * 
- * { default: true, exports: false }
- * 
- * because it's not possible to return *outside* 'exports' AND return *inside* 'default'
+ * Module filter options
  */
 type FilterOptions = {
     exports?: boolean;
@@ -20,11 +17,19 @@ type FilterOptions = {
     default?: true;
 };
 
+// If you are curious why this exists, run
+// __r(994) and enjoy your Hindi timestamps
 function isModuleBlacklisted(id: number) {
     if (id === 54 || id >= 966 && id <= 994) return true;
     return false;
 }
 
+/**
+ * Find a Discord Module
+ * @param filter Module filter
+ * @param options Options.
+ * @returns Module if found, else null
+ */
 export function getModule(filter: (module: any) => boolean, options?: FilterOptions) {
     const { exports = true, default: defaultExport = true } = options ?? {};
 
@@ -33,23 +38,24 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
 
         if (isModuleBlacklisted(id)) continue;
 
+
         let mod;
         try {
             mod = __r(id);
         } catch {
             // Some modules throw error, ignore 
+            continue;
         }
-
         if (!mod) continue;
 
         try {
             if (filter(mod)) {
-                const module = modules[Number(id)].publicModule;
+                const module = modules[id].publicModule;
                 return exports ? module.exports : module;
             }
 
             if (mod.default && filter(mod.default)) {
-                const module = modules[Number(id)].publicModule;
+                const module = modules[id].publicModule;
                 return defaultExport ? module.exports.default :
                     exports ? module.exports : module;
             }
@@ -63,6 +69,10 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
 
 type PropIntellisense<T extends string> = { [P in T]: any; } & Record<any, any>;
 
+/**
+ * Find a module by props
+ * @param props One or more props
+ */
 export function getByProps<T extends string>(...props: T[]): PropIntellisense<T>;
 export function getByProps<T extends string>(...options: [...props: T[], options: FilterOptions]): PropIntellisense<T>;
 export function getByProps<T extends string>(...options: [...props: T[], defaultExport: boolean]): PropIntellisense<T>;
@@ -79,16 +89,32 @@ export function getByProps(...props: any[]) {
     return getModule(filter, typeof options === "boolean" ? { default: options } : options);
 }
 
+/**
+ * Find a module by its displayName property. Usually useful for finding React Components
+ * @returns Module if found, else null
+ */
 export function getByDisplayName(displayName: string, options?: FilterOptions) {
     return getModule(m => m.displayName === displayName, options);
 }
 
+/**
+ * Find a Store by its name. 
+ * @returns Module if found, else null
+ */
 export function getByStoreName(storeName: string, options?: FilterOptions) {
     return getModule(m => m.getName?.() === storeName, options);
 }
 
+/**
+ * Get a module by its numeric id. Unless you know what you're doing, you
+ * should not use this.
+ */
 export const getById = __r;
 
+/**
+ * Same as getModule, but retrieves all matches instead of the first
+ * @returns Array of modules
+ */
 export function getAll(filter: (module: any) => boolean, options?: FilterOptions): any[] {
     const { exports = true, default: defaultExport = true } = options ?? {};
 
@@ -126,6 +152,10 @@ export function getAll(filter: (module: any) => boolean, options?: FilterOptions
     return ret;
 }
 
+/**
+ * Same as getByProps, but retrieves all matches instead of the first
+ * @returns Array of modules
+ */
 export function getAllByProps<T extends string>(...props: T[]): PropIntellisense<T>[];
 export function getAllByProps<T extends string>(...options: [...props: T[], options: FilterOptions]): PropIntellisense<T>[];
 export function getAllByProps<T extends string>(...options: [...props: T[], defaultExport: boolean]): PropIntellisense<T>[];
@@ -143,6 +173,10 @@ export function getAllByProps(...props: any[]) {
 }
 
 // Common modules
+export let Clipboard: {
+    getString(): Promise<string>;
+    setString(text: string): Promise<string>;
+};
 export let UserStore: any;
 export let GuildStore: any;
 export let ChannelStore: any;
@@ -156,10 +190,11 @@ export let FluxDispatcher: any;
 export let FetchUserActions: any;
 export let ContextMenuActions: any;
 
+export let RestAPI: any;
 export let i18n: any;
 export let Flux: any;
 export let React: typeof import("react");
-export let constants: import('./constants').default;
+export let constants: Constants;
 
 export function _initMetro() {
     UserStore = getByStoreName("UserStore");
@@ -170,11 +205,13 @@ export function _initMetro() {
     SelectedChannelStore = getByStoreName("SelectedChannelStore");
 
     ModalActions = getByProps("closeModal");
-    MessageActions = getByProps("sendMessage");
+    MessageActions = getByProps("sendMessage", "receiveMessage");
     FluxDispatcher = getByProps("dirtyDispatch");
     FetchUserActions = getByProps("fetchProfile");
     ContextMenuActions = getByProps("openContextMenu");
 
+    Clipboard = getByProps("getString", "setString");
+    RestAPI = getByProps("getAPIBaseURL", "get");
     i18n = getByProps("Messages");
     Flux = getByProps("connectStores");
     React = getByProps("createElement") as any;
