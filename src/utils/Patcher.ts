@@ -154,7 +154,7 @@ class PatchInfo<T, R, A extends any[]> {
             }
         } while (--idx >= 0);
 
-        return ctx.geROrThrowError();
+        return ctx.getResultOrThrowError();
     }
 }
 
@@ -189,7 +189,7 @@ class PatchContext<T, R, A extends any[]> {
         this._error = error;
     }
 
-    geROrThrowError() {
+    getResultOrThrowError() {
         if (this._error !== undefined) throw this._error;
         return this._result;
     }
