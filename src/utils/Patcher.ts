@@ -241,13 +241,13 @@ export function patch<T = any, R = any, A extends any[] = any[]>(
         patchInfo = new PatchInfo(original, name);
 
         const replacement = patchInfo.makeReplacementFunc();
-        Object.assign(replacement, original);
         Object.defineProperty(replacement, patchInfoSym, {
             value: patchInfo,
             enumerable: false,
             writable: true,
             configurable: true
         });
+        Object.defineProperties(replacement, Object.getOwnPropertyDescriptors(original));
 
         object[name] = replacement;
     }
