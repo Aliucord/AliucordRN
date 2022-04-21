@@ -248,6 +248,9 @@ export function patch<T = any, R = any, A extends any[] = any[]>(
             writable: true,
             configurable: true
         });
+        for (const property of Object.getOwnPropertyNames(original)) {
+            Object.defineProperty(replacement, property, Object.getOwnPropertyDescriptor(original, property) as object);
+        }
 
         object[name] = replacement;
     }
