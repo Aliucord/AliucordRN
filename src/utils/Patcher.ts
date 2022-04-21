@@ -3,20 +3,20 @@ import { Logger } from "./Logger";
 const logger = new Logger("Patcher");
 const patchInfoSym = Symbol("PatchInfo");
 
-export type BeforePatchFn<TThis, TResult, TArgs extends any[]> = (
-    ctx: PatchContext<TThis, TResult, TArgs>,
-    ...args: TArgs
-) => TResult | void;
+export type BeforePatchFn<T, R, A extends any[]> = (
+    ctx: PatchContext<T, R, A>,
+    ...args: A
+) => R | void;
 
-export type AfterPatchFn<TThis, TResult, TArgs extends any[]> = (
-    ctx: AfterPatchContext<TThis, TResult, TArgs>,
-    ...args: TArgs
-) => TResult | void;
+export type AfterPatchFn<T, R, A extends any[]> = (
+    ctx: AfterPatchContext<T, R, A>,
+    ...args: A
+) => R | void;
 
-export type InsteadFn<TThis, TResult, TArgs extends any[]> = (
-    ctx: PatchContext<TThis, TResult, TArgs>,
-    ...args: TArgs
-) => TResult;
+export type InsteadFn<T, R, A extends any[]> = (
+    ctx: PatchContext<T, R, A>,
+    ...args: A
+) => R;
 
 export type Unpatch = () => void;
 
@@ -26,18 +26,18 @@ export enum PatchPriority {
     MAX = 30
 }
 
-type PatchFns<TThis, TResult, TArgs extends any[]> = {
-    before?: BeforePatchFn<TThis, TResult, TArgs>,
-    instead?: InsteadFn<TThis, TResult, TArgs>,
-    after?: AfterPatchFn<TThis, TResult, TArgs>
-}
+type PatchFns<T, R, A extends any[]> = {
+    before?: BeforePatchFn<T, R, A>,
+    instead?: InsteadFn<T, R, A>,
+    after?: AfterPatchFn<T, R, A>;
+};
 
-export class Patch<TThis, TResult, TArgs extends any[]> {
-    public before: BeforePatchFn<TThis, TResult, TArgs>;
-    public after: AfterPatchFn<TThis, TResult, TArgs>;
+export class Patch<T, R, A extends any[]> {
+    public before: BeforePatchFn<T, R, A>;
+    public after: AfterPatchFn<T, R, A>;
 
     public constructor(
-        data: PatchFns<TThis, TResult, TArgs>,
+        data: PatchFns<T, R, A>,
         public readonly priority: number = PatchPriority.DEFAULT,
         public readonly plugin?: string
     ) {
@@ -53,7 +53,7 @@ export class Patch<TThis, TResult, TArgs extends any[]> {
             }
 
             const { instead } = data;
-            this.before = (ctx: PatchContext<TThis, TResult, TArgs>, ...args: TArgs) => {
+            this.before = (ctx: PatchContext<T, R, A>, ...args: A) => {
                 ctx.result = instead(ctx, ...args);
             };
             this.after = defaultFn;
@@ -64,12 +64,12 @@ export class Patch<TThis, TResult, TArgs extends any[]> {
     }
 }
 
-class PatchInfo<TThis, TResult, TArgs extends any[]> {
-    public constructor(public readonly backup: (...args: TArgs) => TResult, public readonly methodName: string) { }
+class PatchInfo<T, R, A extends any[]> {
+    public constructor(public readonly backup: (...args: A) => R, public readonly methodName: string) { }
 
-    private readonly _patches = [] as Patch<TThis, TResult, TArgs>[];
+    private readonly _patches = [] as Patch<T, R, A>[];
 
-    private error(patch: Patch<TThis, TResult, TArgs>, type: "PrePatch" | "PostPatch", error: any) {
+    private error(patch: Patch<T, R, A>, type: "PrePatch" | "PostPatch", error: any) {
         const message =
             (patch.plugin ? `[${patch.plugin}] ` : "") +
             (`Error during ${this.methodName} ${type}\n`);
@@ -80,14 +80,14 @@ class PatchInfo<TThis, TResult, TArgs extends any[]> {
         return this._patches.length;
     }
 
-    public addPatch(patch: Patch<TThis, TResult, TArgs>) {
+    public addPatch(patch: Patch<T, R, A>) {
         if (this._patches.includes(patch)) return false;
         this._patches.push(patch);
         this._patches.sort((a, b) => b.priority - a.priority);
         return true;
     }
 
-    public removePatch(patch: Patch<TThis, TResult, TArgs>) {
+    public removePatch(patch: Patch<T, R, A>) {
         const idx = this._patches.indexOf(patch);
         if (idx === -1) return false;
         this._patches.splice(idx, 1);
@@ -97,12 +97,12 @@ class PatchInfo<TThis, TResult, TArgs extends any[]> {
     public makeReplacementFunc() {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const _this = this;
-        return function AliucordPatchFn(this: TThis, ...args: TArgs) {
+        return function AliucordPatchFn(this: T, ...args: A) {
             return _this._callback(this, ...args);
         };
     }
 
-    private _callback(thisObject: TThis, ...args: TArgs) {
+    private _callback(thisObject: T, ...args: A) {
         const patches = this._patches;
         if (!patches.length) return this.backup.call(thisObject, ...args);
 
@@ -137,11 +137,11 @@ class PatchInfo<TThis, TResult, TArgs extends any[]> {
 
         idx--;
         do {
-            const lastResult = ctx.result;
+            const lasR = ctx.result;
             const lastError = ctx.error;
 
             try {
-                const result = patches[idx].after(ctx as AfterPatchContext<TThis, TResult, TArgs>, ...ctx.args);
+                const result = patches[idx].after(ctx as AfterPatchContext<T, R, A>, ...ctx.args);
                 if (result !== undefined) ctx.result = result;
             } catch (err: any) {
                 this.error(patches[idx], "PostPatch", err);
@@ -149,34 +149,34 @@ class PatchInfo<TThis, TResult, TArgs extends any[]> {
                 if (lastError !== null) {
                     ctx.error = lastError;
                 } else {
-                    ctx.result = lastResult;
+                    ctx.result = lasR;
                 }
             }
         } while (--idx >= 0);
 
-        return ctx.getResultOrThrowError();
+        return ctx.geROrThrowError();
     }
 }
 
-class PatchContext<TThis, TResult, TArgs extends any[]> {
+class PatchContext<T, R, A extends any[]> {
     public constructor(
-        public readonly thisObject: TThis,
-        public readonly args: TArgs,
-        private readonly backup: (...args: TArgs) => TResult
+        public readonly thisObject: T,
+        public readonly args: A,
+        private readonly backup: (...args: A) => R
     ) { }
 
-    private _result: TResult | undefined;
+    private _result: R | undefined;
     private _error: Error | undefined;
     /** Do not use */
     _returnEarly = false;
 
-    set result(value: TResult | undefined) {
+    set result(value: R | undefined) {
         this._result = value;
         this._error = undefined;
         this._returnEarly = true;
     }
 
-    get result(): TResult | undefined {
+    get result(): R | undefined {
         return this._result;
     }
 
@@ -189,17 +189,17 @@ class PatchContext<TThis, TResult, TArgs extends any[]> {
         this._error = error;
     }
 
-    getResultOrThrowError() {
+    geROrThrowError() {
         if (this._error !== undefined) throw this._error;
         return this._result;
     }
 
-    callOriginal(): TResult {
+    callOriginal(): R {
         return callOriginal(this.backup, this.thisObject, this.args);
     }
 }
 
-type AfterPatchContext<TThis, TResult, TArgs extends any[]> = PatchContext<TThis, TResult, TArgs> & { result: TResult; };
+type AfterPatchContext<T, R, A extends any[]> = PatchContext<T, R, A> & { result: R; };
 
 function resolveMethod(obj: any, methodName: string) {
     if (obj == null) throw new Error("obj may not be null or undefined");
@@ -211,9 +211,9 @@ function resolveMethod(obj: any, methodName: string) {
     return method;
 }
 
-export function unpatch<TThis>(obj: TThis | any, methodName: string, patch: Patch<TThis, any, any>) {
+export function unpatch<T>(obj: T | any, methodName: string, patch: Patch<T, any, any>) {
     const func = resolveMethod(obj, methodName);
-    const patchInfo = func[patchInfoSym] as PatchInfo<TThis, any, any>;
+    const patchInfo = func[patchInfoSym] as PatchInfo<T, any, any>;
     if (patchInfo) {
         patchInfo.removePatch(patch);
         if (patchInfo.patchCount === 0) {
@@ -229,14 +229,14 @@ export function callOriginal(func: (...args: any[]) => any, thisObj: any, ...arg
     return original.call(thisObj, ...args);
 }
 
-export function patch<TThis, TResult, TArgs extends any[] = any[]>(
-    object: TThis | any,
+export function patch<T = any, R = any, A extends any[] = any[]>(
+    object: T | any,
     name: string,
-    patch: Patch<TThis, TResult, TArgs>
+    patch: Patch<T, R, A>
 ): Unpatch {
     const original = resolveMethod(object, name);
 
-    let patchInfo = original[patchInfoSym] as PatchInfo<TThis, TResult, TArgs>;
+    let patchInfo = original[patchInfoSym] as PatchInfo<T, R, A>;
     if (!patchInfo) {
         patchInfo = new PatchInfo(original, name);
 
@@ -257,20 +257,20 @@ export function patch<TThis, TResult, TArgs extends any[] = any[]>(
     return () => unpatch(object, name, patch);
 }
 
-export function before<TThis, TResult, TArgs extends any[] = any[]>(
+export function before<T = any, R = any, A extends any[] = any[]>(
     object: any,
     name: string,
-    before: BeforePatchFn<TThis, TResult, TArgs>,
+    before: BeforePatchFn<T, R, A>,
     priority = PatchPriority.DEFAULT,
     plugin?: string
 ): Unpatch {
     return patch(object, name, new Patch({ before }, priority, plugin));
 }
 
-export function instead<TThis, TResult, TArgs extends any[] = any[]>(
+export function instead<T = any, R = any, A extends any[] = any[]>(
     object: any,
     name: string,
-    instead: InsteadFn<TThis, TResult, TArgs>,
+    instead: InsteadFn<T, R, A>,
     priority = PatchPriority.DEFAULT,
     plugin?: string
 ): Unpatch {
@@ -281,10 +281,10 @@ export function insteadDoNothing(object: any, name: string) {
     return instead(object, name, () => void 0);
 }
 
-export function after<TThis, TResult, TArgs extends any[] = any[]>(
+export function after<T = any, R = any, A extends any[] = any[]>(
     object: any,
     name: string,
-    after: AfterPatchFn<TThis, TResult, TArgs>,
+    after: AfterPatchFn<T, R, A>,
     priority = PatchPriority.DEFAULT,
     plugin?: string
 ): Unpatch {

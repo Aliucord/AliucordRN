@@ -67,7 +67,7 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
     return null;
 }
 
-type PropIntellisense<T extends string> = { [P in T]: any; } & Record<any, any>;
+type PropIntellisense<P extends string> = Record<P, any> & Record<PropertyKey, any>;
 
 /**
  * Find a module by props
@@ -118,7 +118,7 @@ export const getById = __r;
 export function getAll(filter: (module: any) => boolean, options?: FilterOptions): any[] {
     const { exports = true, default: defaultExport = true } = options ?? {};
 
-    const ret = [];
+    const ret = [] as any[];
     for (const key in modules) {
         const id = Number(key);
 
@@ -194,7 +194,9 @@ export let RestAPI: any;
 export let i18n: any;
 export let Flux: any;
 export let React: typeof import("react");
+export let ReactNative: typeof import("react-native");
 export let constants: Constants;
+export let URLOpener: any;
 
 export function _initMetro() {
     UserStore = getByStoreName("UserStore");
@@ -215,5 +217,7 @@ export function _initMetro() {
     i18n = getByProps("Messages");
     Flux = getByProps("connectStores");
     React = getByProps("createElement") as any;
+    ReactNative = getByProps("Text", "Image") as any;
     constants = getByProps("ActionTypes") as any;
+    URLOpener = getByProps("openURL", "handleSupportedURL");
 }

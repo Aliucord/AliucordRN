@@ -22,6 +22,7 @@
     "@rollup/plugin-babel": "^5.3.1",
     "@types/node": "^17.0.24",
     "@types/react": "^17.0.39",
+    "@types/react-native": "^0.67.4",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
     "esbuild": "^0.14.36",

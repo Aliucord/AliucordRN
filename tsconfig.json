@@ -3,7 +3,7 @@
     "target": "es6",
     "jsx": "react-native",
     "strict": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "moduleResolution": "node",
     "module": "ESNext"
   }

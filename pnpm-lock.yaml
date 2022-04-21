@@ -6,6 +6,7 @@ specifiers:
   '@rollup/plugin-babel': ^5.3.1
   '@types/node': ^17.0.24
   '@types/react': ^17.0.39
+  '@types/react-native': ^0.67.4
   '@typescript-eslint/eslint-plugin': ^5.19.0
   '@typescript-eslint/parser': ^5.19.0
   esbuild: ^0.14.36
@@ -26,6 +27,7 @@ devDependencies:
   '@rollup/plugin-babel': 5.3.1_@babel+core@7.17.9+rollup@2.70.2
   '@types/node': 17.0.24
   '@types/react': 17.0.44
+  '@types/react-native': 0.67.4
   '@typescript-eslint/eslint-plugin': 5.19.0_f34adc8488d2e4f014fe61432d70cbf2
   '@typescript-eslint/parser': 5.19.0_eslint@8.13.0+typescript@4.6.3
   esbuild: 0.14.36
@@ -426,6 +428,12 @@ packages:
 
   /@types/prop-types/15.7.4:
     resolution: {integrity: sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==}
+    dev: true
+
+  /@types/react-native/0.67.4:
+    resolution: {integrity: sha512-L81CB6W1m0s7d+TH/loP318+VKPwwjWQBUTVYQ1+lQTWiE5jHxyihgCmd7JbwLICo708FRSDwJW7pJoiZHy6yg==}
+    dependencies:
+      '@types/react': 17.0.44
     dev: true
 
   /@types/react/17.0.44:

@@ -1,8 +1,9 @@
 import { Commands } from "./api/Commands";
+import * as AliuConstants from "./constants";
 import * as CorePlugins from "./core-plugins/index";
 import * as Metro from "./metro";
 import { getByProps } from "./metro/index";
-import { AliucordSettings } from "./ui/AliucordSettings";
+import patchSettings from "./ui/patchSettings";
 import { DebugWS } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
 import * as Patcher from "./utils/Patcher";
@@ -25,6 +26,8 @@ function initWithPerms() {
 export class Aliucord {
     logger = new Logger("Aliucord");
     debugWS = new DebugWS();
+
+    Constants = AliuConstants;
 
     Commands = Commands;
     /**
@@ -59,7 +62,7 @@ export class Aliucord {
                 new ReactDevTools().connect();
             }
 
-            new AliucordSettings().patch();
+            patchSettings();
         } catch (error) {
             this.logger.error(error as string | Error);
         }
