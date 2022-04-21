@@ -208,8 +208,8 @@
 
       try {
         mod = __r(id);
-      } catch (e) {
-        continue;
+      } catch (err) {
+        console.error(err);
       }
 
       if (!mod) continue;
@@ -305,6 +305,40 @@
       default: options
     } : options);
   }
+  function searchByKeyword(keyword, skipConstants = true) {
+    var _a, _b;
+
+    keyword = keyword.toLowerCase();
+    const matches = [];
+    window.moduleSearchResults = {};
+
+    function check(obj) {
+      if (!obj) return;
+
+      for (const name of Object.getOwnPropertyNames(obj)) {
+        if (name.toLowerCase().includes(keyword) && (!skipConstants || name.toUpperCase() !== name)) {
+          matches.push(name);
+          window.moduleSearchResults[name] = obj;
+        }
+      }
+    }
+
+    for (const id in modules) if (!isModuleBlacklisted(Number(id))) {
+      try {
+        __r(Number(id));
+
+        const mod = (_a = modules[id]) == null ? void 0 : _a.publicModule;
+
+        if (mod) {
+          check(mod);
+          check(mod.exports);
+          check((_b = mod.exports) == null ? void 0 : _b.default);
+        }
+      } catch (err) {}
+    }
+
+    return matches;
+  }
   let Clipboard;
   let UserStore;
   let GuildStore;
@@ -355,6 +389,7 @@
     getById: getById,
     getAll: getAll,
     getAllByProps: getAllByProps,
+    searchByKeyword: searchByKeyword,
     get Clipboard () { return Clipboard; },
     get UserStore () { return UserStore; },
     get GuildStore () { return GuildStore; },
