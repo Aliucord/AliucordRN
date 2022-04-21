@@ -42,9 +42,9 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
         let mod;
         try {
             mod = __r(id);
-        } catch {
-            // Some modules throw error, ignore 
-            continue;
+        } catch (err) {
+            console.error(err);
+            // Some modules throw error, ignore
         }
         if (!mod) continue;
 
@@ -170,6 +170,45 @@ export function getAllByProps(...props: any[]) {
     };
 
     return getAll(filter, typeof options === "boolean" ? { default: options } : options);
+}
+
+/**
+ * Find all modules with properties containing the specified keyword 
+ * @param keyword They keyword
+ * @param skipConstants Whether constants (names that are FULL_CAPS) should be skipped. Defaults to true
+ * @returns Array of names that match. You can then access moduleSearchResults.SomeName to view the
+ *          corresponding module 
+ */
+export function searchByKeyword(keyword: string, skipConstants = true) {
+    keyword = keyword.toLowerCase();
+    const matches = [];
+    window.moduleSearchResults = {};
+
+    function check(obj: any) {
+        if (!obj) return;
+        for (const name of Object.getOwnPropertyNames(obj)) {
+            if (name.toLowerCase().includes(keyword) && (!skipConstants || name.toUpperCase() !== name)) {
+                matches.push(name);
+                window.moduleSearchResults[name] = obj;
+            }
+        }
+    }
+
+    for (const id in modules) if (!isModuleBlacklisted(Number(id))) {
+        try {
+            __r(Number(id));
+            const mod = modules[id]?.publicModule;
+            if (mod) {
+                check(mod);
+                check(mod.exports);
+                check(mod.exports?.default);
+            }
+        } catch (err) {
+            //
+        }
+    }
+
+    return matches;
 }
 
 // Common modules
