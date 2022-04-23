@@ -10,8 +10,10 @@ export default class CommandHandler extends Plugin {
 
         const discovery = getByProps("useApplicationCommandsDiscoveryState");
         after(discovery, "useApplicationCommandsDiscoveryState", context => {
+            const shouldDisplay = context.args[3] === false;
+
             const res = context.result as any;
-            if (!res.discoverySections.find((s: any) => s.key === Commands._aliucordSection.id) && Commands._commands.length) {
+            if (shouldDisplay && !res.discoverySections.find((s: any) => s.key === Commands._aliucordSection.id) && Commands._commands.length) {
                 res.discoveryCommands.push(...Commands._commands);
                 res.commands.push(...Commands._commands.filter(
                     command => !res.commands.some((cmd: ApplicationCommand) => cmd.name === command.name))
@@ -27,7 +29,7 @@ export default class CommandHandler extends Plugin {
                 offsets.push(offsets[offsets.length - 1] + commands.BUILT_IN_COMMANDS.length - 1);
             }
 
-            if (!res.applicationCommandSections.find((s: CommandSection) => s.id === Commands._aliucordSection.id) && Commands._commands.length) {
+            if (shouldDisplay && !res.applicationCommandSections.find((s: CommandSection) => s.id === Commands._aliucordSection.id) && Commands._commands.length) {
                 res.applicationCommandSections.push(Commands._aliucordSection);
             }
         });
