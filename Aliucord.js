@@ -215,9 +215,7 @@
 
       try {
         mod = __r(id);
-      } catch (err) {
-        console.error(err);
-      }
+      } catch (e) {}
 
       if (!mod) continue;
 
@@ -341,51 +339,30 @@
           check(mod.exports);
           check((_b = mod.exports) == null ? void 0 : _b.default);
         }
-      } catch (err) {}
+      } catch (e) {}
     }
 
     return matches;
   }
-  let Clipboard;
-  let UserStore;
-  let GuildStore;
-  let ChannelStore;
-  let MessageStore;
-  let GuildMemberStore;
-  let SelectedChannelStore;
-  let ModalActions;
-  let MessageActions;
-  let FluxDispatcher;
-  let FetchUserActions;
-  let ContextMenuActions;
-  let RestAPI;
-  let i18n;
-  let Flux;
-  let React;
-  let ReactNative;
-  let constants;
-  let URLOpener;
-  function _initMetro() {
-    UserStore = getByStoreName("UserStore");
-    GuildStore = getByStoreName("GuildStore");
-    ChannelStore = getByStoreName("ChannelStore");
-    MessageStore = getByStoreName("MessageStore");
-    GuildMemberStore = getByStoreName("GuildMemberStore");
-    SelectedChannelStore = getByStoreName("SelectedChannelStore");
-    ModalActions = getByProps("closeModal");
-    MessageActions = getByProps("sendMessage", "receiveMessage");
-    FluxDispatcher = getByProps("dirtyDispatch");
-    FetchUserActions = getByProps("fetchProfile");
-    ContextMenuActions = getByProps("openContextMenu");
-    Clipboard = getByProps("getString", "setString");
-    RestAPI = getByProps("getAPIBaseURL", "get");
-    i18n = getByProps("Messages");
-    Flux = getByProps("connectStores");
-    React = getByProps("createElement");
-    ReactNative = getByProps("Text", "Image");
-    constants = getByProps("ActionTypes");
-    URLOpener = getByProps("openURL", "handleSupportedURL");
-  }
+  const UserStore = getByStoreName("UserStore");
+  const GuildStore = getByStoreName("GuildStore");
+  const ChannelStore = getByStoreName("ChannelStore");
+  const MessageStore = getByStoreName("MessageStore");
+  const GuildMemberStore = getByStoreName("GuildMemberStore");
+  const SelectedChannelStore = getByStoreName("SelectedChannelStore");
+  const ModalActions = getByProps("closeModal");
+  const MessageActions = getByProps("sendMessage", "receiveMessage");
+  const FluxDispatcher = getByProps("dirtyDispatch");
+  const FetchUserActions = getByProps("fetchProfile");
+  const ContextMenuActions = getByProps("openContextMenu");
+  const Clipboard = getByProps("getString", "setString");
+  const RestAPI = getByProps("getAPIBaseURL", "get");
+  const i18n = getByProps("Messages");
+  const Flux = getByProps("connectStores");
+  const React = getByProps("createElement");
+  const ReactNative = getByProps("Text", "Image");
+  const constants = getByProps("ActionTypes");
+  const URLOpener = getByProps("openURL", "handleSupportedURL");
 
   var Metro = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -397,26 +374,25 @@
     getAll: getAll,
     getAllByProps: getAllByProps,
     searchByKeyword: searchByKeyword,
-    get Clipboard () { return Clipboard; },
-    get UserStore () { return UserStore; },
-    get GuildStore () { return GuildStore; },
-    get ChannelStore () { return ChannelStore; },
-    get MessageStore () { return MessageStore; },
-    get GuildMemberStore () { return GuildMemberStore; },
-    get SelectedChannelStore () { return SelectedChannelStore; },
-    get ModalActions () { return ModalActions; },
-    get MessageActions () { return MessageActions; },
-    get FluxDispatcher () { return FluxDispatcher; },
-    get FetchUserActions () { return FetchUserActions; },
-    get ContextMenuActions () { return ContextMenuActions; },
-    get RestAPI () { return RestAPI; },
-    get i18n () { return i18n; },
-    get Flux () { return Flux; },
-    get React () { return React; },
-    get ReactNative () { return ReactNative; },
-    get constants () { return constants; },
-    get URLOpener () { return URLOpener; },
-    _initMetro: _initMetro
+    UserStore: UserStore,
+    GuildStore: GuildStore,
+    ChannelStore: ChannelStore,
+    MessageStore: MessageStore,
+    GuildMemberStore: GuildMemberStore,
+    SelectedChannelStore: SelectedChannelStore,
+    ModalActions: ModalActions,
+    MessageActions: MessageActions,
+    FluxDispatcher: FluxDispatcher,
+    FetchUserActions: FetchUserActions,
+    ContextMenuActions: ContextMenuActions,
+    Clipboard: Clipboard,
+    RestAPI: RestAPI,
+    i18n: i18n,
+    Flux: Flux,
+    React: React,
+    ReactNative: ReactNative,
+    constants: constants,
+    URLOpener: URLOpener
   });
 
   var ApplicationCommandOptionType = /* @__PURE__ */(ApplicationCommandOptionType2 => {
@@ -1358,7 +1334,7 @@
           try {
             this.logger.info("Loading...");
 
-            _initMetro();
+            undefined();
 
             checkPermissions().then(granted => {
               if (granted) initWithPerms();else {
