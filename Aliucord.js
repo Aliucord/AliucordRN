@@ -361,7 +361,7 @@
   const Flux = getByProps("connectStores");
   const React = getByProps("createElement");
   const ReactNative = getByProps("Text", "Image");
-  const constants = getByProps("ActionTypes");
+  const Constants = getByProps("ActionTypes");
   const URLOpener = getByProps("openURL", "handleSupportedURL");
 
   var Metro = /*#__PURE__*/Object.freeze({
@@ -391,7 +391,7 @@
     Flux: Flux,
     React: React,
     ReactNative: ReactNative,
-    constants: constants,
+    Constants: Constants,
     URLOpener: URLOpener
   });
 
@@ -1333,9 +1333,6 @@
         return __async(this, null, function* () {
           try {
             this.logger.info("Loading...");
-
-            undefined();
-
             checkPermissions().then(granted => {
               if (granted) initWithPerms();else {
                 ReactNative.Alert.alert("Storage Access", "Aliucord needs access to your storage to load plugins and themes.", [{
