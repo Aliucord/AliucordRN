@@ -1,5 +1,4 @@
 import { Logger } from "../utils/Logger";
-import type Constants from "./constants";
 
 declare const __r: (moduleId: number) => any;
 declare const modules: { [id: number]: any; };
@@ -42,8 +41,7 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
         let mod;
         try {
             mod = __r(id);
-        } catch (err) {
-            console.error(err);
+        } catch {
             // Some modules throw error, ignore
         }
         if (!mod) continue;
@@ -181,7 +179,7 @@ export function getAllByProps(...props: any[]) {
  */
 export function searchByKeyword(keyword: string, skipConstants = true) {
     keyword = keyword.toLowerCase();
-    const matches = [];
+    const matches = [] as string[];
     window.moduleSearchResults = {};
 
     function check(obj: any) {
@@ -203,7 +201,7 @@ export function searchByKeyword(keyword: string, skipConstants = true) {
                 check(mod.exports);
                 check(mod.exports?.default);
             }
-        } catch (err) {
+        } catch {
             //
         }
     }
@@ -211,52 +209,28 @@ export function searchByKeyword(keyword: string, skipConstants = true) {
     return matches;
 }
 
-// Common modules
-export let Clipboard: {
-    getString(): Promise<string>;
-    setString(text: string): Promise<string>;
+export const UserStore = getByStoreName("UserStore");
+export const GuildStore = getByStoreName("GuildStore");
+export const ChannelStore = getByStoreName("ChannelStore");
+export const MessageStore = getByStoreName("MessageStore");
+export const GuildMemberStore = getByStoreName("GuildMemberStore");
+export const SelectedChannelStore = getByStoreName("SelectedChannelStore");
+
+export const ModalActions = getByProps("closeModal");
+export const MessageActions = getByProps("sendMessage", "receiveMessage");
+export const FluxDispatcher = getByProps("dirtyDispatch");
+export const FetchUserActions = getByProps("fetchProfile");
+export const ContextMenuActions = getByProps("openContextMenu");
+
+export const Clipboard = getByProps("getString", "setString") as {
+    getString(): Promise<string>,
+    setString(str: string): Promise<void>;
 };
-export let UserStore: any;
-export let GuildStore: any;
-export let ChannelStore: any;
-export let MessageStore: any;
-export let GuildMemberStore: any;
-export let SelectedChannelStore: any;
 
-export let ModalActions: any;
-export let MessageActions: any;
-export let FluxDispatcher: any;
-export let FetchUserActions: any;
-export let ContextMenuActions: any;
-
-export let RestAPI: any;
-export let i18n: any;
-export let Flux: any;
-export let React: typeof import("react");
-export let ReactNative: typeof import("react-native");
-export let constants: Constants;
-export let URLOpener: any;
-
-export function _initMetro() {
-    UserStore = getByStoreName("UserStore");
-    GuildStore = getByStoreName("GuildStore");
-    ChannelStore = getByStoreName("ChannelStore");
-    MessageStore = getByStoreName("MessageStore");
-    GuildMemberStore = getByStoreName("GuildMemberStore");
-    SelectedChannelStore = getByStoreName("SelectedChannelStore");
-
-    ModalActions = getByProps("closeModal");
-    MessageActions = getByProps("sendMessage", "receiveMessage");
-    FluxDispatcher = getByProps("dirtyDispatch");
-    FetchUserActions = getByProps("fetchProfile");
-    ContextMenuActions = getByProps("openContextMenu");
-
-    Clipboard = getByProps("getString", "setString");
-    RestAPI = getByProps("getAPIBaseURL", "get");
-    i18n = getByProps("Messages");
-    Flux = getByProps("connectStores");
-    React = getByProps("createElement") as any;
-    ReactNative = getByProps("Text", "Image") as any;
-    constants = getByProps("ActionTypes") as any;
-    URLOpener = getByProps("openURL", "handleSupportedURL");
-}
+export const RestAPI = getByProps("getAPIBaseURL", "get");
+export const i18n = getByProps("Messages");
+export const Flux = getByProps("connectStores");
+export const React = getByProps("createElement") as typeof import("react");
+export const ReactNative = getByProps("Text", "Image") as typeof import("react-native");
+export const constants = getByProps("ActionTypes") as import("./constants").default;
+export const URLOpener = getByProps("openURL", "handleSupportedURL");
