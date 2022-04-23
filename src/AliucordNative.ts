@@ -1,5 +1,5 @@
 import { PluginManifest } from "./entities/types";
-import { Logger } from "./utils/Logger";
+// import { Logger } from "./utils/Logger";
 
 /**
  * FilePath. Must be absolute
@@ -8,7 +8,8 @@ export type Path = string;
 
 const AliucordNative = window.nativeModuleProxy.AliucordNative;
 
-const logger = new Logger("AliucordNative");
+// creating logger here makes Aliucord not load??
+// const logger = new Logger("AliucordNative");
 
 /**
  * Create a directory
@@ -20,7 +21,7 @@ export async function mkdir(path: Path, recursive = false): Promise<boolean> {
     try {
         return AliucordNative.mkdir(path, recursive);
     } catch (err) {
-        logger.error(`mkdir failed.\npath: ${path}, recursive: ${recursive}`, err);
+        // logger.error(`mkdir failed.\npath: ${path}, recursive: ${recursive}`, err);
         return false;
     }
 }
@@ -69,7 +70,7 @@ export async function getManifest(plugin: string): Promise<PluginManifest | null
         const data = await AliucordNative.getManifest(plugin);
         return JSON.parse(data);
     } catch (err) {
-        logger.error("Error while obtaining manifest of " + plugin, err);
+        // logger.error("Error while obtaining manifest of " + plugin, err);
         return null;
     }
 }
@@ -79,3 +80,13 @@ export async function getManifest(plugin: string): Promise<PluginManifest | null
  * @returns Map<ModuleName, MethodList>
  */
 export const listNativeModules: () => Promise<Record<string, string[]>> = AliucordNative.listNativeModules;
+
+/**
+ * Used to check if Aliucord has storage permissions
+ */
+export const checkPermissions: () => Promise<boolean> = AliucordNative.checkPermissions;
+
+/**
+ * Used to request storage permissions
+ */
+export const requestPermissions: () => Promise<boolean> = AliucordNative.requestPermissions;

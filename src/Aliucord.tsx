@@ -1,23 +1,12 @@
+import { checkPermissions, requestPermissions } from "./AliucordNative";
 import { Commands } from "./api/Commands";
 import * as AliuConstants from "./constants";
 import * as CorePlugins from "./core-plugins/index";
 import * as Metro from "./metro";
-import { getByProps } from "./metro/index";
 import patchSettings from "./ui/patchSettings";
 import { DebugWS } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
 import * as Patcher from "./utils/Patcher";
-
-async function checkPermissions() {
-    const Permissions = getByProps("PERMISSIONS", "request");
-
-    const granted = await Permissions.request(Permissions.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
-        title: "Storage Access",
-        message: "Aliucord needs access to your storage to load plugins and themes."
-    });
-
-    return granted === Permissions.RESULTS.GRANTED;
-}
 
 function initWithPerms() {
     // TODO
@@ -38,14 +27,26 @@ export class Aliucord {
 
     async load() {
         try {
-            checkPermissions().then(granted => {
-                if (granted) initWithPerms();
-                else alert("Aliucord cannot function without permissions.");
-            });
-
             this.logger.info("Loading...");
 
             Metro._initMetro();
+
+            checkPermissions().then(granted => {
+                if (granted) initWithPerms();
+                else {
+                    Metro.ReactNative.Alert.alert(
+                        "Storage Access",
+                        "Aliucord needs access to your storage to load plugins and themes.",
+                        [{
+                            text: "OK",
+                            onPress: () => requestPermissions().then(permissionGranted => {
+                                if (permissionGranted) initWithPerms();
+                                else alert("Aliucord needs access to your storage to load plugins and themes.");
+                            })
+                        }]
+                    );
+                }
+            });
 
             CorePlugins.startAll();
 
