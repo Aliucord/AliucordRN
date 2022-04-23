@@ -110,6 +110,13 @@
     };
   }
 
+  const AliucordNative = window.nativeModuleProxy.AliucordNative;
+  AliucordNative.existsFile;
+  AliucordNative.deleteFile;
+  AliucordNative.listNativeModules;
+  const checkPermissions = AliucordNative.checkPermissions;
+  const requestPermissions = AliucordNative.requestPermissions;
+
   const DiscordLogger = getByProps("setLogFn").default;
   let Logger = /*#__PURE__*/function (_DiscordLogger) {
     _inherits(Logger, _DiscordLogger);
@@ -1330,17 +1337,6 @@
     });
   };
 
-  function checkPermissions() {
-    return __async(this, null, function* () {
-      const Permissions = getByProps("PERMISSIONS", "request");
-      const granted = yield Permissions.request(Permissions.PERMISSIONS.WRITE_EXTERNAL_STORAGE, {
-        title: "Storage Access",
-        message: "Aliucord needs access to your storage to load plugins and themes."
-      });
-      return granted === Permissions.RESULTS.GRANTED;
-    });
-  }
-
   function initWithPerms() {}
 
   let Aliucord = /*#__PURE__*/function () {
@@ -1360,13 +1356,20 @@
       value: function load() {
         return __async(this, null, function* () {
           try {
-            checkPermissions().then(granted => {
-              if (granted) initWithPerms();else alert("Aliucord cannot function without permissions.");
-            });
             this.logger.info("Loading...");
 
             _initMetro();
 
+            checkPermissions().then(granted => {
+              if (granted) initWithPerms();else {
+                ReactNative.Alert.alert("Storage Access", "Aliucord needs access to your storage to load plugins and themes.", [{
+                  text: "OK",
+                  onPress: () => requestPermissions().then(permissionGranted => {
+                    if (permissionGranted) initWithPerms();else alert("Aliucord needs access to your storage to load plugins and themes.");
+                  })
+                }]);
+              }
+            });
             startAll();
             this.debugWS.start();
 
