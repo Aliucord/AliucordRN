@@ -29,8 +29,6 @@ export class Aliucord {
         try {
             this.logger.info("Loading...");
 
-            Metro._initMetro();
-
             checkPermissions().then(granted => {
                 if (granted) initWithPerms();
                 else {

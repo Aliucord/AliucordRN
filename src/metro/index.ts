@@ -232,5 +232,5 @@ export const i18n = getByProps("Messages");
 export const Flux = getByProps("connectStores");
 export const React = getByProps("createElement") as typeof import("react");
 export const ReactNative = getByProps("Text", "Image") as typeof import("react-native");
-export const constants = getByProps("ActionTypes") as import("./constants").default;
+export const Constants = getByProps("ActionTypes") as import("./constants").default;
 export const URLOpener = getByProps("openURL", "handleSupportedURL");
