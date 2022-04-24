@@ -67,11 +67,11 @@ function aliucordVersion(): Plugin {
             if (id === "aliucord-version") {
                 try {
                     const hash = execSync("git rev-parse --short HEAD").toString().replace(/\s*/g, "")
-                    return `export default {sha: "${hash || 'unknown'}"}`
+                    return `export const sha = "${hash || 'unknown'}";`
                 } catch (ex) {
                     console.warn("Failed to fetch git hash")
                 }
-                return 'export default {sha: "unknown"}'
+                return 'export const sha = "unknown";'
             }
         }
     }
