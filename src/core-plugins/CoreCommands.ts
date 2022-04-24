@@ -1,3 +1,4 @@
+import version from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import Plugin from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
@@ -60,8 +61,10 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.getDiscordVersion()}
-                        > React: ${DebugInfo.getReactNativeVersion()}
+                        > Aliucord: ${version.sha}
                         > System: ${DebugInfo.getSystem()}
+                        > React: ${DebugInfo.getReactNativeVersion()}
+                        > Hermes: ${DebugInfo.getHermesVersion()}
                     `.replace(/^\s+/gm, "")
                 });
             }
