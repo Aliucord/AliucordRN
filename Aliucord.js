@@ -891,6 +891,57 @@
     return CommandHandler;
   }(Plugin);
 
+  const sha = "767d277";
+
+  let DebugInfo = /*#__PURE__*/function () {
+    function DebugInfo() {
+      _classCallCheck(this, DebugInfo);
+    }
+
+    _createClass(DebugInfo, null, [{
+      key: "getDiscordVersion",
+      value: function getDiscordVersion() {
+        try {
+          return `${ReactNative.NativeModules.InfoDictionaryManager.Version} (${ReactNative.NativeModules.InfoDictionaryManager.ReleaseChannel})`;
+        } catch (ex) {
+          return "unknown";
+        }
+      }
+    }, {
+      key: "getSystem",
+      value: function getSystem() {
+        try {
+          return `${ReactNative.Platform.OS} ${ReactNative.Platform.constants.Release} (SDK v${ReactNative.Platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${ReactNative.Platform.constants.uiMode}`;
+        } catch (ex) {
+          return "unknown";
+        }
+      }
+    }, {
+      key: "getReactNativeVersion",
+      value: function getReactNativeVersion() {
+        try {
+          const ver = ReactNative.Platform.constants.reactNativeVersion;
+          return `${ver.major || 0}.${ver.minor || 0}.${ver.patch || 0}`;
+        } catch (ex) {
+          return "unknown";
+        }
+      }
+    }, {
+      key: "getHermesVersion",
+      value: function getHermesVersion() {
+        try {
+          if (window.HermesInternal === void 0) return "N/A";
+          const runtimeProps = window.HermesInternal.getRuntimeProperties();
+          return `${runtimeProps["OSS Release Version"]} ${runtimeProps["Build"]} (v${runtimeProps["Bytecode Version"]})`;
+        } catch (ex) {
+          return "unknown";
+        }
+      }
+    }]);
+
+    return DebugInfo;
+  }();
+
   function makeAsyncEval(code) {
     return `
     var __async = (generator) => {
@@ -1001,6 +1052,22 @@
             } catch (err) {
               ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock((_b = (_a = err == null ? void 0 : err.stack) != null ? _a : err == null ? void 0 : err.message) != null ? _b : String(err)));
             }
+          })
+        });
+        this.commands.registerCommand({
+          name: "debug",
+          description: "Posts debug info",
+          options: [],
+          execute: (args2, ctx2) => __async$3(this, null, function* () {
+            MessageActions.sendMessage(ctx2.channel.id, {
+              content: `**Debug Info:**
+                        > Discord: ${DebugInfo.getDiscordVersion()}
+                        > Aliucord: ${sha}
+                        > System: ${DebugInfo.getSystem()}
+                        > React: ${DebugInfo.getReactNativeVersion()}
+                        > Hermes: ${DebugInfo.getHermesVersion()}
+                    `.replace(/^\s+/gm, "")
+            });
           })
         });
       }
