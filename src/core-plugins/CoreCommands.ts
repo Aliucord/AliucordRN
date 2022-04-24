@@ -1,6 +1,8 @@
+import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import Plugin from "../entities/Plugin";
-import { getByProps, i18n } from "../metro";
+import { getByProps, i18n, MessageActions } from "../metro";
+import DebugInfo from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
 
 export default class CoreCommands extends Plugin {
@@ -48,6 +50,23 @@ export default class CoreCommands extends Plugin {
                 } catch (err: any) {
                     ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(err?.stack ?? err?.message ?? String(err)));
                 }
+            }
+        });
+
+        this.commands.registerCommand({
+            name: "debug",
+            description: "Posts debug info",
+            options: [],
+            execute: async (args, ctx) => {
+                MessageActions.sendMessage(ctx.channel.id, {
+                    content: `**Debug Info:**
+                        > Discord: ${DebugInfo.getDiscordVersion()}
+                        > Aliucord: ${sha}
+                        > System: ${DebugInfo.getSystem()}
+                        > React: ${DebugInfo.getReactNativeVersion()}
+                        > Hermes: ${DebugInfo.getHermesVersion()}
+                    `.replace(/^\s+/gm, "")
+                });
             }
         });
     }
