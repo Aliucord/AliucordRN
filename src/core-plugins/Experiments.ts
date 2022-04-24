@@ -1,5 +1,5 @@
 import Plugin from "../entities/Plugin";
-import { getByProps } from "../metro/index";
+import { getByProps, FluxDispatcher } from "../metro/index";
 
 export default class Experiments extends Plugin {
     public start() {
@@ -7,7 +7,6 @@ export default class Experiments extends Plugin {
 
         // Make sure our change persists across account switches and other
         // things that re-open a connection.
-        const FluxDispatcher = getByProps("_currentDispatchActionType", "_subscriptions", "_waitQueue");
         FluxDispatcher.subscribe("CONNECTION_OPEN", apply);
     }
 }
