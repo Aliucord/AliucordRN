@@ -1,8 +1,5 @@
 import { ReactNative } from "../../metro";
 
-const capitalize = ([firstLetter, ...restOfWord]) =>
-  firstLetter.toUpperCase() + restOfWord.join("");
-
 export class DebugInfo {
     static getDiscordVersion(): string {
         try {
@@ -14,7 +11,7 @@ export class DebugInfo {
 
     static getSystem(): string {
         try {
-            return `${capitalize(ReactNative.Platform.OS)} ${ReactNative.Platform.constants.Release} (SDK v${ReactNative.Platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${ReactNative.Platform.constants.uiMode}`
+            return `${ReactNative.Platform.OS} ${ReactNative.Platform.constants.Release} (SDK v${ReactNative.Platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${ReactNative.Platform.constants.uiMode}`
         } catch (ex) {
             return "unknown";
         } 
