@@ -1,3 +1,4 @@
+import { sha } from "aliucord-version";
 import { Forms, getModule, i18n, React, ReactNative as RN } from "../metro";
 import { after } from "../utils/Patcher";
 import AliucordPage from "./AliucordPage";
@@ -48,7 +49,7 @@ export default function patchSettings() {
             window.nitro = props.children[nitroIndex];
 
             const aliucordSection = (
-                <FormSection key="AliucordSection" title="Aliucord" >
+                <FormSection key="AliucordSection" title={`Aliucord ${sha}`} >
                     <FormRow
                         label="Aliucord"
                         trailing={FormRow.Arrow}
