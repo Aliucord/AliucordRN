@@ -49,7 +49,7 @@ export default function patchSettings() {
             window.nitro = props.children[nitroIndex];
 
             const aliucordSection = (
-                <FormSection key="AliucordSection" title={`Aliucord ${sha}`} >
+                <FormSection key="AliucordSection" title={`Aliucord (${sha})`} >
                     <FormRow
                         label="Aliucord"
                         trailing={FormRow.Arrow}
