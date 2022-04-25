@@ -974,7 +974,7 @@
     return CommandHandler;
   }(Plugin);
 
-  const sha = "39d417e";
+  const sha = "0b50b9d";
 
   let DebugInfo = /*#__PURE__*/function () {
     function DebugInfo() {
@@ -1384,7 +1384,7 @@
         window.nitro = props.children[nitroIndex];
         const aliucordSection = /* @__PURE__ */React.createElement(FormSection, {
           key: "AliucordSection",
-          title: "Aliucord"
+          title: `Aliucord (${sha})`
         }, /* @__PURE__ */React.createElement(FormRow, {
           label: "Aliucord",
           trailing: FormRow.Arrow,
