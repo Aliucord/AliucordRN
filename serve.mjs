@@ -8,12 +8,27 @@ import chalk from "chalk";
 
 // http-server exists but it is so bloated 😩
 
+let showPrompt = false;
+const logUtils = {
+    info: (message) => {
+        logUtils.incoming(chalk.greenBright("<-- ") + message);
+    },
+    incoming: (message) => {
+        console.info(`\r      \r${message}`);
+        if (showPrompt) process.stdout.write(chalk.cyanBright("--> "));
+    },
+    success: (message) => {
+        console.info(`\r      \r${chalk.greenBright(message)}`);
+    },
+    error: (message) => {
+        console.error(`\r      \r${chalk.redBright(message)}`);
+    }
+};
+
 const whitelist = ["/Aliucord.js", "/Aliucord.js.map", "/Aliucord.js.bundle"];
-let connectedToWs = false;
 
 const server = createServer((req, res) => {
-    console.info(`\r      \r${chalk.greenBright("<--")} Received Request for`, req.url);
-    if (connectedToWs) process.stdout.write(chalk.cyanBright("--> "));
+    logUtils.info("Received Request for" + req.url);
     if (!whitelist.includes(req.url)) res.writeHead(404).end();
     else {
         readFile(`dist${req.url}`, { encoding: "utf-8" }, (err, data) => {
@@ -28,7 +43,7 @@ const server = createServer((req, res) => {
         });
     }
 })
-    .once("listening", () => console.info("Listening on Port 3000"))
+    .once("listening", () => logUtils.success("Listening on Port 3000"))
     .on("error", console.error);
 
 const wss = new WebSocketServer({ server });
@@ -41,28 +56,26 @@ const rl = readline.createInterface({
 let pnpmCommand;
 
 wss.on("connection", async (ws) => {
-    connectedToWs = true;
     ws.on("message", data => {
         const parsed = JSON.parse(data.toString());
         switch (parsed.level) {
             case 0:
-                console.log(`\r      \r${chalk.whiteBright("T:")} ` + parsed.message);
+                logUtils.incoming(`${chalk.bold("T:")} ` + parsed.message);
                 break;
             case 1:
-                console.log(`\r      \r${chalk.white("I:")} ` + parsed.message);
+                logUtils.incoming(`${chalk.greenBright("I:")} ` + parsed.message);
                 break;
             case 2:
-                console.log(`\r      \r${chalk.yellow("W:")} ` + parsed.message);
+                logUtils.incoming(`${chalk.yellow("W:")} ` + parsed.message);
                 break;
             case 3:
-                console.log(`\r      \r${chalk.redBright("E:")} ` + parsed.message);
+                logUtils.incoming(`${chalk.redBright("E:")} ` + parsed.message);
                 break;
         }
-        process.stdout.write(chalk.cyanBright("--> "));
     });
-    ws.on("close", () => connectedToWs = false);
-    console.info(`\r      \r${chalk.greenBright("<--")} Discord client connected to websocket`);
+    logUtils.info("Discord client connected to websocket");
 
+    showPrompt = true;
     for (;;) {
         await new Promise(r => {
             rl.question(chalk.cyanBright("--> "), (cmd) => {
@@ -83,10 +96,10 @@ server.listen(3000);
 
 const adbReverseCommand = spawn("adb", ["reverse", "tcp:3000", "tcp:3000"], { stdio: "ignore" });
 adbReverseCommand.on("exit", (code) => {
-    if (code !== 0) console.error(`Port forwarding port 3000 with adb exited with code ${code}, aliucord may not load`);
-    else console.info("Successfully forwarded port 3000 to phone with adb");
+    if (code !== 0) logUtils.error(`Port forwarding port 3000 with adb exited with code ${code}, aliucord may not load`);
+    else logUtils.success("Successfully forwarded port 3000 to phone with adb");
 });
 
 pnpmCommand = spawn(platform === "win32" ? "pnpm.cmd" : "pnpm", ["dev"], { stdio: "ignore" }).on("spawn", () => {
-    console.info("HTTP and websocket server started, waiting for connection to app...");
+    logUtils.success("HTTP and websocket server started, waiting for connection to app...");
 });
