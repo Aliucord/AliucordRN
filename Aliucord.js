@@ -363,6 +363,7 @@
   const ReactNative = getByProps("Text", "Image");
   const Constants = getByProps("ActionTypes");
   const URLOpener = getByProps("openURL", "handleSupportedURL");
+  const Forms = getByProps("FormSection");
 
   var Metro = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -392,7 +393,8 @@
     React: React,
     ReactNative: ReactNative,
     Constants: Constants,
-    URLOpener: URLOpener
+    URLOpener: URLOpener,
+    Forms: Forms
   });
 
   var ApplicationCommandOptionType = /* @__PURE__ */(ApplicationCommandOptionType2 => {
@@ -461,12 +463,93 @@
   };
   Commands._commands = [];
 
-  const ALIUCORD_INVITE = "https://discord.gg/EsNDvBaHVU";
+  var __async$3 = (__this, __arguments, generator) => {
+    return new Promise((resolve, reject) => {
+      var fulfilled = value => {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
 
-  var AliuConstants = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    ALIUCORD_INVITE: ALIUCORD_INVITE
-  });
+      var rejected = value => {
+        try {
+          step(generator.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      var step = x => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+
+      step((generator = generator.apply(__this, __arguments)).next());
+    });
+  };
+
+  let Settings = /*#__PURE__*/function () {
+    function Settings(module, snapshot) {
+      _classCallCheck(this, Settings);
+
+      this.module = module;
+      this.snapshot = snapshot;
+    }
+
+    _createClass(Settings, [{
+      key: "get",
+      value: function get(key, defaultValue) {
+        var _a;
+
+        return (_a = this.snapshot[key]) != null ? _a : defaultValue;
+      }
+    }, {
+      key: "set",
+      value: function set(key, value) {
+        return __async$3(this, null, function* () {
+          const {
+            snapshot
+          } = this;
+          snapshot[key] = value;
+          return this._persist();
+        });
+      }
+    }, {
+      key: "delete",
+      value: function _delete(key) {
+        return __async$3(this, null, function* () {
+          if (key in this.snapshot) {
+            delete this.snapshot[key];
+            return this._persist();
+          }
+        });
+      }
+    }, {
+      key: "_persist",
+      value: function _persist() {
+        return window.nativeModuleProxy.AliucordNative.writeSettings(this.module, JSON.stringify(this.snapshot, null, 2));
+      }
+    }], [{
+      key: "make",
+      value: function make(module) {
+        return __async$3(this, null, function* () {
+          var _a;
+
+          const snapshot = (_a = yield window.nativeModuleProxy.AliucordNative.getSettings(module)) != null ? _a : "{}";
+
+          try {
+            const data = JSON.parse(snapshot);
+            if (typeof data !== "object") throw new Error("JSON data was not an object.");
+            return new this(module, data);
+          } catch (err) {
+            window.Aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
+            return new this(module, {});
+          }
+        });
+      }
+    }]);
+
+    return Settings;
+  }();
 
   const logger$1 = new Logger("Patcher");
   const patchInfoSym = "__ALIUCORD_PATCH_INFO__";
@@ -891,7 +974,7 @@
     return CommandHandler;
   }(Plugin);
 
-  const sha = "3c53552";
+  const sha = "39d417e";
 
   let DebugInfo = /*#__PURE__*/function () {
     function DebugInfo() {
@@ -1137,28 +1220,114 @@
     }
   }
 
-  const styles = ReactNative.StyleSheet.create({
-    text: {
-      color: "white"
-    }
+  const ALIUCORD_INVITE = "https://discord.gg/EsNDvBaHVU";
+  const ALIUCORD_GITHUB = "https://github.com/Aliucord/Aliucord";
+  const ALIUCORD_PATREON = "https://patreon.com/Aliucord";
+
+  var AliuConstants = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    ALIUCORD_INVITE: ALIUCORD_INVITE,
+    ALIUCORD_GITHUB: ALIUCORD_GITHUB,
+    ALIUCORD_PATREON: ALIUCORD_PATREON
   });
+
+  const assetMap = {};
+  const AssetRegistry = getByProps("registerAsset");
+  after(AssetRegistry, "registerAsset", (_, id, asset) => {
+    console.log("PATCHED");
+    assetMap[asset.name] = id;
+  });
+
+  for (let i = 1;; i++) {
+    const asset = AssetRegistry.getAssetByID(i);
+
+    if (asset) {
+      assetMap[asset.name] = i;
+    } else break;
+  }
+
+  function getAssetId(assetName) {
+    return assetMap[assetName];
+  }
+
+  const {
+    FormSection,
+    FormSwitch,
+    FormRow
+  } = Forms;
+
+  function useSettings(settings) {
+    const [, update] = React.useState(0);
+    return React.useMemo(() => ({
+      get(key, defaultValue) {
+        return settings.get(key, defaultValue);
+      },
+
+      set(key, value) {
+        settings.set(key, value).then(() => update(x => x + 1));
+      }
+
+    }), []);
+  }
+
   function AliucordPage() {
-    return /* @__PURE__ */React.createElement(ReactNative.Text, {
-      style: styles.text
-    }, "Aliucord Moment");
+    const settings = useSettings(window.Aliucord.settings);
+    return /* @__PURE__ */React.createElement(React.Fragment, null, /* @__PURE__ */React.createElement(FormSection, {
+      title: "Settings",
+      android_noDivider: true
+    }, /* @__PURE__ */React.createElement(FormRow, {
+      label: "Automatically disable plugins on crash",
+      trailing: /* @__PURE__ */React.createElement(FormSwitch, {
+        value: settings.get("disablePluginsOnCrash", true),
+        onValueChange: v => settings.set("disablePluginsOnCrash", v)
+      })
+    }), /* @__PURE__ */React.createElement(FormRow, {
+      label: "Automatically update Aliucord",
+      trailing: /* @__PURE__ */React.createElement(FormSwitch, {
+        value: settings.get("autoUpdateAliucord", false),
+        onValueChange: v => settings.set("autoUpdateAliucord", v)
+      })
+    }), /* @__PURE__ */React.createElement(FormRow, {
+      label: "Automatically update Plugins",
+      trailing: /* @__PURE__ */React.createElement(FormSwitch, {
+        value: settings.get("autoUpdatePlugins", false),
+        onValueChange: v => settings.set("autoUpdatePlugins", v)
+      })
+    })), /* @__PURE__ */React.createElement(FormSection, {
+      title: "Socials"
+    }, /* @__PURE__ */React.createElement(FormRow, {
+      label: "Source Code",
+      leading: /* @__PURE__ */React.createElement(FormRow.Icon, {
+        source: getAssetId("img_account_sync_github_white")
+      }),
+      trailing: FormRow.Arrow,
+      onPress: () => URLOpener.openURL(ALIUCORD_GITHUB)
+    }), /* @__PURE__ */React.createElement(FormRow, {
+      label: "Support Server",
+      leading: /* @__PURE__ */React.createElement(FormRow.Icon, {
+        source: getAssetId("img_help_icon")
+      }),
+      trailing: FormRow.Arrow,
+      onPress: () => URLOpener.openURL(ALIUCORD_INVITE)
+    }), /* @__PURE__ */React.createElement(FormRow, {
+      label: "Support Us",
+      leading: /* @__PURE__ */React.createElement(FormRow.Icon, {
+        source: getAssetId("ic_premium_perk_heart_24px")
+      }),
+      trailing: FormRow.Arrow,
+      onPress: () => URLOpener.openURL(ALIUCORD_PATREON)
+    })));
   }
 
   function UpdaterPage() {
-    return /* @__PURE__ */React.createElement(ReactNative.Text, {
-      style: styles.text
-    }, "We do a little updating");
+    return null;
   }
 
   function patchSettings() {
     const {
       FormSection,
       FormRow
-    } = getByProps("FormSection");
+    } = Forms;
     const UserSettingsOverviewWrapper = getModule(m => {
       var _a;
 
@@ -1212,31 +1381,25 @@
 
           return ((_a = c == null ? void 0 : c.props) == null ? void 0 : _a.title) === i18n.Messages.PREMIUM_SETTINGS;
         });
-        const nitro = props.children[nitroIndex];
+        window.nitro = props.children[nitroIndex];
         const aliucordSection = /* @__PURE__ */React.createElement(FormSection, {
           key: "AliucordSection",
-          title: "Aliucord",
-          titleTextStyle: nitro.props.titleTextStyle,
-          titleWrapperStyle: nitro.props.titleWrapperStyle
+          title: "Aliucord"
         }, /* @__PURE__ */React.createElement(FormRow, {
-          key: "ASettings",
           label: "Aliucord",
-          arrowShown: true,
+          trailing: FormRow.Arrow,
           onPress: () => navigation.push("ASettings")
         }), /* @__PURE__ */React.createElement(FormRow, {
-          key: "APlugins",
           label: "Plugins",
-          arrowShown: true,
+          trailing: FormRow.Arrow,
           onPress: () => navigation.push("APlugins")
         }), /* @__PURE__ */React.createElement(FormRow, {
-          key: "AThemes",
           label: "Themes",
-          arrowShown: true,
+          trailing: FormRow.Arrow,
           onPress: () => navigation.push("AThemes")
         }), /* @__PURE__ */React.createElement(FormRow, {
-          key: "AUpdater",
           label: "Updater",
-          arrowShown: true,
+          trailing: FormRow.Arrow,
           onPress: () => navigation.push("AUpdater")
         }));
         props.children.splice(nitroIndex, 0, aliucordSection);
@@ -1353,6 +1516,8 @@
       key: "load",
       value: function load() {
         return __async(this, null, function* () {
+          this.settings = yield Settings.make("Aliucord");
+
           try {
             this.logger.info("Loading...");
             checkPermissions().then(granted => {
