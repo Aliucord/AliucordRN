@@ -94,8 +94,7 @@ wss.on("connection", async (ws) => {
 
 server.listen(3000);
 
-const adbReverseCommand = spawn("adb", ["reverse", "tcp:3000", "tcp:3000"], { stdio: "ignore" });
-adbReverseCommand.on("exit", (code) => {
+spawn("adb", ["reverse", "tcp:3000", "tcp:3000"], { stdio: "ignore" }).on("exit", (code) => {
     if (code !== 0) logUtils.error(`Port forwarding port 3000 with adb exited with code ${code}, aliucord may not load`);
     else logUtils.success("Successfully forwarded port 3000 to phone with adb");
 });
