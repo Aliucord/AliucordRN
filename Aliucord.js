@@ -469,7 +469,7 @@
   });
 
   const logger$1 = new Logger("Patcher");
-  const patchInfoSym = Symbol("PatchInfo");
+  const patchInfoSym = "__ALIUCORD_PATCH_INFO__";
   var PatchPriority = /* @__PURE__ */(PatchPriority2 => {
     PatchPriority2[PatchPriority2["MIN"] = 0] = "MIN";
     PatchPriority2[PatchPriority2["DEFAULT"] = 15] = "DEFAULT";
@@ -604,11 +604,11 @@
         idx--;
 
         do {
-          const lasR = ctx.result;
+          const lastRes = ctx.result;
           const lastError = ctx.error;
 
           try {
-            const result = patches[idx].after(ctx, ...ctx.args);
+            const result = patches[idx].after(ctx, ctx.result, ...ctx.args);
             if (result !== void 0) ctx.result = result;
           } catch (err) {
             this.error(patches[idx], "PostPatch", err);
@@ -616,7 +616,7 @@
             if (lastError !== null) {
               ctx.error = lastError;
             } else {
-              ctx.result = lasR;
+              ctx.result = lastRes;
             }
           }
         } while (--idx >= 0);
@@ -891,7 +891,7 @@
     return CommandHandler;
   }(Plugin);
 
-  const sha = "767d277";
+  const sha = "3c53552";
 
   let DebugInfo = /*#__PURE__*/function () {
     function DebugInfo() {
@@ -974,7 +974,7 @@
     `;
   }
 
-  var __async$3 = (__this, __arguments, generator) => {
+  var __async$2 = (__this, __arguments, generator) => {
     return new Promise((resolve, reject) => {
       var fulfilled = value => {
         try {
@@ -1035,7 +1035,7 @@
             required: true,
             type: ApplicationCommandOptionType.STRING
           }],
-          execute: (args, ctx) => __async$3(this, null, function* () {
+          execute: (args, ctx) => __async$2(this, null, function* () {
             var _a, _b;
 
             try {
@@ -1058,7 +1058,7 @@
           name: "debug",
           description: "Posts debug info",
           options: [],
-          execute: (args2, ctx2) => __async$3(this, null, function* () {
+          execute: (args2, ctx2) => __async$2(this, null, function* () {
             MessageActions.sendMessage(ctx2.channel.id, {
               content: `**Debug Info:**
                         > Discord: ${DebugInfo.getDiscordVersion()}
@@ -1137,128 +1137,82 @@
     }
   }
 
-  const {
-    hasOwnProperty
-  } = Object.prototype;
-  function findInReactTree(tree, searchFilter) {
-    return findInTree(tree, searchFilter, {
-      walkable: ["props", "children", "child", "sibling"]
-    });
-  }
-  function findInTree(tree, searchFilter, {
-    walkable = void 0,
-    ignore = []
-  } = {}) {
-    if (typeof searchFilter === "string") {
-      if (hasOwnProperty.call(tree, searchFilter)) return tree[searchFilter];
-    } else if (searchFilter(tree)) {
-      return tree;
+  const styles = ReactNative.StyleSheet.create({
+    text: {
+      color: "white"
     }
-
-    if (typeof tree !== "object" || tree == null) return void 0;
-    let tempReturn;
-
-    if (Array.isArray(tree)) {
-      for (const value of tree) {
-        tempReturn = findInTree(value, searchFilter, {
-          walkable,
-          ignore
-        });
-        if (typeof tempReturn != "undefined") return tempReturn;
-      }
-    } else {
-      const toWalk = walkable == null ? Object.keys(tree) : walkable;
-
-      for (const key of toWalk) {
-        if (!hasOwnProperty.call(tree, key) || ignore.includes(key)) continue;
-        tempReturn = findInTree(tree[key], searchFilter, {
-          walkable,
-          ignore
-        });
-        if (typeof tempReturn != "undefined") return tempReturn;
-      }
-    }
-
-    return tempReturn;
-  }
-
-  var __async$2 = (__this, __arguments, generator) => {
-    return new Promise((resolve, reject) => {
-      var fulfilled = value => {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      var rejected = value => {
-        try {
-          step(generator.throw(value));
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      var step = x => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-
-      step((generator = generator.apply(__this, __arguments)).next());
-    });
-  };
-  const UserSettingsOverviewWrapper = getModule(m => {
-    var _a;
-
-    return ((_a = m.default) == null ? void 0 : _a.name) === "UserSettingsOverviewWrapper";
   });
-  let UserSettingsOverview;
+  function AliucordPage() {
+    return /* @__PURE__ */React.createElement(ReactNative.Text, {
+      style: styles.text
+    }, "Aliucord Moment");
+  }
+
+  function UpdaterPage() {
+    return /* @__PURE__ */React.createElement(ReactNative.Text, {
+      style: styles.text
+    }, "We do a little updating");
+  }
+
   function patchSettings() {
     const {
       FormSection,
       FormRow
     } = getByProps("FormSection");
-    const nav = getByProps("pushLazy", "push");
-    const unpatch = after(UserSettingsOverviewWrapper, "default", ({
-      result
-    }) => {
-      if (UserSettingsOverview) {
-        return;
-      }
+    const UserSettingsOverviewWrapper = getModule(m => {
+      var _a;
 
+      return ((_a = m.default) == null ? void 0 : _a.name) === "UserSettingsOverviewWrapper";
+    });
+    after(getModule(m => {
+      var _a;
+
+      return ((_a = m.default) == null ? void 0 : _a.name) === "getScreens";
+    }), "default", (_, res) => {
+      res.ASettings = {
+        title: "Aliucord",
+        render: AliucordPage
+      };
+      res.APlugins = {
+        title: "Plugins",
+        render: () => /* @__PURE__ */React.createElement(ReactNative.Text, null, "Hello World")
+      };
+      res.AThemes = {
+        title: "Themes",
+        render: () => /* @__PURE__ */React.createElement(ReactNative.Text, null, "Hello World")
+      };
+      res.AUpdater = {
+        title: "Updater",
+        render: UpdaterPage
+      };
+    });
+    const unpatch = after(UserSettingsOverviewWrapper, "default", (_, res) => {
       unpatch();
-      UserSettingsOverview = result.type;
-      after(UserSettingsOverview.prototype, "render", ({
-        result: result2
+      const {
+        navigation
+      } = res.props;
+      after(res.type.prototype, "renderSupportAndAcknowledgements", (_2, {
+        props
       }) => {
-        var _a, _b;
+        const idx = props.children.findIndex(c => {
+          var _a;
 
-        const {
-          children
-        } = result2.props;
-        const supportComponent = findInReactTree(children, c => (c == null ? void 0 : c.children) && Array.isArray(c.children) && c.children.some(x => {
-          var _a2;
-
-          return ((_a2 = x == null ? void 0 : x.type) == null ? void 0 : _a2.name) === "UploadLogsButton";
-        }));
-
-        for (let i = 0; i < supportComponent.children.length; i++) {
-          const child = supportComponent.children[i];
-
-          if (((_a = child.props) == null ? void 0 : _a.label) === i18n.Messages.SUPPORT) {
-            child.props.onPress = () => __async$2(this, null, function* () {
-              URLOpener.openURL(ALIUCORD_INVITE);
-            });
-          } else if (((_b = child.type) == null ? void 0 : _b.name) === "UploadLogsButton") {
-            supportComponent.children.splice(i, 1);
-            i--;
-          }
-        }
-
-        const nitroIndex = children.findIndex(c => {
-          var _a2;
-
-          return ((_a2 = c == null ? void 0 : c.props) == null ? void 0 : _a2.title) === i18n.Messages.PREMIUM_SETTINGS;
+          return ((_a = c == null ? void 0 : c.type) == null ? void 0 : _a.name) === "UploadLogsButton";
         });
-        const nitro = children[nitroIndex];
+
+        if (idx !== -1) {
+          props.children.splice(idx, 1);
+        }
+      });
+      after(res.type.prototype, "render", (_2, {
+        props
+      }) => {
+        const nitroIndex = props.children.findIndex(c => {
+          var _a;
+
+          return ((_a = c == null ? void 0 : c.props) == null ? void 0 : _a.title) === i18n.Messages.PREMIUM_SETTINGS;
+        });
+        const nitro = props.children[nitroIndex];
         const aliucordSection = /* @__PURE__ */React.createElement(FormSection, {
           key: "AliucordSection",
           title: "Aliucord",
@@ -1266,26 +1220,26 @@
           titleWrapperStyle: nitro.props.titleWrapperStyle
         }, /* @__PURE__ */React.createElement(FormRow, {
           key: "ASettings",
-          label: "Aliucord Settings",
+          label: "Aliucord",
           arrowShown: true,
-          onPress: () => nav.push(() => /* @__PURE__ */React.createElement(ReactNative.Text, null, "Lol"), {})
+          onPress: () => navigation.push("ASettings")
         }), /* @__PURE__ */React.createElement(FormRow, {
           key: "APlugins",
           label: "Plugins",
           arrowShown: true,
-          onPress: () => nav.push(() => /* @__PURE__ */React.createElement(ReactNative.Text, null, "Lol"), {})
+          onPress: () => navigation.push("APlugins")
         }), /* @__PURE__ */React.createElement(FormRow, {
           key: "AThemes",
           label: "Themes",
           arrowShown: true,
-          onPress: () => nav.push(() => /* @__PURE__ */React.createElement(ReactNative.Text, null, "Lol"), {})
+          onPress: () => navigation.push("AThemes")
         }), /* @__PURE__ */React.createElement(FormRow, {
           key: "AUpdater",
           label: "Updater",
           arrowShown: true,
-          onPress: () => nav.push(() => /* @__PURE__ */React.createElement(ReactNative.Text, null, "Lol"), {})
+          onPress: () => navigation.push("AUpdater")
         }));
-        children.splice(nitroIndex, 0, aliucordSection);
+        props.children.splice(nitroIndex, 0, aliucordSection);
       });
     });
   }
