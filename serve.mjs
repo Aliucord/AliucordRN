@@ -9,10 +9,11 @@ import chalk from "chalk";
 // http-server exists but it is so bloated 😩
 
 const whitelist = ["/Aliucord.js", "/Aliucord.js.map", "/Aliucord.js.bundle"];
+let connectedToWs = false;
 
 const server = createServer((req, res) => {
     console.info(`\r      \r${chalk.greenBright("<--")} Received Request for`, req.url);
-    process.stdout.write(chalk.cyanBright("--> "));
+    if (connectedToWs) process.stdout.write(chalk.cyanBright("--> "));
     if (!whitelist.includes(req.url)) res.writeHead(404).end();
     else {
         readFile(`dist${req.url}`, { encoding: "utf-8" }, (err, data) => {
@@ -40,6 +41,7 @@ const rl = readline.createInterface({
 let pnpmCommand;
 
 wss.on("connection", async (ws) => {
+    connectedToWs = true;
     ws.on("message", data => {
         const parsed = JSON.parse(data.toString());
         switch (parsed.level) {
@@ -58,7 +60,8 @@ wss.on("connection", async (ws) => {
         }
         process.stdout.write(chalk.cyanBright("--> "));
     });
-    console.info(`${chalk.greenBright("<--")} Discord client connected to websocket`);
+    ws.on("close", () => connectedToWs = false);
+    console.info(`\r      \r${chalk.greenBright("<--")} Discord client connected to websocket`);
 
     for (;;) {
         await new Promise(r => {
