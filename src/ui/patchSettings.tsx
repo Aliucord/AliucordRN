@@ -1,11 +1,11 @@
-import { getByProps, getModule, i18n, React, ReactNative as RN } from "../metro";
+import { Forms, getModule, i18n, React, ReactNative as RN } from "../metro";
 import { after } from "../utils/Patcher";
 import AliucordPage from "./AliucordPage";
 import UpdaterPage from "./UpdaterPage";
 
 
 export default function patchSettings() {
-    const { FormSection, FormRow } = getByProps("FormSection");
+    const { FormSection, FormRow } = Forms;
     const UserSettingsOverviewWrapper = getModule(m => m.default?.name === "UserSettingsOverviewWrapper");
 
     after(getModule(m => m.default?.name === "getScreens"), "default", (_, res) => {
@@ -45,38 +45,34 @@ export default function patchSettings() {
 
         after(res.type.prototype, "render", (_, { props }) => {
             const nitroIndex = props.children.findIndex(c => c?.props?.title === i18n.Messages.PREMIUM_SETTINGS);
-            const nitro = props.children[nitroIndex];
+            window.nitro = props.children[nitroIndex];
 
             const aliucordSection = (
-                <FormSection key="AliucordSection" title="Aliucord" titleTextStyle={nitro.props.titleTextStyle} titleWrapperStyle={nitro.props.titleWrapperStyle} >
+                <FormSection key="AliucordSection" title="Aliucord" >
                     <FormRow
-                        key={"ASettings"}
-                        label={"Aliucord"}
-                        arrowShown={true}
+                        label="Aliucord"
+                        trailing={FormRow.Arrow}
                         onPress={() =>
                             navigation.push("ASettings")
                         }
                     />
                     <FormRow
-                        key={"APlugins"}
-                        label={"Plugins"}
-                        arrowShown={true}
+                        label="Plugins"
+                        trailing={FormRow.Arrow}
                         onPress={() =>
                             navigation.push("APlugins")
                         }
                     />
                     <FormRow
-                        key={"AThemes"}
-                        label={"Themes"}
-                        arrowShown={true}
+                        label="Themes"
+                        trailing={FormRow.Arrow}
                         onPress={() =>
                             navigation.push("AThemes")
                         }
                     />
                     <FormRow
-                        key={"AUpdater"}
-                        label={"Updater"}
-                        arrowShown={true}
+                        label="Updater"
+                        trailing={FormRow.Arrow}
                         onPress={() =>
                             navigation.push("AUpdater")
                         }

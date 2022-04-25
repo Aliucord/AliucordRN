@@ -1,9 +1,10 @@
 import { checkPermissions, requestPermissions } from "./AliucordNative";
 import { Commands } from "./api/Commands";
-import * as AliuConstants from "./constants";
+import { Settings } from "./api/SettingsAPI";
 import * as CorePlugins from "./core-plugins/index";
 import * as Metro from "./metro";
 import patchSettings from "./ui/patchSettings";
+import * as AliuConstants from "./utils/constants";
 import { DebugWS } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
 import * as Patcher from "./utils/Patcher";
@@ -13,6 +14,7 @@ function initWithPerms() {
 }
 
 export class Aliucord {
+    settings!: Settings<Record<"autoUpdateAliucord" | "autoUpdatePlugins" | "disablePluginsOnCrash", boolean>>;
     logger = new Logger("Aliucord");
     debugWS = new DebugWS();
 
@@ -26,6 +28,8 @@ export class Aliucord {
     Patcher = Patcher;
 
     async load() {
+        this.settings = await Settings.make("Aliucord");
+
         try {
             this.logger.info("Loading...");
 

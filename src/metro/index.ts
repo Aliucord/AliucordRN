@@ -234,3 +234,4 @@ export const React = getByProps("createElement") as typeof import("react");
 export const ReactNative = getByProps("Text", "Image") as typeof import("react-native");
 export const Constants = getByProps("ActionTypes") as import("./constants").default;
 export const URLOpener = getByProps("openURL", "handleSupportedURL");
+export const Forms = getByProps("FormSection");

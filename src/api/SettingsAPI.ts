@@ -30,8 +30,16 @@ export class Settings<Schema> {
      * @returns Settings Instance
      */
     static async make<Schema = any>(module: string) {
-        const snapshot = (await window.nativeModuleProxy.AliucordNative.getSettings(module)) ?? {};
-        return new this<Schema>(module, snapshot);
+        const snapshot = (await window.nativeModuleProxy.AliucordNative.getSettings(module)) ?? "{}";
+        try {
+            const data = JSON.parse(snapshot);
+            if (typeof data !== "object")
+                throw new Error("JSON data was not an object.");
+            return new this<Schema>(module, data);
+        } catch (err: any) {
+            window.Aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
+            return new this<Schema>(module, {} as Schema);
+        }
     }
 
     /**
