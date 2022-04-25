@@ -5,7 +5,7 @@ import { before } from "../patcher";
 let ws: WebSocket;
 export function startDebugWs() {
     if (ws) return;
-    ws = new WebSocket("ws://localhost:9090");
+    ws = new WebSocket("ws://localhost:3000");
 
     const logger = new Logger("DebugWS");
     logger.info("Connecting to debug ws");
