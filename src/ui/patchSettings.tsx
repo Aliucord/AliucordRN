@@ -1,53 +1,60 @@
-import type { JSXElementConstructor } from "react";
-import { ALIUCORD_INVITE } from "../constants";
-import { getByProps, getModule, i18n, React, ReactNative } from "../metro";
-import { URLOpener } from "../metro/index";
-import { findInReactTree } from "../utils/findInReactTree";
+import { getByProps, getModule, i18n, React, ReactNative as RN } from "../metro";
 import { after } from "../utils/Patcher";
+import AliucordPage from "./AliucordPage";
+import UpdaterPage from "./UpdaterPage";
 
-const UserSettingsOverviewWrapper = getModule(m => m.default?.name === "UserSettingsOverviewWrapper");
-let UserSettingsOverview: JSXElementConstructor<any>;
 
 export default function patchSettings() {
     const { FormSection, FormRow } = getByProps("FormSection");
-    const nav = getByProps("pushLazy", "push");
+    const UserSettingsOverviewWrapper = getModule(m => m.default?.name === "UserSettingsOverviewWrapper");
 
-    const unpatch = after(UserSettingsOverviewWrapper, "default", ({ result }) => {
-        if (UserSettingsOverview) {
-            return;
-        }
+    after(getModule(m => m.default?.name === "getScreens"), "default", (_, res) => {
+        res.ASettings = {
+            title: "Aliucord",
+            render: AliucordPage
+        };
+        res.APlugins = {
+            title: "Plugins",
+            render: () => <RN.Text>Hello World</RN.Text>
+        };
+        res.AThemes = {
+            title: "Themes",
+            render: () => <RN.Text>Hello World</RN.Text>
+        };
+        res.AUpdater = {
+            title: "Updater",
+            render: UpdaterPage
+        };
 
+        // TODO: add APluginWrapper and make it work?
+        // Or should we add all plugins that register settings to this?
+    });
+
+    const unpatch = after(UserSettingsOverviewWrapper, "default", (_, res) => {
         unpatch();
 
-        UserSettingsOverview = result.type as JSXElementConstructor<any>;
+        const { navigation } = res.props;
 
-        after(UserSettingsOverview.prototype, "render", ({ result }) => {
-            const { children } = result.props;
-
-            const supportComponent = findInReactTree(children, c => c?.children && Array.isArray(c.children) && c.children.some(x => x?.type?.name === "UploadLogsButton"));
-            for (let i = 0; i < supportComponent.children.length; i++) {
-                const child = supportComponent.children[i];
-                if (child.props?.label === i18n.Messages.SUPPORT) {
-                    child.props.onPress = async () => {
-                        URLOpener.openURL(ALIUCORD_INVITE);
-                    };
-                } else if (child.type?.name === "UploadLogsButton") {
-                    supportComponent.children.splice(i, 1);
-                    i--;
-                }
+        // Yeet the funny Upload Logs button
+        after(res.type.prototype, "renderSupportAndAcknowledgements", (_, { props }) => {
+            const idx = props.children.findIndex(c => c?.type?.name === "UploadLogsButton");
+            if (idx !== -1) {
+                props.children.splice(idx, 1);
             }
+        });
 
-            const nitroIndex = children.findIndex(c => c?.props?.title === i18n.Messages.PREMIUM_SETTINGS);
-            const nitro = children[nitroIndex];
+        after(res.type.prototype, "render", (_, { props }) => {
+            const nitroIndex = props.children.findIndex(c => c?.props?.title === i18n.Messages.PREMIUM_SETTINGS);
+            const nitro = props.children[nitroIndex];
 
             const aliucordSection = (
                 <FormSection key="AliucordSection" title="Aliucord" titleTextStyle={nitro.props.titleTextStyle} titleWrapperStyle={nitro.props.titleWrapperStyle} >
                     <FormRow
                         key={"ASettings"}
-                        label={"Aliucord Settings"}
+                        label={"Aliucord"}
                         arrowShown={true}
                         onPress={() =>
-                            nav.push(() => <ReactNative.Text>Lol</ReactNative.Text>, {})
+                            navigation.push("ASettings")
                         }
                     />
                     <FormRow
@@ -55,7 +62,7 @@ export default function patchSettings() {
                         label={"Plugins"}
                         arrowShown={true}
                         onPress={() =>
-                            nav.push(() => <ReactNative.Text>Lol</ReactNative.Text>, {})
+                            navigation.push("APlugins")
                         }
                     />
                     <FormRow
@@ -63,7 +70,7 @@ export default function patchSettings() {
                         label={"Themes"}
                         arrowShown={true}
                         onPress={() =>
-                            nav.push(() => <ReactNative.Text>Lol</ReactNative.Text>, {})
+                            navigation.push("AThemes")
                         }
                     />
                     <FormRow
@@ -71,13 +78,13 @@ export default function patchSettings() {
                         label={"Updater"}
                         arrowShown={true}
                         onPress={() =>
-                            nav.push(() => <ReactNative.Text>Lol</ReactNative.Text>, {})
+                            navigation.push("AUpdater")
                         }
                     />
                 </FormSection>
             );
 
-            children.splice(nitroIndex, 0, aliucordSection);
+            props.children.splice(nitroIndex, 0, aliucordSection);
         });
     });
 }

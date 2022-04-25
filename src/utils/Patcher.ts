@@ -1,7 +1,9 @@
 import { Logger } from "./Logger";
 
 const logger = new Logger("Patcher");
-const patchInfoSym = Symbol("PatchInfo");
+// TODO: Should this be a symbol? String is probably better so you can access
+// it during debugging
+const patchInfoSym = "__ALIUCORD_PATCH_INFO__";
 
 export type BeforePatchFn<T, R, A extends any[]> = (
     ctx: PatchContext<T, R, A>,
@@ -10,6 +12,7 @@ export type BeforePatchFn<T, R, A extends any[]> = (
 
 export type AfterPatchFn<T, R, A extends any[]> = (
     ctx: AfterPatchContext<T, R, A>,
+    result: R,
     ...args: A
 ) => R | void;
 
@@ -137,11 +140,11 @@ class PatchInfo<T, R, A extends any[]> {
 
         idx--;
         do {
-            const lasR = ctx.result;
+            const lastRes = ctx.result;
             const lastError = ctx.error;
 
             try {
-                const result = patches[idx].after(ctx as AfterPatchContext<T, R, A>, ...ctx.args);
+                const result = patches[idx].after(ctx as AfterPatchContext<T, R, A>, ctx.result!, ...ctx.args);
                 if (result !== undefined) ctx.result = result;
             } catch (err: any) {
                 this.error(patches[idx], "PostPatch", err);
@@ -149,7 +152,7 @@ class PatchInfo<T, R, A extends any[]> {
                 if (lastError !== null) {
                     ctx.error = lastError;
                 } else {
-                    ctx.result = lasR;
+                    ctx.result = lastRes;
                 }
             }
         } while (--idx >= 0);
