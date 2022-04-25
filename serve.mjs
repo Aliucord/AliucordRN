@@ -4,13 +4,15 @@ import { spawn } from "child_process";
 import { platform } from "process";
 import readline from "readline";
 import { WebSocketServer } from "ws";
+import chalk from "chalk";
 
 // http-server exists but it is so bloated 😩
 
 const whitelist = ["/Aliucord.js", "/Aliucord.js.map", "/Aliucord.js.bundle"];
 
 const server = createServer((req, res) => {
-    console.info("-> Received Request for", req.url);
+    console.info(`\r      \r${chalk.greenBright("<--")} Received Request for`, req.url);
+    process.stdout.write(chalk.cyanBright("--> "));
     if (!whitelist.includes(req.url)) res.writeHead(404).end();
     else {
         readFile(`dist${req.url}`, { encoding: "utf-8" }, (err, data) => {
@@ -35,32 +37,35 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
+let pnpmCommand;
+
 wss.on("connection", async (ws) => {
     ws.on("message", data => {
         const parsed = JSON.parse(data.toString());
         switch (parsed.level) {
             case 0:
-                console.log("\r   \rT: " + parsed.message);
+                console.log(`\r      \r${chalk.whiteBright("T:")} ` + parsed.message);
                 break;
             case 1:
-                console.log("\r   \rI: " + parsed.message);
+                console.log(`\r      \r${chalk.white("I:")} ` + parsed.message);
                 break;
             case 2:
-                console.log("\r   \rW: " + parsed.message);
+                console.log(`\r      \r${chalk.yellow("W:")} ` + parsed.message);
                 break;
             case 3:
-                console.log("\r   \rE: " + parsed.message);
+                console.log(`\r      \r${chalk.redBright("E:")} ` + parsed.message);
                 break;
         }
-        process.stdout.write("--> ");
+        process.stdout.write(chalk.cyanBright("--> "));
     });
-    console.info("---> Discord client connected to websocket");
+    console.info(`${chalk.greenBright("<--")} Discord client connected to websocket`);
 
     for (;;) {
         await new Promise(r => {
-            rl.question("--> ", (cmd) => {
+            rl.question(chalk.cyanBright("--> "), (cmd) => {
                 if (["exit", "quit"].includes(cmd)) {
                     ws.close();
+                    pnpmCommand.kill("SIGINT");
                     process.exit();
                 } else {
                     ws.send(cmd);
@@ -79,6 +84,6 @@ adbReverseCommand.on("exit", (code) => {
     else console.info("Successfully forwarded port 3000 to phone with adb");
 });
 
-spawn(platform === "win32" ? "pnpm.cmd" : "pnpm", ["dev"], { stdio: "ignore" }).on("spawn", () => {
+pnpmCommand = spawn(platform === "win32" ? "pnpm.cmd" : "pnpm", ["dev"], { stdio: "ignore" }).on("spawn", () => {
     console.info("HTTP and websocket server started, waiting for connection to app...");
 });
