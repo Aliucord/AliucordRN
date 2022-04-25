@@ -3,7 +3,7 @@ import { readFile } from "fs";
 import { spawn } from "child_process";
 import { platform } from "process";
 import readline from "readline";
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import chalk from "chalk";
 
 // http-server exists but it is so bloated 😩
@@ -14,21 +14,24 @@ const logUtils = {
         logUtils.incoming(chalk.greenBright("<-- ") + message);
     },
     incoming: (message) => {
-        console.info(`\r      \r${message}`);
+        process.stdout.cursorTo(0);
+        console.info(message);
         if (showPrompt) process.stdout.write(chalk.cyanBright("--> "));
     },
     success: (message) => {
-        console.info(`\r      \r${chalk.greenBright(message)}`);
+        process.stdout.cursorTo(0);
+        console.info(chalk.greenBright(message));
     },
     error: (message) => {
-        console.error(`\r      \r${chalk.redBright(message)}`);
+        process.stdout.cursorTo(0);
+        console.error(chalk.redBright(message));
     }
 };
 
 const whitelist = ["/Aliucord.js", "/Aliucord.js.map", "/Aliucord.js.bundle"];
 
 const server = createServer((req, res) => {
-    logUtils.info("Received Request for" + req.url);
+    logUtils.info("Received Request for " + req.url);
     if (!whitelist.includes(req.url)) res.writeHead(404).end();
     else {
         readFile(`dist${req.url}`, { encoding: "utf-8" }, (err, data) => {
@@ -77,12 +80,22 @@ wss.on("connection", async (ws) => {
 
     showPrompt = true;
     for (;;) {
+        if (ws.readyState !== WebSocket.OPEN) {
+            showPrompt = false;
+            logUtils.error("Websocket connection closed, waiting for reconnection");
+            break;
+        }
         await new Promise(r => {
             rl.question(chalk.cyanBright("--> "), (cmd) => {
                 if (["exit", "quit"].includes(cmd)) {
                     ws.close();
                     pnpmCommand.kill("SIGINT");
                     process.exit();
+                } else if (cmd == "clear") {
+                    console.clear();
+                    process.stdout.write(chalk.cyanBright("--> "));
+                } else if (/^\s*$/.test(cmd)) {
+                    r();
                 } else {
                     ws.send(cmd);
                     r();
@@ -101,4 +114,9 @@ spawn("adb", ["reverse", "tcp:3000", "tcp:3000"], { stdio: "ignore" }).on("exit"
 
 pnpmCommand = spawn(platform === "win32" ? "pnpm.cmd" : "pnpm", ["dev"], { stdio: "ignore" }).on("spawn", () => {
     logUtils.success("HTTP and websocket server started, waiting for connection to app...");
+});
+
+process.on("SIGINT", () => {
+    pnpmCommand.kill();
+    process.exit();
 });
