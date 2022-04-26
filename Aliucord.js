@@ -195,7 +195,7 @@
     return Logger;
   }(DiscordLogger);
 
-  const logger$2 = new Logger("Metro");
+  const logger$3 = new Logger("Metro");
 
   function isModuleBlacklisted(id) {
     if (id === 54 || id >= 966 && id <= 994) return true;
@@ -230,7 +230,7 @@
           return defaultExport ? module.exports.default : exports ? module.exports : module;
         }
       } catch (e) {
-        logger$2.error("Error during getModule", e);
+        logger$3.error("Error during getModule", e);
       }
     }
 
@@ -290,7 +290,7 @@
           return defaultExport ? module.exports.default : exports ? module.exports : module;
         }
       } catch (e) {
-        logger$2.error("Error during getAll", e);
+        logger$3.error("Error during getAll", e);
       }
     }
 
@@ -364,6 +364,7 @@
   const Constants = getByProps("ActionTypes");
   const URLOpener = getByProps("openURL", "handleSupportedURL");
   const Forms = getByProps("FormSection");
+  const Styles = getByProps("createThemedStyleSheet");
 
   var Metro = /*#__PURE__*/Object.freeze({
     __proto__: null,
@@ -394,7 +395,8 @@
     ReactNative: ReactNative,
     Constants: Constants,
     URLOpener: URLOpener,
-    Forms: Forms
+    Forms: Forms,
+    Styles: Styles
   });
 
   var ApplicationCommandOptionType = /* @__PURE__ */(ApplicationCommandOptionType2 => {
@@ -486,7 +488,19 @@
       step((generator = generator.apply(__this, __arguments)).next());
     });
   };
+  function useSettings(settings) {
+    const [, update] = React.useState(0);
+    return React.useMemo(() => ({
+      get(key, defaultValue) {
+        return settings.get(key, defaultValue);
+      },
 
+      set(key, value) {
+        settings.set(key, value).then(() => update(x => x + 1));
+      }
+
+    }), []);
+  }
   let Settings = /*#__PURE__*/function () {
     function Settings(module, snapshot) {
       _classCallCheck(this, Settings);
@@ -551,7 +565,7 @@
     return Settings;
   }();
 
-  const logger$1 = new Logger("Patcher");
+  const logger$2 = new Logger("Patcher");
   const patchInfoSym = "__ALIUCORD_PATCH_INFO__";
   var PatchPriority = /* @__PURE__ */(PatchPriority2 => {
     PatchPriority2[PatchPriority2["MIN"] = 0] = "MIN";
@@ -613,7 +627,7 @@
       value: function error(patch2, type, _error) {
         const message = (patch2.plugin ? `[${patch2.plugin}] ` : "") + `Error during ${this.methodName} ${type}
 `;
-        logger$1.error(message, _error);
+        logger$2.error(message, _error);
       }
     }, {
       key: "patchCount",
@@ -974,7 +988,7 @@
     return CommandHandler;
   }(Plugin);
 
-  const sha = "0b50b9d";
+  const sha = "057cb7e";
 
   let DebugInfo = /*#__PURE__*/function () {
     function DebugInfo() {
@@ -1204,9 +1218,9 @@
     return NoTrack;
   }(Plugin);
 
-  const plugins = [CommandHandler, CoreCommands, NoTrack];
+  const plugins$1 = [CommandHandler, CoreCommands, NoTrack];
   function startAll() {
-    for (const pluginClass of plugins) {
+    for (const pluginClass of plugins$1) {
       const {
         name
       } = pluginClass;
@@ -1234,7 +1248,6 @@
   const assetMap = {};
   const AssetRegistry = getByProps("registerAsset");
   after(AssetRegistry, "registerAsset", (_, id, asset) => {
-    console.log("PATCHED");
     assetMap[asset.name] = id;
   });
 
@@ -1255,21 +1268,6 @@
     FormSwitch,
     FormRow
   } = Forms;
-
-  function useSettings(settings) {
-    const [, update] = React.useState(0);
-    return React.useMemo(() => ({
-      get(key, defaultValue) {
-        return settings.get(key, defaultValue);
-      },
-
-      set(key, value) {
-        settings.set(key, value).then(() => update(x => x + 1));
-      }
-
-    }), []);
-  }
-
   function AliucordPage() {
     const settings = useSettings(window.Aliucord.settings);
     return /* @__PURE__ */React.createElement(React.Fragment, null, /* @__PURE__ */React.createElement(FormSection, {
@@ -1319,6 +1317,183 @@
     })));
   }
 
+  const logger$1 = new Logger("PluginManager");
+
+  let PluginManager = /*#__PURE__*/function () {
+    function PluginManager() {
+      _classCallCheck(this, PluginManager);
+    }
+
+    _createClass(PluginManager, null, [{
+      key: "isEnabled",
+      value: function isEnabled(plugin) {
+        return window.Aliucord.settings.get("plugins", {})[plugin] === true;
+      }
+    }, {
+      key: "enable",
+      value: function enable(plugin) {
+        const plugins = window.Aliucord.settings.get("plugins", {});
+        plugins[plugin] = true;
+        window.Aliucord.settings.set("plugins", plugins);
+      }
+    }, {
+      key: "disable",
+      value: function disable(plugin) {
+        const plugins = window.Aliucord.settings.get("plugins", {});
+        plugins[plugin] = false;
+        window.Aliucord.settings.set("plugins", plugins);
+      }
+    }, {
+      key: "_register",
+      value: function _register(plugin) {
+        const {
+          name
+        } = plugin;
+        if (name in this.plugins) throw new Error(`Plugin ${name} already registered`);
+
+        try {
+          logger$1.info(`Loading Plugin ${name}...`);
+          Settings.make(name).then(settings => {
+            const inst = this.plugins[name] = new plugin(settings);
+            inst.start();
+          });
+        } catch (err) {
+          logger$1.error(`Failed to load Plugin ${name}
+`, err);
+        }
+      }
+    }]);
+
+    return PluginManager;
+  }();
+  PluginManager.plugins = {};
+
+  var __defProp = Object.defineProperty;
+  var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+  var __hasOwnProp = Object.prototype.hasOwnProperty;
+  var __propIsEnum = Object.prototype.propertyIsEnumerable;
+
+  var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, {
+    enumerable: true,
+    configurable: true,
+    writable: true,
+    value
+  }) : obj[key] = value;
+
+  var __spreadValues = (a, b) => {
+    for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+
+    if (__getOwnPropSymbols) for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+    }
+    return a;
+  };
+  const {
+    View,
+    Text,
+    FlatList
+  } = ReactNative;
+  const plugins = [{
+    name: "Test",
+    description: "Test Plugin",
+    version: "1.0.0",
+    authors: [{
+      username: "Pot of Avarice",
+      id: "950095902922661988"
+    }, {
+      username: "Discord",
+      id: "643945264868098049"
+    }]
+  }];
+
+  for (let i = 1; i < 5; i++) {
+    const copy = __spreadValues({}, plugins[i - 1]);
+
+    copy.name += "a";
+    copy.description += copy.description;
+    plugins[i] = copy;
+  }
+
+  const styles = Styles.createThemedStyleSheet({
+    list: {
+      padding: 10
+    },
+    card: {
+      borderRadius: 5,
+      margin: 10,
+      backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY
+    },
+    header: {
+      flexDirection: "row"
+    },
+    bodyCard: {
+      backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY
+    },
+    bodyText: {
+      color: Styles.ThemeColorMap.TEXT_NORMAL,
+      padding: 16
+    },
+    text: {
+      fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
+      color: Styles.ThemeColorMap.TEXT_NORMAL,
+      fontSize: 16,
+      lineHeight: 22
+    },
+    link: {
+      marginLeft: 5,
+      fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
+      fontSize: 16,
+      lineHeight: 22,
+      color: Styles.ThemeColorMap.TEXT_LINK
+    }
+  });
+
+  function PluginCard({
+    plugin
+  }) {
+    const [isEnabled, setIsEnabled] = React.useState(PluginManager.isEnabled(plugin.name));
+    return /* @__PURE__ */React.createElement(View, {
+      style: styles.card
+    }, /* @__PURE__ */React.createElement(Forms.FormRow, {
+      label: /* @__PURE__ */React.createElement(View, {
+        style: styles.header
+      }, /* @__PURE__ */React.createElement(Text, {
+        style: styles.text
+      }, plugin.name, " v", plugin.version, " by"), plugin.authors.map((a, i) => /* @__PURE__ */React.createElement(Text, {
+        key: a.id,
+        style: styles.link,
+        onPress: () => getByProps("showUserProfile").showUserProfile({
+          userId: a.id
+        })
+      }, a.username, i !== plugin.authors.length - 1 && ","))),
+      trailing: /* @__PURE__ */React.createElement(Forms.FormSwitch, {
+        value: isEnabled,
+        onValueChange: v => {
+          if (v) PluginManager.enable(plugin.name);else PluginManager.disable(plugin.name);
+          setIsEnabled(v);
+        }
+      })
+    }), /* @__PURE__ */React.createElement(View, {
+      style: styles.bodyCard
+    }, /* @__PURE__ */React.createElement(Forms.FormText, {
+      style: styles.bodyText
+    }, plugin.description)));
+  }
+
+  function PluginsPage() {
+    return /* @__PURE__ */React.createElement(FlatList, {
+      data: plugins,
+      renderItem: ({
+        item
+      }) => /* @__PURE__ */React.createElement(PluginCard, {
+        key: item.name,
+        plugin: item
+      }),
+      keyExtractor: plugin => plugin.name,
+      style: styles.list
+    });
+  }
+
   function UpdaterPage() {
     return null;
   }
@@ -1344,7 +1519,7 @@
       };
       res.APlugins = {
         title: "Plugins",
-        render: () => /* @__PURE__ */React.createElement(ReactNative.Text, null, "Hello World")
+        render: PluginsPage
       };
       res.AThemes = {
         title: "Themes",
@@ -1381,7 +1556,6 @@
 
           return ((_a = c == null ? void 0 : c.props) == null ? void 0 : _a.title) === i18n.Messages.PREMIUM_SETTINGS;
         });
-        window.nitro = props.children[nitroIndex];
         const aliucordSection = /* @__PURE__ */React.createElement(FormSection, {
           key: "AliucordSection",
           title: `Aliucord (${sha})`
