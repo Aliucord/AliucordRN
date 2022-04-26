@@ -1,47 +1,10 @@
-import { Settings } from "../api/SettingsAPI";
+import { useSettings } from "../api/SettingsAPI";
 import { Forms, React } from "../metro";
 import { URLOpener } from "../metro/index";
 import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../utils/constants";
 import { getAssetId } from "../utils/getAssetId";
 
 const { FormSection, FormSwitch, FormRow } = Forms;
-
-// TODO: make this work
-/*
-before(getModule(m => m.prototype?.fromSource).prototype, "fromSource", (ctx, source: string) => {
-    if (source.startsWith("aliucord_")) {
-        // Must not be empty
-        ctx.thisObject.serverUrl = "h";
-        ctx.thisObject.asset.httpServerLocation = ctx.thisObject.asset.httpServerLocation.slice(10);
-        ctx.result = ctx.thisObject.assetServerURL();
-        console.log(ctx);
-    }
-});
-
-const id = getByProps("registerAsset").registerAsset({
-    __packager_asset: true,
-    httpServerLocation: "aliucord_https://raw.githubusercontent.com/Aliucord/Aliucord/main/installer/android/app/src/main/assets",
-    scales: [1],
-    width: 432,
-    height: 432,
-    name: "icon1",
-    type: "png"
-});
-console.log("Registered icon", id); */
-
-// TODO move this to a more appropriate file trolley
-function useSettings<T>(settings: Settings<T>) {
-    const [, update] = React.useState(0);
-
-    return React.useMemo(() => ({
-        get<K extends keyof T, V extends T[K]>(key: K, defaultValue: V) {
-            return settings.get(key, defaultValue);
-        },
-        set<K extends keyof T, V extends T[K]>(key: K, value: V) {
-            settings.set(key, value).then(() => update(x => x + 1));
-        }
-    }), []);
-}
 
 export default function AliucordPage() {
     const settings = useSettings(window.Aliucord.settings);

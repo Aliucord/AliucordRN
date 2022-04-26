@@ -1,3 +1,5 @@
+import { React } from "../metro";
+
 /**
  * Casts types down to be less specific and also allow missing keys in Objects
  * CastDown<12> -> number
@@ -8,6 +10,23 @@ type CastDown<T> =
     T extends boolean ? boolean :
     T extends Record<any, any> ? T & Record<string, any> :
     T;
+
+/** 
+ * Settings React Hook. Will automatically rerender your component and
+ * save to settings on set()
+ */
+export function useSettings<T>(settings: Settings<T>) {
+    const [, update] = React.useState(0);
+
+    return React.useMemo(() => ({
+        get<K extends keyof T, V extends T[K]>(key: K, defaultValue: V) {
+            return settings.get(key, defaultValue);
+        },
+        set<K extends keyof T, V extends T[K]>(key: K, value: V) {
+            settings.set(key, value).then(() => update(x => x + 1));
+        }
+    }), []);
+}
 
 /**
  * SettingsAPI.

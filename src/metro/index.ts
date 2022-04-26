@@ -1,3 +1,4 @@
+import type { ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -235,3 +236,16 @@ export const ReactNative = getByProps("Text", "Image") as typeof import("react-n
 export const Constants = getByProps("ActionTypes") as import("./constants").default;
 export const URLOpener = getByProps("openURL", "handleSupportedURL");
 export const Forms = getByProps("FormSection");
+
+// Abandon all hope, ye who enter here
+type Style = ViewStyle & ImageStyle & TextStyle;
+type Styles = Partial<{ [key in keyof Style]: readonly [Style[key], Style[key]] | Style[key] }>;
+type FlattenValue<T> = { [key in keyof T]: T[key] extends ReadonlyArray<infer E> ? E : T[key] };
+
+export const Styles = getByProps("createThemedStyleSheet") as {
+    ThemeColorMap: Record<string, [string, string]>;
+    createThemedStyleSheet: <T extends { [key: string]: Styles; }>(styles: T)
+        => { [key in keyof T]: FlattenValue<T[key]>; };
+    getThemedStylesheet: <T extends { [key: string]: Styles; }>(styles: T)
+        => Record<"mergedDarkStyles" | "mergedLightStyles", { [key in keyof T]: FlattenValue<T[key]>; }>;
+};

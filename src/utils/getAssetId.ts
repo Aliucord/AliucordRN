@@ -6,7 +6,6 @@ const assetMap = {};
 const AssetRegistry = getByProps("registerAsset");
 
 after(AssetRegistry, "registerAsset", (_, id, asset) => {
-    console.log("PATCHED");
     assetMap[asset.name] = id;
 });
 

@@ -13,8 +13,14 @@ function initWithPerms() {
     // TODO
 }
 
+interface SettingsSchema {
+    autoUpdateAliucord: boolean;
+    autoUpdatePlugins: boolean;
+    disablePluginsOnCrash: boolean;
+    plugins: Record<string, boolean>;
+}
 export class Aliucord {
-    settings!: Settings<Record<"autoUpdateAliucord" | "autoUpdatePlugins" | "disablePluginsOnCrash", boolean>>;
+    settings!: Settings<SettingsSchema>;
     logger = new Logger("Aliucord");
     debugWS = new DebugWS();
 

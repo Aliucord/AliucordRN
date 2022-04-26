@@ -2,6 +2,7 @@ import { sha } from "aliucord-version";
 import { Forms, getModule, i18n, React, ReactNative as RN } from "../metro";
 import { after } from "../utils/Patcher";
 import AliucordPage from "./AliucordPage";
+import PluginsPage from "./PluginsPage";
 import UpdaterPage from "./UpdaterPage";
 
 
@@ -16,7 +17,7 @@ export default function patchSettings() {
         };
         res.APlugins = {
             title: "Plugins",
-            render: () => <RN.Text>Hello World</RN.Text>
+            render: PluginsPage
         };
         res.AThemes = {
             title: "Themes",
@@ -46,7 +47,6 @@ export default function patchSettings() {
 
         after(res.type.prototype, "render", (_, { props }) => {
             const nitroIndex = props.children.findIndex(c => c?.props?.title === i18n.Messages.PREMIUM_SETTINGS);
-            window.nitro = props.children[nitroIndex];
 
             const aliucordSection = (
                 <FormSection key="AliucordSection" title={`Aliucord (${sha})`} >

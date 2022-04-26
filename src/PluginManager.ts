@@ -5,10 +5,26 @@ import { Logger } from "./utils/Logger";
 const logger = new Logger("PluginManager");
 
 // TODO
-class PluginManager {
-    public readonly plugins = {} as Record<string, Plugin>;
+export default class PluginManager {
+    public static readonly plugins = {} as Record<string, Plugin>;
 
-    private _register(plugin: typeof Plugin) {
+    public static isEnabled(plugin: string) {
+        return window.Aliucord.settings.get("plugins", {})[plugin] === true;
+    }
+
+    public static enable(plugin: string) {
+        const plugins = window.Aliucord.settings.get("plugins", {});
+        plugins[plugin] = true;
+        window.Aliucord.settings.set("plugins", plugins);
+    }
+
+    public static disable(plugin: string) {
+        const plugins = window.Aliucord.settings.get("plugins", {});
+        plugins[plugin] = false;
+        window.Aliucord.settings.set("plugins", plugins);
+    }
+
+    private static _register(plugin: typeof Plugin) {
         const { name } = plugin;
         if (name in this.plugins) throw new Error(`Plugin ${name} already registered`);
 
