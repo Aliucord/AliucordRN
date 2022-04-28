@@ -1,4 +1,4 @@
-(function (exports) {
+var aliu = (function (exports) {
   'use strict';
 
   function _classCallCheck(instance, Constructor) {
@@ -109,13 +109,6 @@
       return _possibleConstructorReturn(this, result);
     };
   }
-
-  const AliucordNative = window.nativeModuleProxy.AliucordNative;
-  AliucordNative.existsFile;
-  AliucordNative.deleteFile;
-  AliucordNative.listNativeModules;
-  const checkPermissions = AliucordNative.checkPermissions;
-  const requestPermissions = AliucordNative.requestPermissions;
 
   const DiscordLogger = getByProps("setLogFn").default;
   let Logger = /*#__PURE__*/function (_DiscordLogger) {
@@ -366,7 +359,7 @@
   const Forms = getByProps("FormSection");
   const Styles = getByProps("createThemedStyleSheet");
 
-  var Metro = /*#__PURE__*/Object.freeze({
+  var index$4 = /*#__PURE__*/Object.freeze({
     __proto__: null,
     getModule: getModule,
     getByProps: getByProps,
@@ -399,73 +392,7 @@
     Styles: Styles
   });
 
-  var ApplicationCommandOptionType = /* @__PURE__ */(ApplicationCommandOptionType2 => {
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["SUB_COMMAND"] = 1] = "SUB_COMMAND";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["SUB_COMMAND_GROUP"] = 2] = "SUB_COMMAND_GROUP";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["STRING"] = 3] = "STRING";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["INTEGER"] = 4] = "INTEGER";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["BOOLEAN"] = 5] = "BOOLEAN";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["USER6"] = 6] = "USER6";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["CHANNEL"] = 7] = "CHANNEL";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["ROLE"] = 8] = "ROLE";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["MENTIONABLE"] = 9] = "MENTIONABLE";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["NUMBER"] = 10] = "NUMBER";
-    ApplicationCommandOptionType2[ApplicationCommandOptionType2["ATTACHMENT"] = 11] = "ATTACHMENT";
-    return ApplicationCommandOptionType2;
-  })(ApplicationCommandOptionType || {});
-  const SnowflakeUtils = getByProps("fromTimestamp");
-
-  const _Commands = /*#__PURE__*/function () {
-    function _Commands(plugin) {
-      _classCallCheck(this, _Commands);
-
-      this.plugin = plugin;
-    }
-
-    _createClass(_Commands, [{
-      key: "registerCommand",
-      value: function registerCommand(command) {
-        command.id = _Commands.generateId();
-        command.applicationId = _Commands._aliucordSection.id;
-        command.displayName = command.name;
-        command.displayDescription = command.description;
-        command.inputType = 0
-        /* BUILT_IN */
-        ;
-        command.type = 1
-        /* CHAT */
-        ;
-        command.__plugin = this.plugin;
-
-        for (const option of command.options) {
-          option.displayName = option.name;
-          option.displayDescription = option.description;
-        }
-
-        _Commands._commands.push(command);
-      }
-    }, {
-      key: "unregisterAll",
-      value: function unregisterAll() {
-        _Commands._commands = _Commands._commands.filter(c => c.__plugin !== this.plugin);
-      }
-    }]);
-
-    return _Commands;
-  }();
-
-  let Commands = _Commands;
-  Commands._idIncrementNum = Date.now();
-
-  Commands.generateId = () => `-${SnowflakeUtils.fromTimestamp(_Commands._idIncrementNum++)}`;
-
-  Commands._aliucordSection = {
-    id: _Commands.generateId(),
-    name: "Aliucord"
-  };
-  Commands._commands = [];
-
-  var __async$3 = (__this, __arguments, generator) => {
+  var __async$4 = (__this, __arguments, generator) => {
     return new Promise((resolve, reject) => {
       var fulfilled = value => {
         try {
@@ -519,7 +446,7 @@
     }, {
       key: "set",
       value: function set(key, value) {
-        return __async$3(this, null, function* () {
+        return __async$4(this, null, function* () {
           const {
             snapshot
           } = this;
@@ -530,7 +457,7 @@
     }, {
       key: "delete",
       value: function _delete(key) {
-        return __async$3(this, null, function* () {
+        return __async$4(this, null, function* () {
           if (key in this.snapshot) {
             delete this.snapshot[key];
             return this._persist();
@@ -545,7 +472,7 @@
     }], [{
       key: "make",
       value: function make(module) {
-        return __async$3(this, null, function* () {
+        return __async$4(this, null, function* () {
           var _a;
 
           const snapshot = (_a = yield window.nativeModuleProxy.AliucordNative.getSettings(module)) != null ? _a : "{}";
@@ -564,6 +491,86 @@
 
     return Settings;
   }();
+
+  var ApplicationCommandInputType = /* @__PURE__ */(ApplicationCommandInputType2 => {
+    ApplicationCommandInputType2[ApplicationCommandInputType2["BUILT_IN"] = 0] = "BUILT_IN";
+    ApplicationCommandInputType2[ApplicationCommandInputType2["BUILT_IN_TEXT"] = 1] = "BUILT_IN_TEXT";
+    ApplicationCommandInputType2[ApplicationCommandInputType2["BUILT_IN_INTEGRATION"] = 2] = "BUILT_IN_INTEGRATION";
+    ApplicationCommandInputType2[ApplicationCommandInputType2["BOT"] = 3] = "BOT";
+    ApplicationCommandInputType2[ApplicationCommandInputType2["PLACEHOLDER"] = 4] = "PLACEHOLDER";
+    return ApplicationCommandInputType2;
+  })(ApplicationCommandInputType || {});
+  var ApplicationCommandOptionType = /* @__PURE__ */(ApplicationCommandOptionType2 => {
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["SUB_COMMAND"] = 1] = "SUB_COMMAND";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["SUB_COMMAND_GROUP"] = 2] = "SUB_COMMAND_GROUP";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["STRING"] = 3] = "STRING";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["INTEGER"] = 4] = "INTEGER";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["BOOLEAN"] = 5] = "BOOLEAN";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["USER6"] = 6] = "USER6";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["CHANNEL"] = 7] = "CHANNEL";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["ROLE"] = 8] = "ROLE";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["MENTIONABLE"] = 9] = "MENTIONABLE";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["NUMBER"] = 10] = "NUMBER";
+    ApplicationCommandOptionType2[ApplicationCommandOptionType2["ATTACHMENT"] = 11] = "ATTACHMENT";
+    return ApplicationCommandOptionType2;
+  })(ApplicationCommandOptionType || {});
+  var ApplicationCommandType = /* @__PURE__ */(ApplicationCommandType2 => {
+    ApplicationCommandType2[ApplicationCommandType2["CHAT"] = 1] = "CHAT";
+    ApplicationCommandType2[ApplicationCommandType2["USER"] = 2] = "USER";
+    ApplicationCommandType2[ApplicationCommandType2["MESSAGE"] = 3] = "MESSAGE";
+    return ApplicationCommandType2;
+  })(ApplicationCommandType || {});
+  const SnowflakeUtils = getByProps("fromTimestamp");
+
+  const _Commands = /*#__PURE__*/function () {
+    function _Commands(plugin) {
+      _classCallCheck(this, _Commands);
+
+      this.plugin = plugin;
+    }
+
+    _createClass(_Commands, [{
+      key: "registerCommand",
+      value: function registerCommand(command) {
+        command.id = _Commands.generateId();
+        command.applicationId = _Commands._aliucordSection.id;
+        command.displayName = command.name;
+        command.displayDescription = command.description;
+        command.inputType = 0
+        /* BUILT_IN */
+        ;
+        command.type = 1
+        /* CHAT */
+        ;
+        command.__plugin = this.plugin;
+
+        for (const option of command.options) {
+          option.displayName = option.name;
+          option.displayDescription = option.description;
+        }
+
+        _Commands._commands.push(command);
+      }
+    }, {
+      key: "unregisterAll",
+      value: function unregisterAll() {
+        _Commands._commands = _Commands._commands.filter(c => c.__plugin !== this.plugin);
+      }
+    }]);
+
+    return _Commands;
+  }();
+
+  let Commands = _Commands;
+  Commands._idIncrementNum = Date.now();
+
+  Commands.generateId = () => `-${SnowflakeUtils.fromTimestamp(_Commands._idIncrementNum++)}`;
+
+  Commands._aliucordSection = {
+    id: _Commands.generateId(),
+    name: "Aliucord"
+  };
+  Commands._commands = [];
 
   const logger$2 = new Logger("Patcher");
   const patchInfoSym = "__ALIUCORD_PATCH_INFO__";
@@ -845,7 +852,7 @@
     }, priority, plugin));
   }
 
-  var Patcher$1 = /*#__PURE__*/Object.freeze({
+  var patcher = /*#__PURE__*/Object.freeze({
     __proto__: null,
     PatchPriority: PatchPriority,
     Patch: Patch,
@@ -988,56 +995,45 @@
     return CommandHandler;
   }(Plugin);
 
-  const sha = "057cb7e";
+  const sha = "82603d0";
 
-  let DebugInfo = /*#__PURE__*/function () {
-    function DebugInfo() {
-      _classCallCheck(this, DebugInfo);
+  const DebugInfo = {
+    get discordVersion() {
+      try {
+        return `${ReactNative.NativeModules.InfoDictionaryManager.Version} (${ReactNative.NativeModules.InfoDictionaryManager.ReleaseChannel})`;
+      } catch (ex) {
+        return "unknown";
+      }
+    },
+
+    get system() {
+      try {
+        return `${ReactNative.Platform.OS} ${ReactNative.Platform.constants.Release} (SDK v${ReactNative.Platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${ReactNative.Platform.constants.uiMode}`;
+      } catch (ex) {
+        return "unknown";
+      }
+    },
+
+    get reactNativeVersion() {
+      try {
+        const ver = ReactNative.Platform.constants.reactNativeVersion;
+        return `${ver.major || 0}.${ver.minor || 0}.${ver.patch || 0}`;
+      } catch (ex) {
+        return "unknown";
+      }
+    },
+
+    get hermesVersion() {
+      try {
+        if (window.HermesInternal === void 0) return "N/A";
+        const runtimeProps = window.HermesInternal.getRuntimeProperties();
+        return `${runtimeProps["OSS Release Version"]} ${runtimeProps["Build"]} (v${runtimeProps["Bytecode Version"]})`;
+      } catch (ex) {
+        return "unknown";
+      }
     }
 
-    _createClass(DebugInfo, null, [{
-      key: "getDiscordVersion",
-      value: function getDiscordVersion() {
-        try {
-          return `${ReactNative.NativeModules.InfoDictionaryManager.Version} (${ReactNative.NativeModules.InfoDictionaryManager.ReleaseChannel})`;
-        } catch (ex) {
-          return "unknown";
-        }
-      }
-    }, {
-      key: "getSystem",
-      value: function getSystem() {
-        try {
-          return `${ReactNative.Platform.OS} ${ReactNative.Platform.constants.Release} (SDK v${ReactNative.Platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${ReactNative.Platform.constants.uiMode}`;
-        } catch (ex) {
-          return "unknown";
-        }
-      }
-    }, {
-      key: "getReactNativeVersion",
-      value: function getReactNativeVersion() {
-        try {
-          const ver = ReactNative.Platform.constants.reactNativeVersion;
-          return `${ver.major || 0}.${ver.minor || 0}.${ver.patch || 0}`;
-        } catch (ex) {
-          return "unknown";
-        }
-      }
-    }, {
-      key: "getHermesVersion",
-      value: function getHermesVersion() {
-        try {
-          if (window.HermesInternal === void 0) return "N/A";
-          const runtimeProps = window.HermesInternal.getRuntimeProperties();
-          return `${runtimeProps["OSS Release Version"]} ${runtimeProps["Build"]} (v${runtimeProps["Bytecode Version"]})`;
-        } catch (ex) {
-          return "unknown";
-        }
-      }
-    }]);
-
-    return DebugInfo;
-  }();
+  };
 
   function makeAsyncEval(code) {
     return `
@@ -1071,7 +1067,7 @@
     `;
   }
 
-  var __async$2 = (__this, __arguments, generator) => {
+  var __async$3 = (__this, __arguments, generator) => {
     return new Promise((resolve, reject) => {
       var fulfilled = value => {
         try {
@@ -1132,7 +1128,7 @@
             required: true,
             type: ApplicationCommandOptionType.STRING
           }],
-          execute: (args, ctx) => __async$2(this, null, function* () {
+          execute: (args, ctx) => __async$3(this, null, function* () {
             var _a, _b;
 
             try {
@@ -1155,14 +1151,14 @@
           name: "debug",
           description: "Posts debug info",
           options: [],
-          execute: (args2, ctx2) => __async$2(this, null, function* () {
+          execute: (args2, ctx2) => __async$3(this, null, function* () {
             MessageActions.sendMessage(ctx2.channel.id, {
               content: `**Debug Info:**
-                        > Discord: ${DebugInfo.getDiscordVersion()}
+                        > Discord: ${DebugInfo.discordVersion}
                         > Aliucord: ${sha}
-                        > System: ${DebugInfo.getSystem()}
-                        > React: ${DebugInfo.getReactNativeVersion()}
-                        > Hermes: ${DebugInfo.getHermesVersion()}
+                        > System: ${DebugInfo.system}
+                        > React: ${DebugInfo.reactNativeVersion}
+                        > Hermes: ${DebugInfo.hermesVersion}
                     `.replace(/^\s+/gm, "")
             });
           })
@@ -1234,16 +1230,145 @@
     }
   }
 
+  var __async$2 = (__this, __arguments, generator) => {
+    return new Promise((resolve, reject) => {
+      var fulfilled = value => {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      var rejected = value => {
+        try {
+          step(generator.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      var step = x => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+
+      step((generator = generator.apply(__this, __arguments)).next());
+    });
+  };
+
+  const AliucordNative = window.nativeModuleProxy.AliucordNative;
+  function mkdir(path, recursive = false) {
+    return __async$2(this, null, function* () {
+      try {
+        return AliucordNative.mkdir(path, recursive);
+      } catch (err) {
+        return false;
+      }
+    });
+  }
+  const existsFile = AliucordNative.existsFile;
+  const deleteFile = AliucordNative.deleteFile;
+  function readFile(path, encoding = "utf-8") {
+    return __async$2(this, null, function* () {
+      return AliucordNative.readFile(path, encoding);
+    });
+  }
+  function writeFile(path, content, encoding = "utf-8") {
+    return __async$2(this, null, function* () {
+      return AliucordNative.writeFile(path, content, encoding);
+    });
+  }
+  function getManifest(plugin) {
+    return __async$2(this, null, function* () {
+      try {
+        const data = yield AliucordNative.getManifest(plugin);
+        return JSON.parse(data);
+      } catch (err) {
+        return null;
+      }
+    });
+  }
+  const listNativeModules = AliucordNative.listNativeModules;
+  const checkPermissions = AliucordNative.checkPermissions;
+  const requestPermissions = AliucordNative.requestPermissions;
+
+  var index$3 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    mkdir: mkdir,
+    existsFile: existsFile,
+    deleteFile: deleteFile,
+    readFile: readFile,
+    writeFile: writeFile,
+    getManifest: getManifest,
+    listNativeModules: listNativeModules,
+    checkPermissions: checkPermissions,
+    requestPermissions: requestPermissions
+  });
+
   const ALIUCORD_INVITE = "https://discord.gg/EsNDvBaHVU";
   const ALIUCORD_GITHUB = "https://github.com/Aliucord/Aliucord";
   const ALIUCORD_PATREON = "https://patreon.com/Aliucord";
 
-  var AliuConstants = /*#__PURE__*/Object.freeze({
+  var constants = /*#__PURE__*/Object.freeze({
     __proto__: null,
     ALIUCORD_INVITE: ALIUCORD_INVITE,
     ALIUCORD_GITHUB: ALIUCORD_GITHUB,
     ALIUCORD_PATREON: ALIUCORD_PATREON
   });
+
+  var __async$1 = (__this, __arguments, generator) => {
+    return new Promise((resolve, reject) => {
+      var fulfilled = value => {
+        try {
+          step(generator.next(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      var rejected = value => {
+        try {
+          step(generator.throw(value));
+        } catch (e) {
+          reject(e);
+        }
+      };
+
+      var step = x => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+
+      step((generator = generator.apply(__this, __arguments)).next());
+    });
+  };
+  let ws;
+  function startDebugWs() {
+    if (ws) return;
+    ws = new WebSocket("ws://localhost:9090");
+    const logger = new Logger("DebugWS");
+    logger.info("Connecting to debug ws");
+    ws.addEventListener("open", () => logger.info("Connected with debug websocket"));
+    ws.addEventListener("error", e => logger.error(e.message));
+    ws.addEventListener("message", message => __async$1(this, null, function* () {
+      try {
+        const {
+          data
+        } = message;
+
+        if (data.includes("await")) {
+          console.log(yield eval(makeAsyncEval(data)));
+        } else {
+          console.log(eval(data));
+        }
+      } catch (e) {
+        logger.error(e);
+      }
+    }));
+    before(globalThis, "nativeLoggingHook", (_, message2, level) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          level,
+          message: message2
+        }));
+      }
+    });
+  }
 
   const assetMap = {};
   const AssetRegistry = getByProps("registerAsset");
@@ -1261,6 +1386,18 @@
 
   function getAssetId(assetName) {
     return assetMap[assetName];
+  }
+  function findAssets(keyword) {
+    keyword = keyword.toLowerCase();
+    const names = [];
+
+    for (const name in assetMap) {
+      if (name.toLowerCase().includes(keyword)) {
+        names.push(name);
+      }
+    }
+
+    return names;
   }
 
   const {
@@ -1291,6 +1428,15 @@
         value: settings.get("autoUpdatePlugins", false),
         onValueChange: v => settings.set("autoUpdatePlugins", v)
       })
+    }), /* @__PURE__ */React.createElement(FormRow, {
+      label: "Enable Debug WebSocket",
+      trailing: /* @__PURE__ */React.createElement(FormSwitch, {
+        value: settings.get("debugWS", false),
+        onValueChange: v => {
+          settings.set("debugWS", v);
+          if (v) startDebugWs();
+        }
+      })
     })), /* @__PURE__ */React.createElement(FormSection, {
       title: "Socials"
     }, /* @__PURE__ */React.createElement(FormRow, {
@@ -1318,7 +1464,6 @@
   }
 
   const logger$1 = new Logger("PluginManager");
-
   let PluginManager = /*#__PURE__*/function () {
     function PluginManager() {
       _classCallCheck(this, PluginManager);
@@ -1477,7 +1622,16 @@
       style: styles.bodyCard
     }, /* @__PURE__ */React.createElement(Forms.FormText, {
       style: styles.bodyText
-    }, plugin.description)));
+    }, plugin.description)), /* @__PURE__ */React.createElement(View, {
+      style: {
+        flexDirection: "row",
+        alignContent: "space-between"
+      }
+    }, /* @__PURE__ */React.createElement(Forms.FormRow.Icon, {
+      source: getAssetId("img_account_sync_github_white")
+    }), /* @__PURE__ */React.createElement(View, null, /* @__PURE__ */React.createElement(Forms.FormRow.Icon, {
+      source: getAssetId("")
+    }))));
   }
 
   function PluginsPage() {
@@ -1581,73 +1735,6 @@
     });
   }
 
-  var __async$1 = (__this, __arguments, generator) => {
-    return new Promise((resolve, reject) => {
-      var fulfilled = value => {
-        try {
-          step(generator.next(value));
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      var rejected = value => {
-        try {
-          step(generator.throw(value));
-        } catch (e) {
-          reject(e);
-        }
-      };
-
-      var step = x => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
-
-      step((generator = generator.apply(__this, __arguments)).next());
-    });
-  };
-  const logger = new Logger("DebugWS");
-  let DebugWS = /*#__PURE__*/function () {
-    function DebugWS() {
-      _classCallCheck(this, DebugWS);
-    }
-
-    _createClass(DebugWS, [{
-      key: "start",
-      value: function start() {
-        logger.info("Connecting to debug ws");
-        this.socket = new WebSocket("ws://localhost:9090");
-        this.socket.addEventListener("open", () => logger.info("Connected with debug websocket"));
-        this.socket.addEventListener("error", e => logger.error(e.message));
-        this.socket.addEventListener("message", message => __async$1(this, null, function* () {
-          try {
-            const {
-              data
-            } = message;
-
-            if (data.includes("await")) {
-              console.log(yield eval(makeAsyncEval(data)));
-            } else {
-              console.log(eval(data));
-            }
-          } catch (e) {
-            logger.error(e);
-          }
-        }));
-        before(globalThis, "nativeLoggingHook", (_, message2, level) => {
-          var _a;
-
-          if (((_a = this.socket) == null ? void 0 : _a.readyState) === WebSocket.OPEN) {
-            this.socket.send(JSON.stringify({
-              level,
-              message: message2
-            }));
-          }
-        });
-      }
-    }]);
-
-    return DebugWS;
-  }();
-
   var __async = (__this, __arguments, generator) => {
     return new Promise((resolve, reject) => {
       var fulfilled = value => {
@@ -1674,56 +1761,128 @@
 
   function initWithPerms() {}
 
-  let Aliucord = /*#__PURE__*/function () {
-    function Aliucord() {
-      _classCallCheck(this, Aliucord);
+  let settings;
+  const logger = new Logger("AliucordMain");
+  function load() {
+    return __async(this, null, function* () {
+      settings = yield Settings.make("Aliucord");
 
-      this.logger = new Logger("Aliucord");
-      this.debugWS = new DebugWS();
-      this.Constants = AliuConstants;
-      this.Commands = Commands;
-      this.Metro = Metro;
-      this.Patcher = Patcher$1;
-    }
-
-    _createClass(Aliucord, [{
-      key: "load",
-      value: function load() {
-        return __async(this, null, function* () {
-          this.settings = yield Settings.make("Aliucord");
-
-          try {
-            this.logger.info("Loading...");
-            checkPermissions().then(granted => {
-              if (granted) initWithPerms();else {
-                ReactNative.Alert.alert("Storage Access", "Aliucord needs access to your storage to load plugins and themes.", [{
-                  text: "OK",
-                  onPress: () => requestPermissions().then(permissionGranted => {
-                    if (permissionGranted) initWithPerms();else alert("Aliucord needs access to your storage to load plugins and themes.");
-                  })
-                }]);
-              }
-            });
-            startAll();
-            this.debugWS.start();
-
-            if (false) ;
-
-            patchSettings();
-          } catch (error) {
-            this.logger.error(error);
+      try {
+        logger.info("Loading...");
+        checkPermissions().then(granted => {
+          if (granted) initWithPerms();else {
+            ReactNative.Alert.alert("Storage Access", "Aliucord needs access to your storage to load plugins and themes.", [{
+              text: "OK",
+              onPress: () => requestPermissions().then(permissionGranted => {
+                if (permissionGranted) initWithPerms();else alert("Aliucord needs access to your storage to load plugins and themes.");
+              })
+            }]);
           }
         });
+        startAll();
+
+        if (settings.get("debugWS", false)) {
+          startDebugWs();
+        }
+
+        if (false) ;
+
+        patchSettings();
+      } catch (error) {
+        logger.error(error);
       }
-    }]);
+    });
+  }
 
-    return Aliucord;
-  }();
+  var Aliucord = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    get settings () { return settings; },
+    logger: logger,
+    load: load
+  });
 
-  const aliucord = window.Aliucord = new Aliucord();
-  aliucord.load();
+  var index$2 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    ApplicationCommandInputType: ApplicationCommandInputType,
+    ApplicationCommandOptionType: ApplicationCommandOptionType,
+    ApplicationCommandType: ApplicationCommandType,
+    Commands: Commands,
+    Patcher: Patcher,
+    PluginManager: PluginManager,
+    useSettings: useSettings,
+    Settings: Settings
+  });
 
-  exports.aliucord = aliucord;
+  var index$1 = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    Plugin: Plugin
+  });
+
+  const {
+    hasOwnProperty
+  } = Object.prototype;
+  function findInReactTree(tree, searchFilter) {
+    return findInTree(tree, searchFilter, {
+      walkable: ["props", "children", "child", "sibling"]
+    });
+  }
+  function findInTree(tree, searchFilter, {
+    walkable = void 0,
+    ignore = []
+  } = {}) {
+    if (typeof searchFilter === "string") {
+      if (hasOwnProperty.call(tree, searchFilter)) return tree[searchFilter];
+    } else if (searchFilter(tree)) {
+      return tree;
+    }
+
+    if (typeof tree !== "object" || tree == null) return void 0;
+    let tempReturn;
+
+    if (Array.isArray(tree)) {
+      for (const value of tree) {
+        tempReturn = findInTree(value, searchFilter, {
+          walkable,
+          ignore
+        });
+        if (typeof tempReturn != "undefined") return tempReturn;
+      }
+    } else {
+      const toWalk = walkable == null ? Object.keys(tree) : walkable;
+
+      for (const key of toWalk) {
+        if (!hasOwnProperty.call(tree, key) || ignore.includes(key)) continue;
+        tempReturn = findInTree(tree[key], searchFilter, {
+          walkable,
+          ignore
+        });
+        if (typeof tempReturn != "undefined") return tempReturn;
+      }
+    }
+
+    return tempReturn;
+  }
+
+  var index = /*#__PURE__*/Object.freeze({
+    __proto__: null,
+    Constants: constants,
+    Patcher: patcher,
+    DebugInfo: DebugInfo,
+    findInReactTree: findInReactTree,
+    findInTree: findInTree,
+    getAssetId: getAssetId,
+    findAssets: findAssets,
+    makeAsyncEval: makeAsyncEval
+  });
+
+  window.Aliucord = Aliucord;
+  load();
+
+  exports.api = index$2;
+  exports.entities = index$1;
+  exports.metro = index$4;
+  exports.native = index$3;
+  exports.utils = index;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
