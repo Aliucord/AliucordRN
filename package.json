@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "OSL-3.0",
   "scripts": {
-    "build": "rollup -c --configPlugin esbuild",
+    "build": "spack",
     "dev": "pnpm run build -- -w",
     "deploy": "adb shell am start -S -n com.discordrn/.MainActivity",
     "serve": "node serve.mjs"
@@ -17,20 +17,15 @@
   },
   "homepage": "https://aliucord.com",
   "devDependencies": {
-    "@babel/core": "^7.17.9",
-    "@babel/plugin-transform-classes": "^7.16.7",
-    "@rollup/plugin-babel": "^5.3.1",
+    "@swc/cli": "^0.1.57",
+    "@swc/core": "git+https://github.com/Aliucord/swc.git",
     "@types/node": "^17.0.24",
     "@types/react": "^17.0.39",
     "@types/react-native": "^0.67.4",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
-    "esbuild": "^0.14.36",
     "eslint": "^8.13.0",
     "eslint-plugin-react": "^7.29.4",
-    "rollup": "^2.70.2",
-    "rollup-plugin-esbuild": "^4.9.1",
-    "rollup-plugin-hermes": "^0.11.1",
     "typescript": "^4.6.3"
   },
   "dependencies": {
