@@ -1,6 +1,6 @@
 import { sha } from "aliucord-version";
 import { Forms, getModule, i18n, React, ReactNative as RN } from "../metro";
-import { after } from "../utils/Patcher";
+import { after } from "../utils/patcher";
 import AliucordPage from "./AliucordPage";
 import PluginsPage from "./PluginsPage";
 import UpdaterPage from "./UpdaterPage";

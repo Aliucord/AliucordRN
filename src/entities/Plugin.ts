@@ -1,6 +1,6 @@
 import { Commands } from "../api/Commands";
-import { Patcher } from "../api/PatcherApi";
-import { Settings } from "../api/SettingsAPI";
+import { Patcher } from "../api/Patcher";
+import { Settings } from "../api/Settings";
 import { Logger } from "../utils/Logger";
 
 /**

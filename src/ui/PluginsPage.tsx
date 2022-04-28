@@ -1,7 +1,8 @@
+import { PluginManager } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
 import { Constants, Forms, React, ReactNative, Styles } from "../metro";
 import { getByProps } from "../metro/index";
-import PluginManager from "../PluginManager";
+import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList } = ReactNative;
 
@@ -96,6 +97,12 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText}>{plugin.description}</Forms.FormText>
+            </View>
+            <View style={{ flexDirection: "row", alignContent: "space-between" }}>
+                <Forms.FormRow.Icon source={getAssetId("img_account_sync_github_white")} />
+                <View>
+                    <Forms.FormRow.Icon source={getAssetId("")} />
+                </View>
             </View>
         </View>
     );

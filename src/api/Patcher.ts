@@ -1,14 +1,6 @@
 import {
-    Unpatch,
-    before,
-    PatchPriority,
-    BeforePatchFn,
-    InsteadFn,
-    instead,
-    AfterPatchFn,
-    after,
-    insteadDoNothing
-} from "../utils/Patcher";
+    after, AfterPatchFn, before, BeforePatchFn, instead, insteadDoNothing, InsteadFn, PatchPriority, Unpatch
+} from "../utils/patcher";
 
 export class Patcher {
     private readonly _unpatches = [] as Unpatch[];

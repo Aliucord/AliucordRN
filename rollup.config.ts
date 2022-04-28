@@ -12,7 +12,8 @@ export default defineConfig({
         format: "iife",
         inlineDynamicImports: true,
         sourcemap: true,
-        sourcemapFile: "Aliucord.js.map"
+        sourcemapFile: "Aliucord.js.map",
+        name: "aliu"
     }],
     plugins: [
         esbuild({
@@ -59,20 +60,20 @@ function aliucordVersion(): Plugin {
         name: "aliucord-version",
         resolveId(id) {
             if (id === "aliucord-version") {
-                return id
+                return id;
             }
-            return null
+            return null;
         },
         load(id) {
             if (id === "aliucord-version") {
                 try {
-                    const hash = execSync("git rev-parse --short HEAD").toString().replace(/\s*/g, "")
-                    return `export const sha = "${hash || 'unknown'}";`
+                    const hash = execSync("git rev-parse --short HEAD").toString().replace(/\s*/g, "");
+                    return `export const sha = "${hash || "unknown"}";`;
                 } catch (ex) {
-                    console.warn("Failed to fetch git hash")
+                    console.warn("Failed to fetch git hash");
                 }
-                return 'export const sha = "unknown";'
+                return "export const sha = \"unknown\";";
             }
         }
-    }
+    };
 }

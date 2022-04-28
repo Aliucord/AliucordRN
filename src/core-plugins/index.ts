@@ -10,6 +10,7 @@ export function startAll() {
         const { name } = pluginClass;
         try {
             window.Aliucord.logger.info("Loading CorePlugin " + name);
+            // TODO - Does this need a settings instance?
             new pluginClass().start();
         } catch (e) {
             window.Aliucord.logger.error("Failed to start CorePlugin " + name, e);

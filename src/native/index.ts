@@ -1,4 +1,4 @@
-import { PluginManifest } from "./entities/types";
+import { PluginManifest } from "../entities/types";
 // import { Logger } from "./utils/Logger";
 
 /**

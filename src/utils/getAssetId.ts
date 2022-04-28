@@ -1,5 +1,5 @@
 import { getByProps } from "../metro";
-import { after } from "./Patcher";
+import { after } from "./patcher";
 
 const assetMap = {};
 

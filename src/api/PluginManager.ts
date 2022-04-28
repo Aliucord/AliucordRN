@@ -1,11 +1,10 @@
-import { Settings } from "./api/SettingsAPI";
-import Plugin from "./entities/Plugin";
-import { Logger } from "./utils/Logger";
+import Plugin from "../entities/Plugin";
+import { Logger } from "../utils/Logger";
+import { Settings } from "./Settings";
 
 const logger = new Logger("PluginManager");
 
-// TODO
-export default class PluginManager {
+export class PluginManager {
     public static readonly plugins = {} as Record<string, Plugin>;
 
     public static isEnabled(plugin: string) {

@@ -4,7 +4,7 @@
 
 import Plugin from "../entities/Plugin";
 import { getByProps } from "../metro/index";
-import { insteadDoNothing } from "../utils/Patcher";
+import { insteadDoNothing } from "../utils/patcher";
 
 export default class NoTrack extends Plugin {
     public start() {

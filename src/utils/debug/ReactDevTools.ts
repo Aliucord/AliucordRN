@@ -2,33 +2,31 @@ import reactDevTools from "react-devtools-core";
 import { getModule } from "../../metro";
 import { Logger } from "../Logger";
 
-const logger = new Logger("ReactDevTools");
 
+let ws: WebSocket;
 // Based on https://github.com/facebook/react-native/blob/v0.63.4/Libraries/Core/setUpReactDevTools.js
-export class ReactDevTools {
-    socket: WebSocket | undefined;
+export function startReactDevTools() {
+    if (ws) return;
+    ws = new WebSocket("ws://localhost:8097");
 
-    connect() {
-        const { AppState } = getModule(m => m.AppState);
+    const { AppState } = getModule(m => m.AppState);
+    const isAppActive = () => AppState.currentState !== "background";
+    const viewConfig = getModule(m => m.uiViewClassName == "RCTView");
+    const { flattenStyle } = getModule(m => m.flattenStyle);
 
-        const isAppActive = () => AppState.currentState !== "background";
+    const logger = new Logger("ReactDevTools");
+    logger.info("Connecting to devtools");
 
-        this.socket = new WebSocket("ws://localhost:8097");
-        this.socket.addEventListener("error", function (event: Event) {
-            logger.warn("Connection error: " + (event as Event & { message: string; }).message);
-        });
+    ws.addEventListener("error", e => {
+        logger.warn("Connection error: " + (e as ErrorEvent).message);
+    });
 
-        const viewConfig = getModule(m => m.uiViewClassName == "RCTView");
-        const { flattenStyle } = getModule(m => m.flattenStyle);
-
-        logger.info("Connecting to devtools");
-        reactDevTools.connectToDevTools({
-            isAppActive,
-            resolveRNStyle: flattenStyle,
-            nativeStyleEditorValidAttributes: Object.keys(
-                viewConfig.validAttributes.style,
-            ),
-            websocket: this.socket
-        });
-    }
+    reactDevTools.connectToDevTools({
+        isAppActive,
+        resolveRNStyle: flattenStyle,
+        nativeStyleEditorValidAttributes: Object.keys(
+            viewConfig.validAttributes.style,
+        ),
+        websocket: ws
+    });
 }

@@ -1,8 +1,8 @@
-import { Aliucord } from "./Aliucord";
+import * as Aliucord from "./Aliucord";
 
 declare global {
     interface Window {
-        Aliucord: Aliucord;
+        Aliucord: typeof Aliucord;
         [key: PropertyKey]: any;
     }
 }

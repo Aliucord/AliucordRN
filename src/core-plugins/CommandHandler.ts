@@ -1,7 +1,7 @@
 import { ApplicationCommand, Commands, CommandSection } from "../api/Commands";
 import Plugin from "../entities/Plugin";
 import { getByProps } from "../metro";
-import { after } from "../utils/Patcher";
+import { after } from "../utils/patcher";
 
 export default class CommandHandler extends Plugin {
     start() {

@@ -2,7 +2,7 @@ import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import Plugin from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
-import DebugInfo from "../utils/debug/DebugInfo";
+import DebugInfo from "../utils/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
 
 export default class CoreCommands extends Plugin {
@@ -60,11 +60,11 @@ export default class CoreCommands extends Plugin {
             execute: async (args, ctx) => {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
-                        > Discord: ${DebugInfo.getDiscordVersion()}
+                        > Discord: ${DebugInfo.discordVersion}
                         > Aliucord: ${sha}
-                        > System: ${DebugInfo.getSystem()}
-                        > React: ${DebugInfo.getReactNativeVersion()}
-                        > Hermes: ${DebugInfo.getHermesVersion()}
+                        > System: ${DebugInfo.system}
+                        > React: ${DebugInfo.reactNativeVersion}
+                        > Hermes: ${DebugInfo.hermesVersion}
                     `.replace(/^\s+/gm, "")
                 });
             }
