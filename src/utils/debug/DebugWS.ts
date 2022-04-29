@@ -2,7 +2,7 @@ import { Logger } from "../Logger";
 import { makeAsyncEval } from "../misc";
 import { before } from "../patcher";
 
-let ws: WebSocket;
+let ws: WebSocket | null;
 let patched: boolean;
 export function startDebugWs() {
     if (ws) return;
@@ -27,12 +27,13 @@ export function startDebugWs() {
     });
     ws.addEventListener("close", () => {
         logger.info("Disconnected from debug websocket, reconnecting in 3 seconds");
+        ws = null;
         setTimeout(startDebugWs, 3000);
     });
 
     if (!patched) {
         before(globalThis, "nativeLoggingHook", (_, message: string, level: number) => {
-            if (ws.readyState === WebSocket.OPEN) {
+            if (ws?.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ level, message }));
             }
         });
