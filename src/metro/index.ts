@@ -171,25 +171,62 @@ export function getAllByProps(...props: any[]) {
     return getAll(filter, typeof options === "boolean" ? { default: options } : options);
 }
 
+type KeywordOptions = {
+    caseSensitive?: boolean;
+    returnModules?: boolean;
+    skipConstants?: true;
+    onlyConstants?: false;
+} | {
+    caseSensitive?: boolean;
+    returnModules?: boolean;
+    skipConstants?: false;
+    onlyConstants?: boolean;
+};
+
 /**
  * Find all modules with properties containing the specified keyword 
- * @param keyword They keyword
- * @param skipConstants Whether constants (names that are FULL_CAPS) should be skipped. Defaults to true
- * @returns Array of names that match. You can then access moduleSearchResults.SomeName to view the
- *          corresponding module 
+ * @param {string | string[]} keyword They keyword
+ * @param {KeywordOptions | boolean} options An object of options to modify the search return and parsing. Can also be a boolean, that being the same as {@link KeywordOptions.skipConstants} (skip names that are FULL_CAPS). Defaults to true.
+ * @returns Array of names (or modules if the returnModules option is true) that match the keyword or keywords.
  */
-export function searchByKeyword(keyword: string, skipConstants = true) {
-    keyword = keyword.toLowerCase();
-    const matches = [] as string[];
-    window.moduleSearchResults = {};
+export function searchByKeyword(keyword: string | string[], _options: KeywordOptions | boolean = true) {
+    const options = typeof _options === 'boolean' ? { skipConstants: _options } as KeywordOptions : _options;
 
+    if (!options.onlyConstants && options.skipConstants === undefined) {
+        options.skipConstants = true;
+    }
+
+    // Don't mutate keyword directly because otherwise TS complains about it possibly being a string.
+    let keywords = Array.isArray(keyword) ? keyword : [keyword];
+
+    if (!options.caseSensitive) {
+        keywords = keywords.map(k => k.toLowerCase());
+    }
+
+    const matches: (string | any)[] = [];
     function check(obj: any) {
         if (!obj) return;
-        for (const name of Object.getOwnPropertyNames(obj)) {
-            if (name.toLowerCase().includes(keyword) && (!skipConstants || name.toUpperCase() !== name)) {
-                matches.push(name);
-                window.moduleSearchResults[name] = obj;
+        outer: for (const name of Object.getOwnPropertyNames(obj)) {
+            if (options.caseSensitive) {
+                for (let i = 0; i < keywords.length; i++) {
+                    if (!~name.indexOf(keywords[i]))
+                        continue outer;
+                }
+            } else {
+                for (let i = 0; i < keywords.length; i++) {
+                    if (!~name.toLowerCase().indexOf(keywords[i]))
+                        continue outer;
+                }
             }
+
+            if (
+                options.skipConstants && name === name.toUpperCase() ||
+                options.onlyConstants && name !== name.toUpperCase()
+            ) {
+                continue;
+            }
+
+            matches.push(options.returnModules ? obj : name);
         }
     }
 
