@@ -995,7 +995,7 @@ var aliu = (function (exports) {
     return CommandHandler;
   }(Plugin);
 
-  const sha = "82603d0";
+  const sha = "d302733";
 
   const DebugInfo = {
     get discordVersion() {
