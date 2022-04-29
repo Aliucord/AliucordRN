@@ -5,6 +5,12 @@
     "strict": true,
     "noImplicitAny": false,
     "moduleResolution": "node",
-    "module": "ESNext"
-  }
+    "module": "ESNext",
+    "declaration": true,
+    "outDir": "build",
+    "lib": ["ESNext"]
+  },
+  "include": [
+    "src/**/*"
+  ]
 }

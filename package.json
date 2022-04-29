@@ -1,12 +1,15 @@
 {
   "name": "aliucord",
   "version": "0.1.0",
+  "main": "index.js",
+  "types": "index.d.ts",
   "license": "OSL-3.0",
   "scripts": {
     "build": "rollup -c --configPlugin esbuild",
     "dev": "pnpm run build -- -w",
     "deploy": "adb shell am start -S -n com.discordrn/.MainActivity",
-    "serve": "node serve.mjs"
+    "serve": "node serve.mjs",
+    "prepublishOnly": "tsc; node prePublish.mjs"
   },
   "repository": {
     "type": "git",

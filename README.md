@@ -11,7 +11,11 @@ pnpm build
 
 ## Install
 
-Kinda inconvenient for now, will be improved in the future
+1) Install the apks pinned in the hermes thread on the Aliucord Server
+2) Run `pnpm serve` and start the app
 
-1) Install and enable the [Xposed Module](https://github.com/Aliucord/AliucordXposed/releases/download/1.0.0/aliuxposed.apk). Make sure you check Discord in application list
-2) Connect your phone via adb and run `pnpm serve`
+## Publishing to npm
+
+```sh
+npm publish ./build
+```
