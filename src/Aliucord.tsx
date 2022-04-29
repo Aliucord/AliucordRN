@@ -10,7 +10,7 @@ function initWithPerms() {
     // TODO
 }
 
-interface SettingsSchema {
+export interface SettingsSchema {
     autoUpdateAliucord: boolean;
     autoUpdatePlugins: boolean;
     disablePluginsOnCrash: boolean;

@@ -1,3 +1,4 @@
+import { SettingsSchema } from "../Aliucord";
 import { useSettings } from "../api/Settings";
 import { Forms, React } from "../metro";
 import { URLOpener } from "../metro/index";
@@ -9,28 +10,44 @@ const { FormSection, FormSwitch, FormRow } = Forms;
 
 export default function AliucordPage() {
     const settings = useSettings(window.Aliucord.settings);
+    const [state, setState] = React.useState<Omit<SettingsSchema, "plugins">>({
+        autoUpdateAliucord: settings.get("autoUpdateAliucord", false),
+        autoUpdatePlugins: settings.get("autoUpdatePlugins", false),
+        disablePluginsOnCrash: settings.get("disablePluginsOnCrash", true),
+        debugWS: settings.get("debugWS", false),
+    });
 
     return (
         <>
             <FormSection title="Settings" /* Nice prop name discord */ android_noDivider={true}>
                 <FormRow
                     label="Automatically disable plugins on crash"
-                    trailing={<FormSwitch value={settings.get("disablePluginsOnCrash", true)} onValueChange={v => settings.set("disablePluginsOnCrash", v)} />}
+                    trailing={<FormSwitch value={state.disablePluginsOnCrash} onValueChange={v => {
+                        settings.set("disablePluginsOnCrash", v);
+                        setState({ ...state, disablePluginsOnCrash: v });
+                    }} />}
                 />
                 <FormRow
                     label="Automatically update Aliucord"
-                    trailing={<FormSwitch value={settings.get("autoUpdateAliucord", false)} onValueChange={v => settings.set("autoUpdateAliucord", v)} />}
+                    trailing={<FormSwitch value={state.autoUpdateAliucord} onValueChange={v => {
+                        settings.set("autoUpdateAliucord", v);
+                        setState({ ...state, autoUpdateAliucord: v });
+                    }} />}
                 />
                 <FormRow
                     label="Automatically update Plugins"
-                    trailing={<FormSwitch value={settings.get("autoUpdatePlugins", false)} onValueChange={v => settings.set("autoUpdatePlugins", v)} />}
+                    trailing={<FormSwitch value={state.autoUpdatePlugins} onValueChange={v => {
+                        settings.set("autoUpdatePlugins", v);
+                        setState({ ...state, autoUpdatePlugins: v });
+                    }} />}
                 />
                 <FormRow
                     label="Enable Debug WebSocket"
                     trailing={<FormSwitch
-                        value={settings.get("debugWS", false)}
+                        value={state.debugWS}
                         onValueChange={v => {
                             settings.set("debugWS", v);
+                            setState({ ...state, debugWS: v });
                             if (v) startDebugWs();
                         }}
                     />}
