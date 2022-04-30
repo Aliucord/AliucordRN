@@ -51,14 +51,13 @@ const server = createServer((req, res) => {
 
 const wss = new WebSocketServer({ server });
 
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-
 let pnpmCommand;
 
 wss.on("connection", async (ws) => {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
     ws.on("message", data => {
         const parsed = JSON.parse(data.toString());
         switch (parsed.level) {
@@ -76,21 +75,19 @@ wss.on("connection", async (ws) => {
                 break;
         }
     });
-    let ac;
     ws.on("close", () => {
         connected = false;
-        ac?.abort?.();
+        rl.close();
         logUtils.error("Websocket connection closed, waiting for reconnection");
     });
     logUtils.info("Discord client connected to websocket");
 
     connected = true;
-    for (;;) {
-        if (!connected) return;
+    while (connected) {
         await new Promise(r => {
-            ac = new AbortController();
-            rl.question(chalk.cyanBright("--> "), { signal: ac.signal }, (cmd) => {
-                if (["exit", "quit"].includes(cmd)) {
+            rl.question(chalk.cyanBright("--> "), (cmd) => {
+                if (!connected) return;
+                else if (["exit", "quit"].includes(cmd)) {
                     ws.close();
                     pnpmCommand.kill("SIGINT");
                     process.exit();
