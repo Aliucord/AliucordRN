@@ -18,7 +18,7 @@ type CastDown<T> =
 export function useSettings<T extends Record<string, any>>(settings: Settings<T>, defaults: T) {
     const initialValues = {};
     for (const [key, value] of Object.entries(defaults)) {
-        initialValues[key] = settings.get(key, defaults[key]);
+        initialValues[key] = settings.get(key, value);
     }
     const [state, setState] = React.useState(initialValues as T);
     return React.useMemo(() => new Proxy(state, {
