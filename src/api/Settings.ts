@@ -15,17 +15,19 @@ type CastDown<T> =
  * Settings React Hook. Will automatically rerender your component and
  * save to settings on set()
  */
-export function useSettings<T>(settings: Settings<T>) {
-    const [, update] = React.useState(0);
-
-    return React.useMemo(() => ({
-        get<K extends keyof T, V extends T[K]>(key: K, defaultValue: V) {
-            return settings.get(key, defaultValue);
-        },
-        set<K extends keyof T, V extends T[K]>(key: K, value: V) {
-            settings.set(key, value).then(() => update(x => x + 1));
+export function useSettings<T extends Record<string, any>>(settings: Settings<T>, defaults: T) {
+    const [state, setState] = React.useState(defaults);
+    return new Proxy(state, {
+        set(_, property, value) {
+            const newState = { ...state };
+            Object.defineProperty(newState, property, {
+                value
+            });
+            setState(newState);
+            settings.set(property as string, value);
+            return true;
         }
-    }), []);
+    });
 }
 
 /**
@@ -33,7 +35,7 @@ export function useSettings<T>(settings: Settings<T>) {
  * For technical reasons, this class must be constructed using Settings.make, 
  * and NOT via new.
  */
-export class Settings<Schema> {
+export class Settings<Schema extends Record<string, any>> {
     private constructor(public readonly module: string, public readonly snapshot: Schema) { }
 
     // FIXME - find a better way to do this somehow
@@ -48,7 +50,7 @@ export class Settings<Schema> {
      *               identify your settings
      * @returns Settings Instance
      */
-    static async make<Schema = any>(module: string) {
+    static async make<Schema = Record<string, never>>(module: string) {
         const snapshot = (await window.nativeModuleProxy.AliucordNative.getSettings(module)) ?? "{}";
         try {
             const data = JSON.parse(snapshot);
