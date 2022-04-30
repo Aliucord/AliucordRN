@@ -10,28 +10,32 @@ import chalk from "chalk";
 
 let connected = false;
 const logUtils = {
-    info: (message) => {
-        logUtils.incoming(chalk.greenBright("<-- ") + message);
-    },
     incoming: (message) => {
-        process.stdout.cursorTo(0);
+        logUtils.info(chalk.greenBright("<-- ") + message);
+    },
+    info: (message) => {
+        logUtils.clearLine();
         console.info(message);
         if (connected) process.stdout.write(chalk.cyanBright("--> "));
     },
     success: (message) => {
-        process.stdout.cursorTo(0);
+        logUtils.clearLine();
         console.info(chalk.greenBright(message));
     },
     error: (message) => {
-        process.stdout.cursorTo(0);
+        logUtils.clearLine();
         console.error(chalk.redBright(message));
+    },
+    clearLine: () => {
+        process.stdout.clearLine();
+        process.stdout.cursorTo(0);
     }
 };
 
 const whitelist = ["/Aliucord.js", "/Aliucord.js.map", "/Aliucord.js.bundle"];
 
 const server = createServer((req, res) => {
-    logUtils.info("Received Request for " + req.url);
+    logUtils.incoming("Received Request for " + req.url);
     if (!whitelist.includes(req.url)) res.writeHead(404).end();
     else {
         readFile(`dist${req.url}`, { encoding: "utf-8" }, (err, data) => {
@@ -62,16 +66,16 @@ wss.on("connection", async (ws) => {
         const parsed = JSON.parse(data.toString());
         switch (parsed.level) {
             case 0:
-                logUtils.incoming(`${chalk.bold("T:")} ` + parsed.message);
+                logUtils.info(`${chalk.bold("T:")} ` + parsed.message);
                 break;
             case 1:
-                logUtils.incoming(`${chalk.greenBright("I:")} ` + parsed.message);
+                logUtils.info(`${chalk.greenBright("I:")} ` + parsed.message);
                 break;
             case 2:
-                logUtils.incoming(`${chalk.yellow("W:")} ` + parsed.message);
+                logUtils.info(`${chalk.yellow("W:")} ` + parsed.message);
                 break;
             case 3:
-                logUtils.incoming(`${chalk.redBright("E:")} ` + parsed.message);
+                logUtils.info(`${chalk.redBright("E:")} ` + parsed.message);
                 break;
         }
     });
@@ -80,7 +84,7 @@ wss.on("connection", async (ws) => {
         rl.close();
         logUtils.error("Websocket connection closed, waiting for reconnection");
     });
-    logUtils.info("Discord client connected to websocket");
+    logUtils.incoming("Discord client connected to websocket");
 
     connected = true;
     while (connected) {
