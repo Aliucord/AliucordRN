@@ -16,8 +16,12 @@ type CastDown<T> =
  * save to settings on set()
  */
 export function useSettings<T extends Record<string, any>>(settings: Settings<T>, defaults: T) {
-    const [state, setState] = React.useState(defaults);
-    return new Proxy(state, {
+    const initialValues = {};
+    for (const [key, value] of Object.entries(defaults)) {
+        initialValues[key] = settings.get(key, defaults[key]);
+    }
+    const [state, setState] = React.useState(initialValues as T);
+    return React.useMemo(() => new Proxy(state, {
         set(_, property, value) {
             const newState = { ...state };
             Object.defineProperty(newState, property, {
@@ -27,7 +31,7 @@ export function useSettings<T extends Record<string, any>>(settings: Settings<T>
             settings.set(property as string, value);
             return true;
         }
-    });
+    }), [state]);
 }
 
 /**
