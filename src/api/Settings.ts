@@ -23,8 +23,8 @@ type CastDown<T> =
  *          
  *          // Use in an element
  *          <FormSwitch value={settings.autoUpdateAliucord} onValueChange={v => {
-                settings.autoUpdateAliucord = v;
-            }} />
+ *              settings.autoUpdateAliucord = v;
+ *          }} />
  * @param {Settings<T>} settings The settings class to use for setting and getting options
  * @param {T} defaults An object containing defaults for all the settings
  * @returns {T} An object containing all provided settings, which will save the settings on property set
