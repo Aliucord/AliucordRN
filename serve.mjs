@@ -3,12 +3,12 @@ import { readFile } from "fs";
 import { spawn } from "child_process";
 import { platform } from "process";
 import readline from "readline";
-import { WebSocketServer, WebSocket } from "ws";
+import { WebSocketServer } from "ws";
 import chalk from "chalk";
 
 // http-server exists but it is so bloated 😩
 
-let showPrompt = false;
+let connected = false;
 const logUtils = {
     info: (message) => {
         logUtils.incoming(chalk.greenBright("<-- ") + message);
@@ -16,7 +16,7 @@ const logUtils = {
     incoming: (message) => {
         process.stdout.cursorTo(0);
         console.info(message);
-        if (showPrompt) process.stdout.write(chalk.cyanBright("--> "));
+        if (connected) process.stdout.write(chalk.cyanBright("--> "));
     },
     success: (message) => {
         process.stdout.cursorTo(0);
@@ -76,17 +76,20 @@ wss.on("connection", async (ws) => {
                 break;
         }
     });
+    let ac;
+    ws.on("close", () => {
+        connected = false;
+        ac?.abort?.();
+        logUtils.error("Websocket connection closed, waiting for reconnection");
+    });
     logUtils.info("Discord client connected to websocket");
 
-    showPrompt = true;
+    connected = true;
     for (;;) {
-        if (ws.readyState !== WebSocket.OPEN) {
-            showPrompt = false;
-            logUtils.error("Websocket connection closed, waiting for reconnection");
-            break;
-        }
+        if (!connected) return;
         await new Promise(r => {
-            rl.question(chalk.cyanBright("--> "), (cmd) => {
+            ac = new AbortController();
+            rl.question(chalk.cyanBright("--> "), { signal: ac.signal }, (cmd) => {
                 if (["exit", "quit"].includes(cmd)) {
                     ws.close();
                     pnpmCommand.kill("SIGINT");
@@ -117,6 +120,6 @@ pnpmCommand = spawn(platform === "win32" ? "pnpm.cmd" : "pnpm", ["dev"], { stdio
 });
 
 process.on("SIGINT", () => {
-    pnpmCommand.kill();
+    pnpmCommand.kill("SIGKILL");
     process.exit();
 });
