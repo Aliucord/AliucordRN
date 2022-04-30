@@ -36,13 +36,9 @@ export function useSettings<T extends Record<string, any>>(settings: Settings<T>
     }
     const [state, setState] = React.useState(initialValues as T);
     return React.useMemo(() => new Proxy(state, {
-        set(_, property, value) {
-            const newState = { ...state };
-            Object.defineProperty(newState, property, {
-                value
-            });
-            setState(newState);
-            settings.set(property as string, value);
+        set(_, property: string, value) {
+            setState({ ...state, [property]: value });
+            settings.set(property as string, value).catch(e => console.error(e));
             return true;
         }
     }), [state]);
