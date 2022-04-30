@@ -20,8 +20,6 @@ interface SettingsSchema {
 
 export let settings: Settings<SettingsSchema>;
 export const logger = new Logger("AliucordMain");
-export * as Metro from "./metro";
-export * as Patcher from "./utils/patcher";
 export async function load() {
     settings = await Settings.make("Aliucord");
 
