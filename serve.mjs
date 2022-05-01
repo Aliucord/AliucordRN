@@ -51,7 +51,7 @@ const server = createServer((req, res) => {
     }
 })
     .once("listening", () => logUtils.success("Listening on Port 3000"))
-    .on("error", console.error);
+    .on("error", (e) => logUtils.error(e.stack));
 
 const wss = new WebSocketServer({ server });
 
