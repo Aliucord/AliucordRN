@@ -14,34 +14,18 @@ type CastDown<T> =
 /** 
  * Settings React Hook. Will automatically rerender your component and
  * save to settings on set()
- * @example // Use hook
- *          const settings = useSettings(window.Aliucord.settings);
- *          // Fetch value
- *          settings.autoUpdateAliucord; // true
- *          // Set value
- *          settings.autoUpdateAliucord = false;
- *          
- *          // Use in an element
- *          <FormSwitch value={settings.autoUpdateAliucord} onValueChange={v => {
- *              settings.autoUpdateAliucord = v;
- *          }} />
- * @param {Settings<T>} settings The settings class to use for setting and getting options
- * @param {T} defaults An object containing defaults for all the settings
- * @returns {T} An object containing all provided settings, which will save the settings on property set
  */
-export function useSettings<T extends Record<string, any>>(settings: Settings<T>, defaults: T): T {
-    const initialValues = {};
-    for (const [key, value] of Object.entries(defaults)) {
-        initialValues[key] = settings.get(key, value);
-    }
-    const [state, setState] = React.useState(initialValues as T);
-    return React.useMemo(() => new Proxy(state, {
-        set(_, property: string, value) {
-            setState({ ...state, [property]: value });
-            settings.set(property as string, value).catch(e => console.error(e));
-            return true;
+export function useSettings<T>(settings: Settings<T>) {
+    const [, update] = React.useState(0);
+
+    return React.useMemo(() => ({
+        get<K extends keyof T, V extends T[K]>(key: K, defaultValue: V) {
+            return settings.get(key, defaultValue);
+        },
+        set<K extends keyof T, V extends T[K]>(key: K, value: V) {
+            settings.set(key, value).then(() => update(x => x + 1));
         }
-    }), [state]);
+    }), []);
 }
 
 /**
@@ -49,7 +33,7 @@ export function useSettings<T extends Record<string, any>>(settings: Settings<T>
  * For technical reasons, this class must be constructed using Settings.make, 
  * and NOT via new.
  */
-export class Settings<Schema extends Record<string, any>> {
+export class Settings<Schema> {
     private constructor(public readonly module: string, public readonly snapshot: Schema) { }
 
     // FIXME - find a better way to do this somehow
@@ -64,7 +48,7 @@ export class Settings<Schema extends Record<string, any>> {
      *               identify your settings
      * @returns Settings Instance
      */
-    static async make<Schema = Record<string, never>>(module: string) {
+    static async make<Schema = any>(module: string) {
         const snapshot = (await window.nativeModuleProxy.AliucordNative.getSettings(module)) ?? "{}";
         try {
             const data = JSON.parse(snapshot);
@@ -114,4 +98,3 @@ export class Settings<Schema extends Record<string, any>> {
         return window.nativeModuleProxy.AliucordNative.writeSettings(this.module, JSON.stringify(this.snapshot, null, 2));
     }
 }
-

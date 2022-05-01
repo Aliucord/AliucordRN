@@ -14,7 +14,7 @@ async function initWithPerms() {
     }
 }
 
-export interface SettingsSchema {
+interface SettingsSchema {
     autoUpdateAliucord: boolean;
     autoUpdatePlugins: boolean;
     disablePluginsOnCrash: boolean;
