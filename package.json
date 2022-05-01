@@ -28,13 +28,15 @@
     "@types/react-native": "^0.67.4",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
+    "chalk": "^5.0.1",
     "esbuild": "^0.14.36",
     "eslint": "^8.13.0",
     "eslint-plugin-react": "^7.29.4",
     "rollup": "^2.70.2",
     "rollup-plugin-esbuild": "^4.9.1",
     "rollup-plugin-hermes": "^0.11.1",
-    "typescript": "^4.6.3"
+    "typescript": "^4.6.3",
+    "ws": "^8.5.0"
   },
   "dependencies": {
     "react-devtools-core": "^4.24.4"

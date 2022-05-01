@@ -8,7 +8,10 @@
     "module": "ESNext",
     "declaration": true,
     "outDir": "build",
-    "lib": ["ESNext"]
+    "lib": [
+      "ESNext",
+      "DOM"
+    ]
   },
   "include": [
     "src/**/*"
