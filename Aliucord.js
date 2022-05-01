@@ -995,7 +995,7 @@ var aliu = (function (exports) {
     return CommandHandler;
   }(Plugin);
 
-  const sha = "d302733";
+  const sha = "16cc156";
 
   const DebugInfo = {
     get discordVersion() {
@@ -1338,9 +1338,10 @@ var aliu = (function (exports) {
     });
   };
   let ws;
+  let patched;
   function startDebugWs() {
     if (ws) return;
-    ws = new WebSocket("ws://localhost:9090");
+    ws = new WebSocket("ws://localhost:3000");
     const logger = new Logger("DebugWS");
     logger.info("Connecting to debug ws");
     ws.addEventListener("open", () => logger.info("Connected with debug websocket"));
@@ -1360,14 +1361,23 @@ var aliu = (function (exports) {
         logger.error(e);
       }
     }));
-    before(globalThis, "nativeLoggingHook", (_, message2, level) => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({
-          level,
-          message: message2
-        }));
-      }
+    ws.addEventListener("close", () => {
+      logger.info("Disconnected from debug websocket, reconnecting in 3 seconds");
+      ws = null;
+      setTimeout(startDebugWs, 3e3);
     });
+
+    if (!patched) {
+      before(globalThis, "nativeLoggingHook", (_, message2, level) => {
+        if ((ws == null ? void 0 : ws.readyState) === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            level,
+            message: message2
+          }));
+        }
+      });
+      patched = true;
+    }
   }
 
   const assetMap = {};
