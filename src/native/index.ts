@@ -90,3 +90,8 @@ export const checkPermissions: () => Promise<boolean> = AliucordNative.checkPerm
  * Used to request storage permissions
  */
 export const requestPermissions: () => Promise<boolean> = AliucordNative.requestPermissions;
+
+/**
+ * Initializes all Aliucord directories
+ */
+export const initAliucordDirs: () => Promise<void> = AliucordNative.initAliucordDirs;

@@ -1,13 +1,17 @@
 import { Settings } from "./api/Settings";
 import * as CorePlugins from "./core-plugins/index";
 import * as Metro from "./metro";
-import { checkPermissions, requestPermissions } from "./native";
+import { checkPermissions, initAliucordDirs, requestPermissions } from "./native";
 import patchSettings from "./ui/patchSettings";
 import { startDebugWs } from "./utils/debug/DebugWS";
 import { Logger } from "./utils/Logger";
 
-function initWithPerms() {
-    // TODO
+async function initWithPerms() {
+    try {
+        initAliucordDirs();
+    } catch (e) {
+        logger.error("Failed while initializing aliucord directories", e);
+    }
 }
 
 export interface SettingsSchema {
