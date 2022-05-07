@@ -1,13 +1,14 @@
-import { checkPermissions, requestPermissions } from "./AliucordNative";
-import { Commands } from "./api/Commands";
-import { Settings } from "./api/SettingsAPI";
+import { PluginManager } from "./api";
+import { Settings } from "./api/Settings";
 import * as CorePlugins from "./core-plugins/index";
 import * as Metro from "./metro";
+import { mkdir } from "./native/fs";
+import { checkPermissions, requestPermissions } from "./native/permissions";
 import patchSettings from "./ui/patchSettings";
-import * as AliuConstants from "./utils/constants";
+import { ALIUCORD_DIRECTORY, PLUGINS_DIRECTORY, SETTINGS_DIRECTORY } from "./utils/constants";
 import { DebugWS } from "./utils/debug/DebugWS";
+import { ReactDevTools } from "./utils/debug/ReactDevTools";
 import { Logger } from "./utils/Logger";
-import * as Patcher from "./utils/Patcher";
 
 function initWithPerms() {
     // TODO
@@ -20,25 +21,19 @@ interface SettingsSchema {
     plugins: Record<string, boolean>;
 }
 export class Aliucord {
-    settings!: Settings<SettingsSchema>;
     logger = new Logger("Aliucord");
+    settings!: Settings<SettingsSchema>;
+
     debugWS = new DebugWS();
+    reactDevTools = new ReactDevTools();
 
-    Constants = AliuConstants;
-
-    Commands = Commands;
-    /**
-     * Metro. Module Store
-     */
-    Metro = Metro;
-    Patcher = Patcher;
+    pluginManager: PluginManager = new PluginManager(this);
 
     async load() {
-        this.settings = await Settings.make("Aliucord");
-
         try {
             this.logger.info("Loading...");
 
+            // TODO move to bootstrap
             checkPermissions().then(granted => {
                 if (granted) initWithPerms();
                 else {
@@ -56,22 +51,20 @@ export class Aliucord {
                 }
             });
 
+            mkdir(ALIUCORD_DIRECTORY);
+            mkdir(SETTINGS_DIRECTORY);
+            mkdir(PLUGINS_DIRECTORY);
+
+            this.settings = await Settings.make("Aliucord");
+
             CorePlugins.startAll();
 
+            this.reactDevTools.connect();
             this.debugWS.start();
 
-            // Needs to be hardcoded instead of variable so this code is correcty
-            // detected as unreachable and not included in build.
-            // if (variable) still crashes
-            // eslint-disable-next-line no-constant-condition
-            if (false) {
-                // CAUSES CRASHES
-                // "lateinit property audioManager has not been initialized"
-                const { ReactDevTools } = await import("./utils/debug/ReactDevTools");
-                new ReactDevTools().connect();
-            }
-
             patchSettings();
+
+            this.pluginManager.load();
         } catch (error) {
             this.logger.error(error as string | Error);
         }

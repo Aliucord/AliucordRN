@@ -1,6 +1,6 @@
 import { Logger } from "../Logger";
 import { makeAsyncEval } from "../misc";
-import { before } from "../Patcher";
+import { before } from "../patcher";
 
 const logger = new Logger("DebugWS");
 

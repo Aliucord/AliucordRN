@@ -1,4 +1,7 @@
+import { aliucord } from "..";
 import { React } from "../metro";
+import { exists, readFile, writeFile } from "../native/fs";
+import { SETTINGS_DIRECTORY } from "../utils/constants";
 
 /**
  * Casts types down to be less specific and also allow missing keys in Objects
@@ -28,12 +31,17 @@ export function useSettings<T>(settings: Settings<T>) {
     }), []);
 }
 
+function getPath(module: string) {
+    return SETTINGS_DIRECTORY + module + ".json";
+}
+
 /**
  * SettingsAPI.
  * For technical reasons, this class must be constructed using Settings.make, 
  * and NOT via new.
  */
 export class Settings<Schema> {
+
     private constructor(public readonly module: string, public readonly snapshot: Schema) { }
 
     // FIXME - find a better way to do this somehow
@@ -49,14 +57,15 @@ export class Settings<Schema> {
      * @returns Settings Instance
      */
     static async make<Schema = any>(module: string) {
-        const snapshot = (await window.nativeModuleProxy.AliucordNative.getSettings(module)) ?? "{}";
+        const path = getPath(module);
+        const snapshot = exists(path) ? readFile(path) : "{}";
         try {
             const data = JSON.parse(snapshot);
             if (typeof data !== "object")
                 throw new Error("JSON data was not an object.");
             return new this<Schema>(module, data);
         } catch (err: any) {
-            window.Aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
+            aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
             return new this<Schema>(module, {} as Schema);
         }
     }
@@ -94,8 +103,7 @@ export class Settings<Schema> {
         }
     }
 
-    private _persist(): Promise<void> {
-        return window.nativeModuleProxy.AliucordNative.writeSettings(this.module, JSON.stringify(this.snapshot, null, 2));
+    private async _persist(): Promise<void> {
+        writeFile(getPath(this.module), JSON.stringify(this.snapshot, null, 2));
     }
 }
-

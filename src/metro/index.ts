@@ -17,11 +17,37 @@ type FilterOptions = {
     default?: true;
 };
 
-// If you are curious why this exists, run
-// __r(994) and enjoy your Hindi timestamps
+let nullProxyId: number | undefined;
+
+for (const key in modules) {
+    const id = Number(key);
+    const module = modules[id];
+
+    if (!nullProxyId && module.isInitialized && module.publicModule && module.publicModule.exports) {
+        // Blacklist the stupid proxy that returns null to everything
+        if (module.publicModule.exports["get defeated by your own weapon nerd"] === null) {
+            nullProxyId = id;
+            continue;
+        }
+    }
+
+    if (module.factory) {
+        const strings = AliuHermes.findStrings(module.factory);
+
+        // Remove momentjs locale modules which change the language as a side effect
+        if (strings.length === 8 && strings[6] === "moment") {
+            delete modules[id];
+            continue;
+        }
+    }
+}
+
+if (!nullProxyId) {
+    console.warn("Null proxy not found, expect problems");
+}
+
 function isModuleBlacklisted(id: number) {
-    if (id === 54 || id >= 966 && id <= 994) return true;
-    return false;
+    return (nullProxyId && id === nullProxyId);
 }
 
 /**
@@ -37,7 +63,6 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
         const id = Number(key);
 
         if (isModuleBlacklisted(id)) continue;
-
 
         let mod;
         try {
@@ -58,8 +83,8 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
                 return defaultExport ? module.exports.default :
                     exports ? module.exports : module;
             }
-        } catch (e) {
-            logger.error("Error during getModule", e);
+        } catch (e: any) {
+            (logger ?? console).error("Error during getModule", e?.stack ?? e);
         }
     }
 
@@ -143,8 +168,8 @@ export function getAll(filter: (module: any) => boolean, options?: FilterOptions
                 return defaultExport ? module.exports.default :
                     exports ? module.exports : module;
             }
-        } catch (e) {
-            logger.error("Error during getAll", e);
+        } catch (e: any) {
+            (logger ?? console).error("Error during getModule", e?.stack ?? e);
         }
     }
 

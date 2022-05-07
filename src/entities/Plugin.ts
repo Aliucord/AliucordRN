@@ -1,6 +1,4 @@
-import { Commands } from "../api/Commands";
-import { Patcher } from "../api/PatcherApi";
-import { Settings } from "../api/SettingsAPI";
+import { Commands, Patcher, Settings } from "../api";
 import { Logger } from "../utils/Logger";
 
 /**
@@ -8,7 +6,7 @@ import { Logger } from "../utils/Logger";
  * You may pass a Settings Schema to have calls to
  * this.settings.get and this.settings.set validated and typed strongly
  */
-export default class Plugin<SettingsSchema = any> {
+export class Plugin<SettingsSchema = any> {
     public readonly commands = new Commands(this.name);
     public readonly logger = new Logger(this.name);
     public readonly patcher = new Patcher(this.name);

@@ -11,6 +11,7 @@ declare module "react-devtools-core" {
     };
 
     export const connectToDevTools: (options: ConnectionOptions) => void;
+    export const installHook: (target: any) => any | null;
 
     const exports: {
         connectToDevTools: (options: ConnectionOptions) => void;

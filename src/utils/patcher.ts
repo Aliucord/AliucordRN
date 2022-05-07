@@ -41,7 +41,7 @@ export class Patch<T, R, A extends any[]> {
 
     public constructor(
         data: PatchFns<T, R, A>,
-        public readonly priority: number = PatchPriority.DEFAULT,
+        public readonly priority: number, // = PatchPriority.DEFAULT - this caused stupid Illegal 'use strict' directive in function with non-simple parameter list
         public readonly plugin?: string
     ) {
         if (this.priority < PatchPriority.MIN || this.priority > PatchPriority.MAX) {

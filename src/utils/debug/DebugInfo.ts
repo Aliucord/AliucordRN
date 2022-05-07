@@ -1,7 +1,8 @@
+import { PlatformAndroidStatic } from "react-native";
 import { ReactNative } from "../../metro";
 
 export class DebugInfo {
-    static getDiscordVersion(): string {
+    static get discordVersion(): string {
         try {
             return `${ReactNative.NativeModules.InfoDictionaryManager.Version} (${ReactNative.NativeModules.InfoDictionaryManager.ReleaseChannel})`;
         } catch (ex) {
@@ -9,15 +10,16 @@ export class DebugInfo {
         }
     }
 
-    static getSystem(): string {
+    static get system(): string {
         try {
-            return `${ReactNative.Platform.OS} ${ReactNative.Platform.constants.Release} (SDK v${ReactNative.Platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${ReactNative.Platform.constants.uiMode}`
+            const platform = ReactNative.Platform as PlatformAndroidStatic;
+            return `${platform.OS} ${platform.constants.Release} (SDK v${platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${platform.constants.uiMode}`;
         } catch (ex) {
             return "unknown";
-        } 
+        }
     }
 
-    static getReactNativeVersion(): string {
+    static get reactNativeVersion(): string {
         try {
             const ver = ReactNative.Platform.constants.reactNativeVersion;
             return `${ver.major || 0}.${ver.minor || 0}.${ver.patch || 0}`;
@@ -26,15 +28,13 @@ export class DebugInfo {
         }
     }
 
-    static getHermesVersion(): string {
+    static get hermesVersion(): string {
         try {
-            if (window.HermesInternal === undefined) return "N/A";
-            const runtimeProps = window.HermesInternal.getRuntimeProperties()
-            return `${runtimeProps['OSS Release Version']} ${runtimeProps['Build']} (v${runtimeProps['Bytecode Version']})`
+            if (HermesInternal === undefined) return "N/A";
+            const runtimeProps = (HermesInternal as any).getRuntimeProperties();
+            return `${runtimeProps['OSS Release Version']} ${runtimeProps['Build']} (v${runtimeProps['Bytecode Version']})`;
         } catch (ex) {
             return "unknown";
         }
     }
 }
-
-export default DebugInfo

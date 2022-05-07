@@ -1,4 +1,4 @@
-import reactDevTools from "react-devtools-core";
+import { connectToDevTools, installHook } from "@aliucord/react-devtools-core";
 import { getModule } from "../../metro";
 import { Logger } from "../Logger";
 
@@ -8,7 +8,23 @@ const logger = new Logger("ReactDevTools");
 export class ReactDevTools {
     socket: WebSocket | undefined;
 
+    static fixHook() {
+        const oldHook = window.__REACT_DEVTOOLS_GLOBAL_HOOK__;
+        if (oldHook.injected) {
+            const hook = installHook({});
+
+            for (const injected of oldHook.injected) {
+                hook.inject(injected);
+            }
+            delete oldHook.injected;
+
+            window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = Object.assign(oldHook, hook);
+        }
+    }
+
     connect() {
+        ReactDevTools.fixHook();
+
         const { AppState } = getModule(m => m.AppState);
 
         const isAppActive = () => AppState.currentState !== "background";
@@ -22,7 +38,7 @@ export class ReactDevTools {
         const { flattenStyle } = getModule(m => m.flattenStyle);
 
         logger.info("Connecting to devtools");
-        reactDevTools.connectToDevTools({
+        connectToDevTools({
             isAppActive,
             resolveRNStyle: flattenStyle,
             nativeStyleEditorValidAttributes: Object.keys(

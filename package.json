@@ -2,11 +2,15 @@
   "name": "aliucord",
   "version": "0.1.0",
   "license": "OSL-3.0",
+  "publishConfig": {
+    "directory": "lib",
+    "typings": "index.d.ts"
+  },
   "scripts": {
-    "build": "rollup -c --configPlugin esbuild",
-    "dev": "pnpm run build -- -w",
-    "deploy": "adb shell am start -S -n com.discordrn/.MainActivity",
-    "serve": "node serve.mjs"
+    "build": "rollup -c --configPlugin @rollup/plugin-typescript",
+    "dev": "pnpm run build -w",
+    "deploy": "adb shell am start -S -n com.discord/.MainActivity",
+    "prepublishOnly": "rm lib -r && tsc && cp package.json lib && cp LICENSE lib && cp README.md lib"
   },
   "repository": {
     "type": "git",
@@ -17,24 +21,31 @@
   },
   "homepage": "https://aliucord.com",
   "devDependencies": {
-    "@babel/core": "^7.17.9",
-    "@babel/plugin-transform-classes": "^7.16.7",
-    "@rollup/plugin-babel": "^5.3.1",
+    "@aliucord/rollup-plugin": "0.1.0",
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-node-resolve": "^13.3.0",
+    "@rollup/plugin-typescript": "^8.3.2",
     "@types/node": "^17.0.24",
     "@types/react": "^17.0.39",
     "@types/react-native": "^0.67.4",
     "@typescript-eslint/eslint-plugin": "^5.19.0",
     "@typescript-eslint/parser": "^5.19.0",
-    "esbuild": "^0.14.36",
     "eslint": "^8.13.0",
     "eslint-plugin-react": "^7.29.4",
+    "hermes-engine": "0.11.0",
     "rollup": "^2.70.2",
-    "rollup-plugin-esbuild": "^4.9.1",
-    "rollup-plugin-hermes": "^0.11.1",
     "typescript": "^4.6.3"
   },
   "dependencies": {
-    "react-devtools-core": "^4.24.4"
+    "@aliucord/react-devtools-core": "^4.24.4-aliucord.1",
+    "@swc/helpers": "^0.3.9"
   },
-  "packageManager": "pnpm@6.32.9"
+  "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "tslib"
+      ]
+    }
+  },
+  "packageManager": "pnpm@7.0.0"
 }
