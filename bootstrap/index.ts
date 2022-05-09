@@ -1,5 +1,6 @@
 (async () => {
-    async function loadAliucord() {
+    const { externalStorageDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
+    async function downloadAliucord() {
         const bundlePath = externalStorageDirectory + "/AliucordRN/Aliucord.js.bundle";
         if (!AliuFS.exists(bundlePath)) {
             try {
@@ -13,20 +14,13 @@
         (globalThis._globals ??= {}).aliucord = AliuHermes.run(bundlePath);
     }
     try {
-        const { externalStorageDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
         const granted = await checkPermissions()
-        if (!granted) Metro.ReactNative.Alert.alert(
-            "Storage Access",
-            "Aliucord needs access to your storage to load plugins and themes.",
-            [{
-                text: "OK",
-                onPress: () => requestPermissions().then(permissionGranted => {
-                    if (permissionGranted) loadAliucord();
-                    else alert("Unable to load, Aliucord needs access to your storage to load plugins and themes.");
-                })
-            }]
-        );
-        else await loadAliucord();
+        if (!granted) {
+            alert("Aliucord needs access to your storage to load plugins and themes.");
+            const permissionsGranted = await requestPermissions();
+            if (!permissionsGranted) alert("Unable to load Aliucord, Aliucord needs access to your storage to load plugins and themes.");
+        }
+        await downloadAliucord();
     } catch (error) {
         alert("Something went wrong :(\nCheck logs");
         console.error((error as Error).stack);
