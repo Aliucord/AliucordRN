@@ -16,9 +16,26 @@
     try {
         const granted = await checkPermissions()
         if (!granted) {
-            alert("Aliucord needs access to your storage to load plugins and themes.");
+            const dialogResult = await new Promise((res, rej) => {
+                window.nativeModuleProxy.DialogManagerAndroid.showAlert({
+                    title: "Storage Permissions",
+                    message: "Aliucord needs access to your storage to load plugins and themes.",
+                    cancellable: true,
+                    buttonPositive: "Open"
+                }, rej, action => {
+                    if (action === constants.buttonClicked) res(true);
+                    else res(false);
+                });
+            })
+            if (dialogResult) {
+                alert("Access to your storage is required for aliucord to load.");
+                return;
+            }
             const permissionsGranted = await requestPermissions();
-            if (!permissionsGranted) alert("Unable to load Aliucord, Aliucord needs access to your storage to load plugins and themes.");
+            if (!permissionsGranted) {
+                alert("Access to your storage is required for aliucord to load.");
+                return;
+            }
         }
         await downloadAliucord();
     } catch (error) {
