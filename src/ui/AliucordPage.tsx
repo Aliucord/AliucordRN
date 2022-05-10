@@ -25,6 +25,15 @@ export default function AliucordPage() {
                     label="Automatically update Plugins"
                     trailing={<FormSwitch value={settings.get("autoUpdatePlugins", false)} onValueChange={v => settings.set("autoUpdatePlugins", v)} />}
                 />
+                <FormRow
+                    label="Enable debug websocket"
+                    trailing={<FormSwitch value={settings.get("debugWS", false)} onValueChange={v => {
+                        settings.set("autoUpdatePlugins", v);
+                        v
+                            ? aliucord.debugWS.start()
+                            : aliucord.debugWS.stop();
+                    }} />}
+                />
             </FormSection>
             <FormSection title="Socials">
                 <FormRow
