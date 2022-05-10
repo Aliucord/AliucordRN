@@ -22,20 +22,29 @@
                     title: "Storage Permissions",
                     message: "Aliucord needs access to your storage to load plugins and themes.",
                     cancelable: true,
-                    buttonPositive: "Open"
-                }, rej, action => {
-                    if (action === constants.buttonClicked) res(true);
+                    buttonPositive: "Ok",
+                    buttonNegative: "Cancel"
+                }, rej, (action, key) => {
+                    if (action === constants.buttonClicked && key === constants.buttonPositive) res(true);
                     else res(false);
                 });
             });
             if (!(dialogResult && await requestPermissions())) {
-                alert("Access to your storage is required for aliucord to load.");
+                nativeModuleProxy.DialogManagerAndroid.showAlert({
+                    title: "Storage Permissions",
+                    message: "Access to your storage is required for aliucord to load.",
+                    cancelable: false
+                }, () => { }, () => { });
                 return;
             }
         }
         await downloadAliucord();
     } catch (error) {
-        alert("Something went wrong :(\nCheck logs");
+        nativeModuleProxy.DialogManagerAndroid.showAlert({
+            title: "Error",
+            message: "Something went wrong while loading aliucord, check logs for the specific error.",
+            cancelable: false
+        }, () => { }, () => { });
         console.error((error as Error).stack);
     }
 })();
