@@ -28,12 +28,7 @@
                     else res(false);
                 });
             });
-            if (dialogResult) {
-                alert("Access to your storage is required for aliucord to load.");
-                return;
-            }
-            const permissionsGranted = await requestPermissions();
-            if (!permissionsGranted) {
+            if (!(dialogResult || await requestPermissions())) {
                 alert("Access to your storage is required for aliucord to load.");
                 return;
             }
