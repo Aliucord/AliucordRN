@@ -14,19 +14,20 @@
         (globalThis._globals ??= {}).aliucord = AliuHermes.run(bundlePath);
     }
     try {
-        const granted = await checkPermissions()
+        const granted = await checkPermissions();
+        const constants = nativeModuleProxy.DialogManagerAndroid.getConstants();
         if (!granted) {
-            const dialogResult = await new Promise((res, rej) => {
-                window.nativeModuleProxy.DialogManagerAndroid.showAlert({
+            const dialogResult = await new Promise<boolean>((res, rej) => {
+                nativeModuleProxy.DialogManagerAndroid.showAlert({
                     title: "Storage Permissions",
                     message: "Aliucord needs access to your storage to load plugins and themes.",
-                    cancellable: true,
+                    cancelable: true,
                     buttonPositive: "Open"
                 }, rej, action => {
                     if (action === constants.buttonClicked) res(true);
                     else res(false);
                 });
-            })
+            });
             if (dialogResult) {
                 alert("Access to your storage is required for aliucord to load.");
                 return;
