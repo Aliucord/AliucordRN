@@ -1,3 +1,4 @@
+import { aliucord } from "../..";
 import { Logger } from "../Logger";
 import { makeAsyncEval } from "../misc";
 import { before } from "../patcher";
@@ -9,7 +10,7 @@ export class DebugWS {
     patched: boolean = false;
 
     start() {
-        if (this.socket) return;
+        if (this.socket || !aliucord.settings.get("debugWS", false)) return;
         this.socket = new WebSocket("ws://localhost:3000");
 
         const logger = new Logger("DebugWS");
@@ -30,9 +31,11 @@ export class DebugWS {
             }
         });
         this.socket.addEventListener("close", () => {
-            logger.info("Disconnected from debug websocket, reconnecting in 3 seconds");
             this.socket = null;
-            setTimeout(this.start, 3000);
+            if (aliucord.settings.get("debugWS", false)) {
+                logger.info("Disconnected from debug websocket, reconnecting in 3 seconds");
+                setTimeout(this.start, 3000);
+            }
         });
 
         if (!this.patched) {
@@ -43,5 +46,11 @@ export class DebugWS {
             });
             this.patched = true;
         }
+    }
+
+    stop() {
+        if (!this.socket) return;
+        this.socket.close();
+        this.socket = null;
     }
 }
