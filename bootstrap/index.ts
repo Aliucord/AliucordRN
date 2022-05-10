@@ -33,7 +33,8 @@
                 nativeModuleProxy.DialogManagerAndroid.showAlert({
                     title: "Storage Permissions",
                     message: "Access to your storage is required for aliucord to load.",
-                    cancelable: false
+                    cancelable: true,
+                    buttonPositive: "Ok"
                 }, () => { }, () => { });
                 return;
             }
@@ -43,7 +44,8 @@
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
             message: "Something went wrong while loading aliucord, check logs for the specific error.",
-            cancelable: false
+            cancelable: true,
+            buttonPositive: "Ok"
         }, () => { }, () => { });
         console.error((error as Error).stack);
     }
