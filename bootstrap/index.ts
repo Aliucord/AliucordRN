@@ -28,7 +28,7 @@
                     else res(false);
                 });
             });
-            if (!(dialogResult || await requestPermissions())) {
+            if (!(dialogResult && await requestPermissions())) {
                 alert("Access to your storage is required for aliucord to load.");
                 return;
             }
