@@ -11,7 +11,8 @@ import { ReactDevTools } from "./utils/debug/ReactDevTools";
 import { Logger } from "./utils/Logger";
 
 function initWithPerms() {
-    // TODO
+    if (!AliuFS.exists(PLUGINS_DIRECTORY)) AliuFS.mkdir(PLUGINS_DIRECTORY);
+    if (!AliuFS.exists(SETTINGS_DIRECTORY)) AliuFS.mkdir(SETTINGS_DIRECTORY);
 }
 
 interface SettingsSchema {
