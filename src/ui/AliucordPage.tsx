@@ -28,7 +28,7 @@ export default function AliucordPage() {
                 <FormRow
                     label="Enable debug websocket"
                     trailing={<FormSwitch value={settings.get("debugWS", false)} onValueChange={v => {
-                        settings.set("autoUpdatePlugins", v);
+                        settings.set("debugWS", v);
                         v
                             ? aliucord.debugWS.start()
                             : aliucord.debugWS.stop();
