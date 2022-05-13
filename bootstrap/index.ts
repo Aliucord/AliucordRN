@@ -28,7 +28,7 @@
         }
 
         const aliucordDir = externalStorageDirectory + "/AliucordRN";
-        if (!AliuFS.exists(aliucordDir)) AliuFS.mkdir(aliucordDir);
+        AliuFS.mkdir(aliucordDir);
 
         const bundlePath = aliucordDir + "/Aliucord.js.bundle";
         if (!AliuFS.exists(bundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", bundlePath);
