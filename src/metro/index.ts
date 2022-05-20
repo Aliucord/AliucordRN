@@ -122,6 +122,14 @@ export function getByDisplayName(displayName: string, options?: FilterOptions) {
 }
 
 /**
+ * Find a module by its default.name property. Usually useful for finding React Components
+ * @returns Module if found, else null
+ */
+export function getByDefaultName(defaultName: string, options?: FilterOptions) {
+    return getModule(m => m?.default?.name === defaultName, options);
+}
+
+/**
  * Find a Store by its name. 
  * @returns Module if found, else null
  */
@@ -251,6 +259,33 @@ export const ContextMenuActions = getByProps("openContextMenu");
 export const Clipboard = getByProps("getString", "setString") as {
     getString(): Promise<string>,
     setString(str: string): Promise<void>;
+};
+
+export const Dialog = getByProps("show", "openLazy", "open", "close") as {
+    show(options: {
+        title?: string,
+        body?: string,
+        confirmText?: string,
+        cancelText?: string,
+        confirmColor?: string,
+        isDismissable?: boolean,
+        onConfirm?: () => any,
+        onCancel?: () => any;
+    });
+    close();
+};
+
+export const Toasts = getModule(m => (
+    m.open !== undefined && m.close !== undefined && !m.openLazy && !m.startDrag && !m.init && !m.openReplay
+)) as {
+    open(options: {
+        content?: string,
+        /**
+         * Specify toast icon AssetId, specify by using getAssetId()
+         */
+        source?: number;
+    });
+    close();
 };
 
 export const RestAPI = getByProps("getAPIBaseURL", "get");
