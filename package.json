@@ -8,9 +8,10 @@
   },
   "scripts": {
     "build": "rollup -c --configPlugin @rollup/plugin-typescript",
+    "buildTypes": "rm -rf lib && tsc",
     "dev": "pnpm run build -w",
     "deploy": "adb shell am start -S -n com.discord/.MainActivity",
-    "prepublishOnly": "rm lib -r && tsc && cp package.json lib && cp LICENSE lib && cp README.md lib"
+    "prepublishOnly": "node scripts/prePublish.mjs"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,7 @@
 {
   "typescript.format.semicolons": "insert",
   "typescript.preferences.quoteStyle": "double",
+  "typescript.validate.enable": true,
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
   "files.insertFinalNewline": true,
