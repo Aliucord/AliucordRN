@@ -1,18 +1,5 @@
 (async () => {
     const { externalStorageDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
-    async function downloadAliucord() {
-        const bundlePath = externalStorageDirectory + "/AliucordRN/Aliucord.js.bundle";
-        if (!AliuFS.exists(bundlePath)) {
-            try {
-                await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", bundlePath);
-            } catch (error) {
-                alert("Failed to download Aliucord.js.bundle");
-                throw error;
-            }
-        }
-
-        (globalThis._globals ??= {}).aliucord = AliuHermes.run(bundlePath);
-    }
     try {
         const granted = await checkPermissions();
         const constants = nativeModuleProxy.DialogManagerAndroid.getConstants();
@@ -33,18 +20,27 @@
                 nativeModuleProxy.DialogManagerAndroid.showAlert({
                     title: "Storage Permissions",
                     message: "Access to your storage is required for aliucord to load.",
-                    cancelable: false
-                }, () => { }, () => { });
+                    cancelable: true,
+                    buttonPositive: "Ok"
+                }, () => null, () => null);
                 return;
             }
         }
-        await downloadAliucord();
+
+        const aliucordDir = externalStorageDirectory + "/AliucordRN";
+        AliuFS.mkdir(aliucordDir);
+
+        const bundlePath = aliucordDir + "/Aliucord.js.bundle";
+        if (!AliuFS.exists(bundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", bundlePath);
+
+        (globalThis._globals ??= {}).aliucord = AliuHermes.run(bundlePath);
     } catch (error) {
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
             message: "Something went wrong while loading aliucord, check logs for the specific error.",
-            cancelable: false
-        }, () => { }, () => { });
+            cancelable: true,
+            buttonPositive: "Ok"
+        }, () => null, () => null);
         console.error((error as Error).stack);
     }
 })();
