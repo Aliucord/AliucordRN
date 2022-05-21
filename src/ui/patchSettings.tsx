@@ -1,5 +1,5 @@
 import { sha } from "aliucord-version";
-import { Forms, getModule, i18n, React, ReactNative as RN } from "../metro";
+import { Forms, getByName, i18n, React, ReactNative as RN } from "../metro";
 import { after } from "../utils/patcher";
 import AliucordPage from "./AliucordPage";
 import PluginsPage from "./PluginsPage";
@@ -8,9 +8,9 @@ import UpdaterPage from "./UpdaterPage";
 
 export default function patchSettings() {
     const { FormSection, FormRow } = Forms;
-    const UserSettingsOverviewWrapper = getModule(m => m.default?.name === "UserSettingsOverviewWrapper");
+    const UserSettingsOverviewWrapper = getByName("UserSettingsOverviewWrapper");
 
-    after(getModule(m => m.default?.name === "getScreens"), "default", (_, res) => {
+    after(getByName("getScreens"), "default", (_, res) => {
         res.ASettings = {
             title: "Aliucord",
             render: AliucordPage

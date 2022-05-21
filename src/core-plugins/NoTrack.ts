@@ -27,8 +27,11 @@ export default class NoTrack extends Plugin {
         hub.getScope().clear();
 
         const c = console as any;
-        for (const method in c) if (c[method].__sentry_original__) {
-            c[method] = c[method].__sentry_original__;
+        for (const method in c) {
+            if (c[method].__sentry_original__)
+                c[method] = c[method].__sentry_original__;
+            if (c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__?.__sentry_original__)
+                c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__ = c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__.__sentry_original__;
         }
     }
 }
