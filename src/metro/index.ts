@@ -125,7 +125,7 @@ export function getByDisplayName(displayName: string, options?: FilterOptions) {
  * Find a module by its default.name property. Usually useful for finding React Components
  * @returns Module if found, else null
  */
-export function getByDefaultName(defaultName: string, options?: FilterOptions) {
+export function getByName(defaultName: string, options?: FilterOptions) {
     return getModule(m => m?.default?.name === defaultName, options);
 }
 
@@ -270,9 +270,11 @@ export const Dialog = getByProps("show", "openLazy", "open", "close") as {
         confirmColor?: string,
         isDismissable?: boolean,
         onConfirm?: () => any,
-        onCancel?: () => any;
-    });
-    close();
+        onCancel?: () => any,
+        [k: PropertyKey]: any;
+    }),
+    close(),
+    [k: PropertyKey]: any;
 };
 
 export const Toasts = getModule(m => (
@@ -283,9 +285,11 @@ export const Toasts = getModule(m => (
         /**
          * Specify toast icon AssetId, specify by using getAssetId()
          */
-        source?: number;
-    });
-    close();
+        source?: number,
+        [k: PropertyKey]: any;
+    }),
+    close(),
+    [k: PropertyKey]: any;
 };
 
 export const RestAPI = getByProps("getAPIBaseURL", "get");
