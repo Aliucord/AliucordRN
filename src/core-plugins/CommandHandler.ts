@@ -1,4 +1,4 @@
-import { ApplicationCommand, Commands, CommandSection } from "../api/Commands";
+import { ApplicationCommand, ApplicationCommandType, Commands, CommandSection } from "../api/Commands";
 import { Plugin } from "../entities/Plugin";
 import { getByProps } from "../metro";
 import { after } from "../utils/patcher";
@@ -7,7 +7,7 @@ export default class CommandHandler extends Plugin {
     start() {
         const commands = getByProps("getBuiltInCommands");
         after<any, ApplicationCommand[], any>(commands, "getBuiltInCommands", context => {
-            if (context.args[0] !== 1) return;
+            if (context.args[0] != ApplicationCommandType.CHAT) return;
             context.result = [...context.result, ...Commands._commands];
         });
 
