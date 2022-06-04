@@ -34,3 +34,14 @@ export function makeAsyncEval(code: string) {
     });
     `;
 }
+
+
+// : 2^22 = 4194304 and discord epoch starts at 1420070400000
+
+/**
+ * Converts a Snowflake into a date.
+ * @link https://discord.com/developers/docs/reference#snowflakes
+ * @param snowflake Snowflake to parse
+ * @returns date object corresponding to the given snowflake
+ */
+export const snowflakeToDate = (snowflake) => new Date(parseInt(snowflake) / 4194304 + 1420070400000);

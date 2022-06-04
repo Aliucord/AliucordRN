@@ -1,4 +1,4 @@
-import type { ImageStyle, TextStyle, ViewStyle } from "react-native";
+import type { ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -282,10 +282,7 @@ export const Toasts = getModule(m => (
 )) as {
     open(options: {
         content?: string,
-        /**
-         * Specify toast icon AssetId, specify by using getAssetId()
-         */
-        source?: number,
+        source?: ImageSourcePropType,
         [k: PropertyKey]: any;
     }),
     close(),

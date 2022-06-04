@@ -2,7 +2,7 @@ import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import { Plugin } from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
-import { DebugInfo } from "../utils/debug/DebugInfo";
+import DebugInfo from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
 
 export default class CoreCommands extends Plugin {
@@ -63,7 +63,7 @@ export default class CoreCommands extends Plugin {
                         > Discord: ${DebugInfo.discordVersion}
                         > Aliucord: ${sha}
                         > System: ${DebugInfo.system}
-                        > React: ${DebugInfo.reactNativeVersion}
+                        > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}
                     `.replace(/^\s+/gm, "")
                 });
