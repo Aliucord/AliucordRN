@@ -255,6 +255,7 @@ export const MessageActions = getByProps("sendMessage", "receiveMessage");
 export const FluxDispatcher = getByProps("dirtyDispatch");
 export const FetchUserActions = getByProps("fetchProfile");
 export const ContextMenuActions = getByProps("openContextMenu");
+export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
 
 export const Clipboard = getByProps("getString", "setString") as {
     getString(): Promise<string>,
