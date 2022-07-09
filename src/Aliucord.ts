@@ -13,6 +13,7 @@ interface SettingsSchema {
     autoUpdatePlugins: boolean;
     disablePluginsOnCrash: boolean;
     plugins: Record<string, boolean>;
+    debugWS: boolean;
 }
 export class Aliucord {
     logger = new Logger("Aliucord");
