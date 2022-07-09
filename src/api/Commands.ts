@@ -1,4 +1,4 @@
-import { getByProps } from "../metro";
+import { SnowflakeUtils } from "../metro";
 
 export interface CommandSection {
     id: string;
@@ -73,8 +73,6 @@ export interface CommandResult {
     content: string;
     tts?: boolean;
 }
-
-const SnowflakeUtils = getByProps("fromTimestamp");
 
 export class Commands {
     private static _idIncrementNum = Date.now();

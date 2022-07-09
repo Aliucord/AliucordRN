@@ -1,4 +1,4 @@
-import type { ImageStyle, TextStyle, ViewStyle } from "react-native";
+import type { ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -255,6 +255,7 @@ export const MessageActions = getByProps("sendMessage", "receiveMessage");
 export const FluxDispatcher = getByProps("dirtyDispatch");
 export const FetchUserActions = getByProps("fetchProfile");
 export const ContextMenuActions = getByProps("openContextMenu");
+export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
 
 export const Clipboard = getByProps("getString", "setString") as {
     getString(): Promise<string>,
@@ -282,10 +283,7 @@ export const Toasts = getModule(m => (
 )) as {
     open(options: {
         content?: string,
-        /**
-         * Specify toast icon AssetId, specify by using getAssetId()
-         */
-        source?: number,
+        source?: ImageSourcePropType,
         [k: PropertyKey]: any;
     }),
     close(),

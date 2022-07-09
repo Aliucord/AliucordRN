@@ -1,10 +1,11 @@
 import { aliucord } from "..";
 import { Plugin } from "../entities/Plugin";
+import Badges from "./Badges";
 import CommandHandler from "./CommandHandler";
 import CoreCommands from "./CoreCommands";
 import NoTrack from "./NoTrack";
 
-const plugins: Array<typeof Plugin> = [CommandHandler, CoreCommands, NoTrack];
+const plugins: Array<typeof Plugin> = [Badges, CommandHandler, CoreCommands, NoTrack];
 
 export function startAll() {
     for (const pluginClass of plugins) {
