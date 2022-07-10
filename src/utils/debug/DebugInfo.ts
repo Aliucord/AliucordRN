@@ -32,7 +32,7 @@ export const DebugInfo = {
         try {
             if (HermesInternal === undefined) return "N/A";
             const runtimeProps = (HermesInternal as any).getRuntimeProperties();
-            return `${runtimeProps['OSS Release Version']} ${runtimeProps['Build']} (v${runtimeProps['Bytecode Version']})`;
+            return `${runtimeProps["OSS Release Version"]} ${runtimeProps["Build"]} (v${runtimeProps["Bytecode Version"]})`;
         } catch (ex) {
             return "unknown";
         }

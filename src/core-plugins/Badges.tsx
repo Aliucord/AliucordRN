@@ -34,7 +34,7 @@ export default class Badges extends Plugin {
             img: {
                 width: 24,
                 height: 24,
-                resizeMode: 'contain'
+                resizeMode: "contain"
             }
         });
 

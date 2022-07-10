@@ -31,7 +31,7 @@ jobs:
       run: pnpm install
       
     - name: Build aliucord
-      run: pnpm build
+      run: pnpm lint && pnpm build
       
     - name: Upload dist folder as artifact
       uses: actions/upload-artifact@v3
