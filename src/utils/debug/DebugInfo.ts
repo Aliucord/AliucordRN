@@ -1,7 +1,7 @@
 import { PlatformAndroidStatic } from "react-native";
 import { React, ReactNative } from "../../metro";
 
-const DebugInfo = {
+export const DebugInfo = {
     get discordVersion(): string {
         try {
             return `${ReactNative.NativeModules.InfoDictionaryManager.Version} (${ReactNative.NativeModules.InfoDictionaryManager.ReleaseChannel})`;
@@ -38,6 +38,3 @@ const DebugInfo = {
         }
     }
 };
-
-
-export default DebugInfo;
