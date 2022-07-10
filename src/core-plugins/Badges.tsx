@@ -4,6 +4,16 @@ import { after } from "../utils/patcher";
 
 const { View, Image, Pressable } = ReactNative;
 
+interface BadgeOwner {
+    roles: string[];
+    custom?: Badge[];
+}
+
+interface Badge {
+    url: string;
+    text: string;
+}
+
 const url = "https://raw.githubusercontent.com/Aliucord/badges/main/";
 
 const roles = {
@@ -19,7 +29,6 @@ const roles = {
         "url": "https://cdn.discordapp.com/emojis/886587553187246120.webp",
         "text": "Aliucord Contributor"
     }
-
 };
 
 export default class Badges extends Plugin {
@@ -38,15 +47,16 @@ export default class Badges extends Plugin {
             }
         });
 
-        const cache = {};
+        const cache: Record<string, Badge[]> = {};
 
         after(ProfileBadges, "default", (ctx, component) => {
             const user = ctx.args[0]?.user;
-            if (typeof user === "undefined") return;
+            if (user === undefined) return;
 
-            if (typeof cache[user.id] !== "undefined") {
-                const renderedBadges = cache[user.id]?.filter(it => it?.url && it?.text).map(badge => {
-                    return <Pressable onPress={() => {
+            const badges = cache[user.id];
+            if (badges !== undefined) {
+                const renderedBadges = badges.map(badge => {
+                    return <Pressable key={badge.url} onPress={() => {
                         Toasts.open({
                             content: badge.text,
                             source: { uri: badge.url }
@@ -54,17 +64,16 @@ export default class Badges extends Plugin {
                     }}>
                         <Image source={{ uri: badge.url }} style={styles.img} />
                     </Pressable>;
-                }) || [];
+                });
 
                 ctx.result = [component, <View style={styles.container}>{renderedBadges}</View>];
                 return;
             }
 
-
             fetch(`${url}/users/${user.id}.json`)
                 .then(r => r.json())
-                .then(badges => {
-                    cache[user.id] = [...(badges.roles.map(it => roles[it]) || []), ...(badges.custom || [])];
+                .then((badges: BadgeOwner) => {
+                    cache[user.id] = [...badges.roles.map(it => roles[it]), ...(badges.custom ?? [])];
                 });
         });
     }
