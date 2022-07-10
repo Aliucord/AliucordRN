@@ -17,16 +17,29 @@ type FilterOptions = {
     default?: true;
 };
 
-let nullProxyId: number | undefined;
+/**
+ * Make the property non enumerable so it is not included in module search.
+ */
+function blacklist(id: number) {
+    Object.defineProperty(modules, id, {
+        value: modules[id],
+        enumerable: false,
+        configurable: true,
+        writable: true
+    });
+}
+
+let nullProxyFound = false;
 
 for (const key in modules) {
     const id = Number(key);
     const module = modules[id];
 
-    if (!nullProxyId && module.isInitialized && module.publicModule && module.publicModule.exports) {
+    if (!nullProxyFound && module.isInitialized && module.publicModule && module.publicModule.exports) {
         // Blacklist the stupid proxy that returns null to everything
         if (module.publicModule.exports["get defeated by your own weapon nerd"] === null) {
-            nullProxyId = id;
+            blacklist(id);
+            nullProxyFound = true;
             continue;
         }
     }
@@ -34,20 +47,16 @@ for (const key in modules) {
     if (module.factory) {
         const strings = AliuHermes.findStrings(module.factory);
 
-        // Remove momentjs locale modules which change the language as a side effect
+        // Blacklist momentjs locale modules which change the language as a side effect
         if (strings.length === 8 && strings[6] === "moment") {
-            delete modules[id];
+            blacklist(id);
             continue;
         }
     }
 }
 
-if (!nullProxyId) {
+if (!nullProxyFound) {
     console.warn("Null proxy not found, expect problems");
-}
-
-function isModuleBlacklisted(id: number) {
-    return (nullProxyId && id === nullProxyId);
 }
 
 /**
@@ -61,8 +70,6 @@ export function getModule(filter: (module: any) => boolean, options?: FilterOpti
 
     for (const key in modules) {
         const id = Number(key);
-
-        if (isModuleBlacklisted(id)) continue;
 
         let mod;
         try {
@@ -154,8 +161,6 @@ export function getAll(filter: (module: any) => boolean, options?: FilterOptions
     for (const key in modules) {
         const id = Number(key);
 
-        if (isModuleBlacklisted(id)) continue;
-
         let mod;
         try {
             mod = __r(id);
@@ -226,7 +231,7 @@ export function searchByKeyword(keyword: string, skipConstants = true) {
         }
     }
 
-    for (const id in modules) if (!isModuleBlacklisted(Number(id))) {
+    for (const id in modules) {
         try {
             __r(Number(id));
             const mod = modules[id]?.publicModule;
