@@ -66,7 +66,7 @@ export default class Badges extends Plugin {
                     </Pressable>;
                 });
 
-                ctx.result = [component, <View style={styles.container}>{renderedBadges}</View>];
+                ctx.result = [component, <View key="aliu-badges" style={styles.container}>{renderedBadges}</View>];
                 return;
             }
 
