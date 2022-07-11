@@ -1,4 +1,5 @@
-export default interface Constants {
+/* eslint @typescript-eslint/ban-types: 0 */
+interface Constants {
     ACTIVITY_PLATFORM_TYPES: string[];
     ADYEN_PAYMENT_SOURCES: number[];
     ADYEN_RESULT_CODE_TYPES: {
@@ -8227,3 +8228,5 @@ export default interface Constants {
         z: number;
     };
 }
+
+export default Constants;

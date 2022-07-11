@@ -267,7 +267,7 @@ export const Clipboard = getByProps("getString", "setString") as {
     setString(str: string): Promise<void>;
 };
 
-export const Dialog = getByProps("show", "openLazy", "open", "close") as {
+export const Dialog = getByProps("show", "openLazy", "confirm", "close") as {
     show(options: {
         title?: string,
         body?: string,
@@ -284,7 +284,7 @@ export const Dialog = getByProps("show", "openLazy", "open", "close") as {
 };
 
 export const Toasts = getModule(m => (
-    m.open !== undefined && m.close !== undefined && !m.openLazy && !m.startDrag && !m.init && !m.openReplay
+    m.open !== undefined && m.close !== undefined && !m.openLazy && !m.startDrag && !m.init && !m.openReplay && !m.openChannelCallPopout
 )) as {
     open(options: {
         content?: string,
