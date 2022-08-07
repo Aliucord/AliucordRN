@@ -3,11 +3,9 @@ import { Logger } from "../Logger";
 import { makeAsyncEval } from "../misc";
 import { before } from "../patcher";
 
-const logger = new Logger("DebugWS");
-
 export class DebugWS {
     socket: WebSocket | null = null;
-    patched: boolean = false;
+    patched = false;
 
     start() {
         if (this.socket || !aliucord.settings.get("debugWS", false)) return;
