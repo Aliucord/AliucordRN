@@ -6,6 +6,7 @@
     "noImplicitAny": false,
     "moduleResolution": "node",
     "module": "esnext",
+    "newLine": "LF",
     "lib": [
       "esnext",
       "dom"
