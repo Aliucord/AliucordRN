@@ -8,8 +8,8 @@
   },
   "scripts": {
     "build": "rollup -c --configPlugin @rollup/plugin-typescript",
-    "dev": "pnpm run build -w",
-    "deploy": "adb shell am start -S -n com.discord/.MainActivity",
+    "dev": "pnpm run deploy -w",
+    "deploy": "pnpm run build && adb shell rm /sdcard/AliucordRN/Aliucord.js.bundle && adb push ./dist/Aliucord.js.bundle /sdcard/AliucordRN/ && adb shell am start -a android.intent.action.VIEW -d discord://app/connect/alicuord",
     "prepublishOnly": "rm lib -r && tsc && cp package.json lib && cp LICENSE lib && cp README.md lib",
     "lint": "eslint ./src"
   },

@@ -74,7 +74,7 @@ class PatchInfo<T, R, A extends any[]> {
 
     private error(patch: Patch<T, R, A>, type: "PrePatch" | "PostPatch", error: any) {
         const message =
-            (patch.plugin ? `[${patch.plugin}] ` : "") +
+            (patch?.plugin ? `[${patch.plugin}] ` : "") +
             (`Error during ${this.methodName} ${type}\n`);
         logger.error(message, error);
     }
