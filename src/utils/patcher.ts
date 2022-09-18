@@ -144,7 +144,7 @@ class PatchInfo<T, R, A extends any[]> {
             const lastError = ctx.error;
 
             try {
-                const result = patches[idx].after(ctx as AfterPatchContext<T, R, A>, ctx.result!, ...ctx.args);
+                const result = patches[idx].after(ctx as AfterPatchContext<T, R, A>, ctx.result as R, ...ctx.args);
                 if (result !== undefined) ctx.result = result;
             } catch (err: any) {
                 this.error(patches[idx], "PostPatch", err);

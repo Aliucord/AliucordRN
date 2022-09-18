@@ -1,15 +1,16 @@
 import { sha } from "aliucord-version";
-import { Forms, getByName, i18n, React, ReactNative as RN } from "../metro";
+import { Forms, getByName, Locale, React } from "../metro";
+import { findInReactTree } from "../utils/findInReactTree";
 import { after } from "../utils/patcher";
+import { getAssetId } from "../utils/getAssetId";
 import AliucordPage from "./AliucordPage";
 import PluginsPage from "./PluginsPage";
 import UpdaterPage from "./UpdaterPage";
-
+import ThemesPage from "./ThemesPage";
 
 export default function patchSettings() {
     const { FormSection, FormRow } = Forms;
-    const UserSettingsOverviewWrapper = getByName("UserSettingsOverviewWrapper");
-
+    const UserSettingsOverviewWrapper = getByName("UserSettingsOverviewWrapper", { default: false });
     after(getByName("getScreens"), "default", (_, res) => {
         res.ASettings = {
             title: "Aliucord",
@@ -21,7 +22,7 @@ export default function patchSettings() {
         };
         res.AThemes = {
             title: "Themes",
-            render: () => <RN.Text>Hello World</RN.Text>
+            render: ThemesPage
         };
         res.AUpdater = {
             title: "Updater",
@@ -33,55 +34,59 @@ export default function patchSettings() {
     });
 
     const unpatch = after(UserSettingsOverviewWrapper, "default", (_, res) => {
-        unpatch();
-
-        const { navigation } = res.props;
+        const Overview = findInReactTree(res, m => m.type?.name === "UserSettingsOverview");
 
         // Yeet the funny Upload Logs button
-        after(res.type.prototype, "renderSupportAndAcknowledgements", (_, { props }) => {
+        after(Overview.type.prototype, "renderSupportAndAcknowledgements", (_, { props }) => {
             const idx = props.children.findIndex(c => c?.type?.name === "UploadLogsButton");
             if (idx !== -1) {
                 props.children.splice(idx, 1);
             }
         });
 
-        after(res.type.prototype, "render", (_, { props }) => {
-            const nitroIndex = props.children.findIndex(c => c?.props?.title === i18n.Messages.PREMIUM_SETTINGS);
+        after(Overview.type.prototype, "render", (_, { props }) => {
+            const { children } = props;
 
-            const aliucordSection = (
+            const searchable = [Locale.Messages["BILLING_SETTINGS"], Locale.Messages["PREMIUM_SETTINGS"]];
+            const index = children.findIndex(x => searchable.includes(x.props.title));
+
+            children.splice(index === -1 ? 4 : index, 0, <>
                 <FormSection key="AliucordSection" title={`Aliucord (${sha})`} >
                     <FormRow
+                        leading={<FormRow.Icon source={getAssetId("Discord")} />}
                         label="Aliucord"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            navigation.push("ASettings")
+                            Overview.props.navigation.push("ASettings")
                         }
                     />
                     <FormRow
+                        leading={<FormRow.Icon source={getAssetId("ic_settings")} />}
                         label="Plugins"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            navigation.push("APlugins")
+                            Overview.props.navigation.push("APlugins")
                         }
                     />
                     <FormRow
+                        leading={<FormRow.Icon source={getAssetId("ic_theme_24px")} />}
                         label="Themes"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            navigation.push("AThemes")
+                            Overview.props.navigation.push("AThemes")
                         }
                     />
                     <FormRow
+                        leading={<FormRow.Icon source={getAssetId("ic_share_ios")} />}
                         label="Updater"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            navigation.push("AUpdater")
+                            Overview.props.navigation.push("AUpdater")
                         }
                     />
                 </FormSection>
-            );
-
-            props.children.splice(nitroIndex, 0, aliucordSection);
+            </>);
         });
+        unpatch();
     });
 }
