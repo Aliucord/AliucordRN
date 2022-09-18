@@ -11,7 +11,4 @@ pnpm build
 
 ## Install
 
-Kinda inconvenient for now, will be improved in the future
-
-1) Install and enable the [Xposed Module](https://github.com/Aliucord/AliucordXposed/releases/download/1.0.0/aliuxposed.apk). Make sure you check Discord in application list
-2) Connect your phone via adb and run `pnpm serve`
+No release for now, check pins in the Hermes Hate Club thread in core-development on our Discord Server
