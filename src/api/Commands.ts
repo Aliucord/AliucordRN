@@ -3,6 +3,7 @@ import { SnowflakeUtils } from "../metro";
 export interface CommandSection {
     id: string;
     name: string;
+    type: number;
     icon?: string;
 }
 
@@ -81,7 +82,9 @@ export class Commands {
 
     public static _aliucordSection: CommandSection = {
         id: Commands.generateId(),
-        name: "Aliucord"
+        type: 1,
+        name: "Aliucord",
+        icon: "https://github.com/aliucord.png"
     };
 
     public static _commands: AliucordCommand[] = [];

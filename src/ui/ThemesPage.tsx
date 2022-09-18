@@ -3,12 +3,12 @@ import { getAssetId } from "../utils/getAssetId";
 
 const { FormSection, FormRow } = Forms;
 
-export default function UpdaterPage() {
+export default function ThemesPage() {
     return (
         <>
-            <FormSection title="Updater" android_noDivider={true}>
+            <FormSection title="Themes" android_noDivider={true}>
                 <FormRow
-                    leading={<FormRow.Icon source={getAssetId("ic_share_ios")}  />}
+                    leading={<FormRow.Icon source={getAssetId("ic_warning_24px")} />}
                     label="Coming soon"
                 />
             </FormSection>

@@ -261,6 +261,7 @@ export const FluxDispatcher = getByProps("isDispatching");
 export const FetchUserActions = getByProps("fetchProfile");
 export const ContextMenuActions = getByProps("openContextMenu");
 export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
+export const Locale = getByProps("Messages");
 
 export const Clipboard = getByProps("getString", "setString") as {
     getString(): Promise<string>,
