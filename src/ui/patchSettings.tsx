@@ -1,5 +1,5 @@
 import { sha } from "aliucord-version";
-import { Forms, getByName, i18n, Locale, React, ReactNative as RN } from "../metro";
+import { Forms, getByName, Locale, React } from "../metro";
 import { findInReactTree } from "../utils/findInReactTree";
 import { after } from "../utils/patcher";
 import { getAssetId } from "../utils/getAssetId";
