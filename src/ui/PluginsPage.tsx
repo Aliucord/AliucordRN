@@ -77,21 +77,17 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 }
 
 export default function PluginsPage() {
-    const plugins: PluginManifest[] = [];
-    Object.keys(aliucord.pluginManager.plugins).map((plugin) => {
-        const data = {
-            name: plugin,
-            description: "Dummy data",
-            version: "1.0.0",
-            authors: [
-                {
-                    username: "Discord",
-                    id: "643945264868098049"
-                }
-            ]
-        };
-        plugins.push(data);
-    });
+    const plugins: PluginManifest[] = Object.keys(aliucord.pluginManager.plugins).map((plugin) => ({
+        name: plugin,
+        description: "Dummy data",
+        version: "1.0.0",
+        authors: [
+            {
+                username: "Discord",
+                id: "643945264868098049"
+            }
+        ]
+    }));
 
     return (
         <FlatList
