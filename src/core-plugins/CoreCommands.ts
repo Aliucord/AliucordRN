@@ -50,7 +50,7 @@ export default class CoreCommands extends Plugin {
                 **Disabled plugins**: **${disabledPlugins.length}**
                 > ${disabledPlugins.join(", ") ? disabledPlugins.join(", ") : "None."}`;
 
-                ClydeUtils.sendBotMessage(ctx.channel.id, plugins);
+                ClydeUtils.sendBotMessage(ctx.channel.id, plugins.replaceAll("    ", ""));
             }
         });
 
