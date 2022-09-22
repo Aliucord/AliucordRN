@@ -77,7 +77,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 }
 
 export default function PluginsPage() {
-    const plugins: PluginManifest[] = Object.keys(aliucord.pluginManager.plugins).map((plugin) => ({
+    const plugins = Object.keys(aliucord.pluginManager.plugins).map((plugin) => ({
         name: plugin,
         description: "Dummy data",
         version: "1.0.0",
