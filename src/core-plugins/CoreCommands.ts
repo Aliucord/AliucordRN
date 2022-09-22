@@ -27,7 +27,7 @@ export default class CoreCommands extends Plugin {
 
         this.commands.registerCommand({
             name: "plugins",
-            description: "List your Aliucord Plugins.",
+            description: "Lists all installed Aliucord plugins.",
             options: [],
             execute: (args, ctx) => {
                 const enabledPlugins: string[] = [];
