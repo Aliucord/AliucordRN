@@ -41,7 +41,14 @@ export default class CoreCommands extends Plugin {
                     }
                 }
 
-                const plugins = `**Total plugins**: **${Object.keys(aliucord.pluginManager.plugins).length}**\n\n**Enabled plugins**: **${enabledPlugins.length}**\n> ${enabledPlugins.join(", ") ? enabledPlugins.join(", ") : "None."}\n**Disabled plugins**: **${disabledPlugins.length}**\n> ${disabledPlugins.join(", ") ? disabledPlugins.join(", ") : "None."}`;
+                const plugins = `
+                **Total plugins**: **${Object.keys(aliucord.pluginManager.plugins).length}**
+                
+                **Enabled plugins**: **${enabledPlugins.length}**
+                > ${enabledPlugins.join(", ") ? enabledPlugins.join(", ") : "None."}
+                
+                **Disabled plugins**: **${disabledPlugins.length}**
+                > ${disabledPlugins.join(", ") ? disabledPlugins.join(", ") : "None."}`;
 
                 ClydeUtils.sendBotMessage(ctx.channel.id, plugins);
             }
@@ -49,7 +56,7 @@ export default class CoreCommands extends Plugin {
 
         this.commands.registerCommand({
             name: "eval",
-            description: "Evaluate JavaScript.",
+            description: "Evaluates JavaScript.",
             options: [
                 {
                     name: "code",
@@ -78,7 +85,7 @@ export default class CoreCommands extends Plugin {
 
         this.commands.registerCommand({
             name: "debug",
-            description: "Post Debug info.",
+            description: "Posts Debug info.",
             options: [],
             execute: async (args, ctx) => {
                 MessageActions.sendMessage(ctx.channel.id, {

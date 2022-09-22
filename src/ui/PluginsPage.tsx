@@ -78,7 +78,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 
 export default function PluginsPage() {
     const plugins: PluginManifest[] = [];
-    for (const plugin in aliucord.pluginManager.plugins) {
+    Object.keys(aliucord.pluginManager.plugins).map((plugin) => {
         const data = {
             name: plugin,
             description: "Dummy data",
@@ -91,7 +91,7 @@ export default function PluginsPage() {
             ]
         };
         plugins.push(data);
-    }
+    });
 
     return (
         <FlatList
