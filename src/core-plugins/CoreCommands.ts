@@ -41,8 +41,7 @@ export default class CoreCommands extends Plugin {
                     }
                 }
 
-                const plugins = `
-                **Total plugins**: **${Object.keys(aliucord.pluginManager.plugins).length}**
+                const plugins = `**Total plugins**: **${Object.keys(aliucord.pluginManager.plugins).length}**
                 
                 **Enabled plugins**: **${enabledPlugins.length}**
                 > ${enabledPlugins.join(", ") ? enabledPlugins.join(", ") : "None."}
