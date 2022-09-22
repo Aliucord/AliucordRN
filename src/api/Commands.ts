@@ -84,7 +84,7 @@ export class Commands {
         id: Commands.generateId(),
         type: 1,
         name: "Aliucord",
-        icon: "https://github.com/aliucord.png"
+        icon: "https://avatars.githubusercontent.com/u/78881422?s=200&v=4"
     };
 
     public static _commands: AliucordCommand[] = [];

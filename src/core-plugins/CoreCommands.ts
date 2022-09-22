@@ -1,4 +1,5 @@
 import { sha } from "aliucord-version";
+import { aliucord } from "..";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import { Plugin } from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
@@ -10,7 +11,7 @@ export default class CoreCommands extends Plugin {
         const ClydeUtils = getByProps("sendBotMessage");
         this.commands.registerCommand({
             name: "echo",
-            description: "Creates Clyde message",
+            description: "Creates Clyde message.",
             options: [
                 {
                     name: "message",
@@ -25,8 +26,30 @@ export default class CoreCommands extends Plugin {
         });
 
         this.commands.registerCommand({
+            name: "plugins",
+            description: "List your Aliucord Plugins.",
+            options: [],
+            execute: (args, ctx) => {
+                const enabledPlugins: string[] = [];
+                const disabledPlugins: string[] = [];
+
+                for (const plugin in aliucord.pluginManager.plugins) {
+                    if (aliucord.pluginManager.isEnabled(plugin)) {
+                        enabledPlugins.push(plugin);
+                    } else {
+                        disabledPlugins.push(plugin);
+                    }
+                }
+
+                const plugins = `**Total plugins**: **${Object.keys(aliucord.pluginManager.plugins).length}**\n\n**Enabled plugins**: **${enabledPlugins.length}**\n> ${enabledPlugins.join(", ") ? enabledPlugins.join(", ") : "None."}\n**Disabled plugins**: **${disabledPlugins.length}**\n> ${disabledPlugins.join(", ") ? disabledPlugins.join(", ") : "None."}`;
+
+                ClydeUtils.sendBotMessage(ctx.channel.id, plugins);
+            }
+        });
+
+        this.commands.registerCommand({
             name: "eval",
-            description: "Eval javascript",
+            description: "Evaluate JavaScript.",
             options: [
                 {
                     name: "code",
@@ -55,13 +78,13 @@ export default class CoreCommands extends Plugin {
 
         this.commands.registerCommand({
             name: "debug",
-            description: "Posts debug info",
+            description: "Post Debug info.",
             options: [],
             execute: async (args, ctx) => {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha}
+                        > Aliucord: ${sha} (${Object.keys(aliucord.pluginManager.plugins).length} plugins)
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}

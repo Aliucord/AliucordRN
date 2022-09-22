@@ -5,31 +5,6 @@ import { getByProps } from "../metro/index";
 
 const { View, Text, FlatList } = ReactNative;
 
-// Dummy data for now lmao
-const plugins: PluginManifest[] = [
-    {
-        name: "Test",
-        description: "Test Plugin",
-        version: "1.0.0",
-        authors: [
-            {
-                username: "Pot of Avarice",
-                id: "950095902922661988"
-            },
-            {
-                username: "Discord",
-                id: "643945264868098049"
-            }
-        ]
-    }
-];
-for (let i = 1; i < 5; i++) {
-    const copy = { ...plugins[i - 1] };
-    copy.name += "a";
-    copy.description += copy.description;
-    plugins[i] = copy;
-}
-
 const styles = Styles.createThemedStyleSheet({
     list: {
         padding: 10,
@@ -102,6 +77,22 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 }
 
 export default function PluginsPage() {
+    const plugins: PluginManifest[] = [];
+    for (const plugin in aliucord.pluginManager.plugins) {
+        const data = {
+            name: plugin,
+            description: "Dummy data",
+            version: "1.0.0",
+            authors: [
+                {
+                    username: "Discord",
+                    id: "643945264868098049"
+                }
+            ]
+        };
+        plugins.push(data);
+    }
+
     return (
         <FlatList
             data={plugins}
