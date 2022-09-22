@@ -11,7 +11,7 @@ export default class CoreCommands extends Plugin {
         const ClydeUtils = getByProps("sendBotMessage");
         this.commands.registerCommand({
             name: "echo",
-            description: "Creates Clyde message.",
+            description: "Creates a Clyde message.",
             options: [
                 {
                     name: "message",
