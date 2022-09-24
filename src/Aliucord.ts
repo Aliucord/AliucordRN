@@ -22,8 +22,8 @@ let aliucordLoaded = false;
 
 export async function load() {
     // Make sure this is only called once
-    if (aliucordLoaded) return;
-    else aliucordLoaded = true;
+    if (aliucordLoaded) throw Error("Aliucord is already loaded");
+    aliucordLoaded = true;
 
     logger.info("Loading...");
 
@@ -42,4 +42,4 @@ export async function load() {
     } catch (err) {
         logger.error("Failed to load", err);
     }
-};
+}
