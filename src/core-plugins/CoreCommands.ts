@@ -41,9 +41,9 @@ export default class CoreCommands extends Plugin {
 
                     let result;
                     if (code.includes("await")) {
-                        result = await eval(makeAsyncEval(code));
+                        result = await (0, eval)(makeAsyncEval(code));
                     } else {
-                        result = eval(code);
+                        result = (0, eval)(code);
                     }
 
                     ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(String(result)));

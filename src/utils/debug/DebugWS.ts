@@ -9,7 +9,7 @@ export function startDebugWs() {
     if (socket) throw "no";
 
     logger.info("Connecting to debug ws");
-    socket = new WebSocket("ws://localhost:9090");
+    socket = new WebSocket("ws://localhost:3000");
 
     socket.addEventListener("open", () => logger.info("Connected with debug websocket"));
     socket.addEventListener("error", e => logger.error((e as ErrorEvent).message));
@@ -17,9 +17,9 @@ export function startDebugWs() {
         try {
             const { data } = message;
             if (data.includes("await")) {
-                console.log(await eval(makeAsyncEval(data)));
+                console.log(await (0, eval)(makeAsyncEval(data)));
             } else {
-                console.log(eval(data));
+                console.log((0, eval)(data));
             }
         } catch (e) {
             logger.error(e as Error | string);
