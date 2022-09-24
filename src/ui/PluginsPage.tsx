@@ -1,4 +1,4 @@
-import { aliucord } from "..";
+import { disablePlugin, enablePlugin, isPluginEnabled } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
 import { Constants, Forms, React, ReactNative, Styles } from "../metro";
 import { getByProps } from "../metro/index";
@@ -65,7 +65,7 @@ const styles = Styles.createThemedStyleSheet({
 });
 
 function PluginCard({ plugin }: { plugin: PluginManifest; }) {
-    const [isEnabled, setIsEnabled] = React.useState(aliucord.pluginManager.isEnabled(plugin.name));
+    const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     return (
         <View style={styles.card}>
@@ -87,9 +87,9 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     </View>)}
                 trailing={<Forms.FormSwitch value={isEnabled} onValueChange={v => {
                     if (v)
-                        aliucord.pluginManager.enable(plugin.name);
+                        enablePlugin(plugin.name);
                     else
-                        aliucord.pluginManager.disable(plugin.name);
+                        disablePlugin(plugin.name);
 
                     setIsEnabled(v);
                 }} />}

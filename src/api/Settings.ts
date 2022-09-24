@@ -1,4 +1,3 @@
-import { aliucord } from "..";
 import { React } from "../metro";
 import { exists, readFile, writeFile } from "../native/fs";
 import { SETTINGS_DIRECTORY } from "../utils/constants";
@@ -65,7 +64,7 @@ export class Settings<Schema> {
                 throw new Error("JSON data was not an object.");
             return new this<Schema>(module, data);
         } catch (err: any) {
-            aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
+            window.Aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
             return new this<Schema>(module, {} as Schema);
         }
     }

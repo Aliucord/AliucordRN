@@ -1,7 +1,7 @@
 import { getByProps } from "../metro";
 import { after } from "./patcher";
 
-const assetMap = {};
+export const assetMap = {};
 
 const AssetRegistry = getByProps("registerAsset");
 

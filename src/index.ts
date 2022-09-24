@@ -1,10 +1,5 @@
 import * as swcHelpers from "@swc/helpers";
-import { Aliucord } from "./Aliucord";
-
-window.swcHelpers = swcHelpers;
-
-export const aliucord = window.Aliucord = new Aliucord();
-aliucord.load().catch(console.error);
+import * as Aliucord from "./Aliucord";
 
 export * from "./Aliucord";
 export * as api from "./api";
@@ -13,3 +8,7 @@ export * as metro from "./metro";
 export * as native from "./native";
 export * as utils from "./utils";
 
+window.swcHelpers = swcHelpers;
+window.Aliucord = Aliucord;
+
+Aliucord.load();

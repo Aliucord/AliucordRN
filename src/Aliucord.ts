@@ -1,11 +1,10 @@
-import { PluginManager } from "./api";
+import { startCorePlugins, startPlugins } from "./api/PluginManager";
 import { Settings } from "./api/Settings";
-import * as CorePlugins from "./core-plugins/index";
 import { mkdir } from "./native/fs";
 import patchSettings from "./ui/patchSettings";
-import { PLUGINS_DIRECTORY, SETTINGS_DIRECTORY } from "./utils/constants";
-import { DebugWS } from "./utils/debug/DebugWS";
-import { ReactDevTools } from "./utils/debug/ReactDevTools";
+import { PLUGINS_DIRECTORY, SETTINGS_DIRECTORY, THEME_DIRECTORY } from "./utils/constants";
+import { startDebugWs } from "./utils/debug/DebugWS";
+import { startReactDevTools } from "./utils/debug/ReactDevTools";
 import { Logger } from "./utils/Logger";
 
 interface SettingsSchema {
@@ -14,34 +13,31 @@ interface SettingsSchema {
     disablePluginsOnCrash: boolean;
     plugins: Record<string, boolean>;
 }
-export class Aliucord {
-    logger = new Logger("Aliucord");
-    settings!: Settings<SettingsSchema>;
 
-    debugWS = new DebugWS();
-    reactDevTools = new ReactDevTools();
+export * as pluginManager from "./api/PluginManager";
+export const logger = new Logger("Aliucord");
+export let settings: Settings<SettingsSchema>;
 
-    pluginManager: PluginManager = new PluginManager(this);
+export let load = async function loadFn() {
+    // Make sure this is only called once
+    //@ts-ignore
+    load = void 0;
 
-    async load() {
-        try {
-            this.logger.info("Loading...");
+    logger.info("Loading...");
 
-            mkdir(PLUGINS_DIRECTORY);
-            mkdir(SETTINGS_DIRECTORY);
+    try {
+        mkdir(PLUGINS_DIRECTORY);
+        mkdir(THEME_DIRECTORY);
+        mkdir(SETTINGS_DIRECTORY);
 
-            this.settings = await Settings.make("Aliucord");
+        settings = await Settings.make("Aliucord");
+        patchSettings();
 
-            CorePlugins.startAll();
-
-            this.reactDevTools.connect();
-            this.debugWS.start();
-
-            patchSettings();
-
-            this.pluginManager.load();
-        } catch (error) {
-            this.logger.error(error as string | Error);
-        }
+        startPlugins();
+        startCorePlugins();
+        startReactDevTools();
+        startDebugWs();
+    } catch (err) {
+        logger.error("Failed to load", err);
     }
-}
+};

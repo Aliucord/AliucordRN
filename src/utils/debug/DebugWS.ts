@@ -3,33 +3,33 @@ import { makeAsyncEval } from "../misc";
 import { before } from "../patcher";
 
 const logger = new Logger("DebugWS");
+let socket: WebSocket;
 
-export class DebugWS {
-    socket: WebSocket | undefined;
+export function startDebugWs() {
+    if (socket) throw "no";
 
-    start() {
-        logger.info("Connecting to debug ws");
-        this.socket = new WebSocket("ws://localhost:9090");
+    logger.info("Connecting to debug ws");
+    socket = new WebSocket("ws://localhost:9090");
 
-        this.socket.addEventListener("open", () => logger.info("Connected with debug websocket"));
-        this.socket.addEventListener("error", e => logger.error((e as any).message));
-        this.socket.addEventListener("message", async message => {
-            try {
-                const { data } = message;
-                if (data.includes("await")) {
-                    console.log(await eval(makeAsyncEval(data)));
-                } else {
-                    console.log(eval(data));
-                }
-            } catch (e) {
-                logger.error(e as Error | string);
+    socket.addEventListener("open", () => logger.info("Connected with debug websocket"));
+    socket.addEventListener("error", e => logger.error((e as ErrorEvent).message));
+    socket.addEventListener("message", async message => {
+        try {
+            const { data } = message;
+            if (data.includes("await")) {
+                console.log(await eval(makeAsyncEval(data)));
+            } else {
+                console.log(eval(data));
             }
-        });
+        } catch (e) {
+            logger.error(e as Error | string);
+        }
+    });
 
-        before(globalThis, "nativeLoggingHook", (_, message: string, level: number) => {
-            if (this.socket?.readyState === WebSocket.OPEN) {
-                this.socket.send(JSON.stringify({ level, message }));
-            }
-        });
-    }
+    before(globalThis, "nativeLoggingHook", (_, message: string, level: number) => {
+        if (socket?.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ level, message }));
+        }
+    });
 }
+

@@ -1,4 +1,3 @@
-import { aliucord } from "..";
 import { useSettings } from "../api/Settings";
 import { Forms, React } from "../metro";
 import { URLOpener } from "../metro/index";
@@ -8,7 +7,7 @@ import { getAssetId } from "../utils/getAssetId";
 const { FormSection, FormSwitch, FormRow } = Forms;
 
 export default function AliucordPage() {
-    const settings = useSettings(aliucord.settings);
+    const settings = useSettings(window.Aliucord.settings);
 
     return (
         <>
