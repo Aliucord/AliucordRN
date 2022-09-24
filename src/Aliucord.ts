@@ -21,8 +21,7 @@ export let settings: Settings<SettingsSchema>;
 let aliucordLoaded = false;
 
 export async function load() {
-    // Make sure this is only called once
-    if (aliucordLoaded) throw Error("Aliucord is already loaded");
+    if (aliucordLoaded) throw "no";
     aliucordLoaded = true;
 
     logger.info("Loading...");
