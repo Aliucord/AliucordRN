@@ -6,9 +6,15 @@ you should probably not install this if you don't know what you're doing.
 ## Build
 
 ```sh
-pnpm build
+pnpm dev
 ```
 
 ## Install
 
-No release for now, check pins in the Hermes Hate Club thread in core-development on our Discord Server
+Download and install the latest [Aliucord Manager](https://github.com/Aliucord/AliucordManager)
+artifact (click on latest commit > CI) and use it to install
+
+## DebugWs
+
+Websocket you can use to run arbitrary code, similar to browser devtools
+https://github.com/Aliucord/debug-ws-server
