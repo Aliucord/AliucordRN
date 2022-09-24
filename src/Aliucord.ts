@@ -18,10 +18,11 @@ export * as pluginManager from "./api/PluginManager";
 export const logger = new Logger("Aliucord");
 export let settings: Settings<SettingsSchema>;
 
-export let load = async function loadFn() {
-    // Make sure this is only called once
-    //@ts-ignore
-    load = void 0;
+let aliucordLoaded = false;
+
+export async function load() {
+    if (aliucordLoaded) throw "no";
+    aliucordLoaded = true;
 
     logger.info("Loading...");
 
@@ -40,4 +41,4 @@ export let load = async function loadFn() {
     } catch (err) {
         logger.error("Failed to load", err);
     }
-};
+}
