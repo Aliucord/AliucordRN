@@ -47,10 +47,10 @@ export async function startPlugins() {
                 const pluginBuffer = zip.readEntry("binary");
                 zip.closeEntry();
 
+                if (manifestBuffer.name in plugins) throw new Error(`Plugin ${manifestBuffer.name} already registered`);
                 const pluginClass = AliuHermes.run(file.name, pluginBuffer) as typeof Plugin;
 
                 const { name } = pluginClass;
-                if (name in plugins) throw new Error(`Plugin ${name} already registered`);
                 try {
                     logger.info(`Loading Plugin ${name}...`);
                     const plugin = plugins[name] = new pluginClass(new Settings(name));
