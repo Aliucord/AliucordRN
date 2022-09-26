@@ -42,19 +42,20 @@ export async function startPlugins() {
                 const manifest = JSON.parse(zip.readEntry("text"));
                 zip.closeEntry();
 
+                if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
+                if (!isPluginEnabled(manifest.name)) continue;
+
                 zip.openEntry("index.js.bundle");
                 const pluginBuffer = zip.readEntry("binary");
                 zip.closeEntry();
 
-                if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
-                if (!isPluginEnabled(manifest.name)) continue;
                 const pluginClass = AliuHermes.run(file.name, pluginBuffer) as typeof Plugin;
                 try {
                     if (pluginClass.prototype instanceof Plugin) {
                         if (manifest.name !== pluginClass.name) throw new Error(`Plugin ${manifest.name} must export a class named ${manifest.name}`);
                         logger.info(`Loading Plugin ${manifest.name}...`);
                         const plugin = plugins[manifest] = new pluginClass(manifest);
-                        if (isPluginEnabled(plugin.name)) plugin.start();
+                        plugin.start();
                     } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
                 } catch (err) {
                     logger.error(`Failed while loading Plugin: ${manifest.name}\n`, err);
