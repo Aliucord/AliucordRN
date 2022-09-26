@@ -18,12 +18,14 @@ type CastDown<T> =
  * save to settings on set()
  */
 export function useSettings<T>(settings: Settings<T>) {
+    const [, update] = React.useState(0);
     return React.useMemo(() => ({
         get<K extends keyof T, V extends T[K]>(key: K, defaultValue: V) {
             return settings.get(key, defaultValue);
         },
         set<K extends keyof T, V extends T[K]>(key: K, value: V) {
             settings.set(key, value);
+            update(x => x + 1); 
         }
     }), []);
 }

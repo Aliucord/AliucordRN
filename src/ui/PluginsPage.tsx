@@ -95,12 +95,12 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 }
 
 export default function PluginsPage() {
-    const plugins: PluginManifest[] = Object.entries(window.Aliucord.pluginManager.plugins).map((plugin) => (
+    const plugins: PluginManifest[] = Object.values(window.Aliucord.pluginManager.plugins).map((plugin) => (
         {
-            name: plugin[1].name,
-            description: plugin[1].manifest.description,
-            version: plugin[1].manifest.version,
-            authors: plugin[1].manifest.authors
+            name: plugin.name,
+            description: plugin.manifest.description,
+            version: plugin.manifest.version,
+            authors: plugin.manifest.authors
         }
     ));
     return (
