@@ -33,7 +33,7 @@
         const bundlePath = aliucordDir + "/Aliucord.js.bundle";
         if (!AliuFS.exists(bundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", bundlePath);
 
-        (globalThis._globals ??= {}).aliucord = AliuHermes.run(bundlePath);
+        globalThis.aliucord = AliuHermes.run(bundlePath);
     } catch (error) {
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
