@@ -19,13 +19,13 @@ type CastDown<T> =
  */
 export function useSettings<T>(settings: Settings<T>) {
     const [, update] = React.useState(0);
-
     return React.useMemo(() => ({
         get<K extends keyof T, V extends T[K]>(key: K, defaultValue: V) {
             return settings.get(key, defaultValue);
         },
         set<K extends keyof T, V extends T[K]>(key: K, value: V) {
-            settings.set(key, value).then(() => update(x => x + 1));
+            settings.set(key, value);
+            update(x => x + 1); 
         }
     }), []);
 }
@@ -40,35 +40,21 @@ function getPath(module: string) {
  * and NOT via new.
  */
 export class Settings<Schema> {
+    public readonly snapshot!: Schema;
 
-    private constructor(public readonly module: string, public readonly snapshot: Schema) { }
-
-    // FIXME - find a better way to do this somehow
-    // getSettings is an asynchronous method. Thus, an async factory method
-    // is required to ensure the snapshot is ready before receiving any calls to other methods
-    // An alternative would be making get async, but that would be very inconvenient.
-    /**
-     * Construct a new Settings instance.
-     * Accepts a Schema as generic argument which will be used to validate 
-     * and type calls to get and set
-     * @param module Name of your module. Choose something meaningful as this will be used to 
-     *               identify your settings
-     * @returns Settings Instance
-     */
-    static async make<Schema = any>(module: string) {
+    public constructor(public readonly module: string) {
         const path = getPath(module);
-        const snapshot = exists(path) ? readFile(path) : "{}";
+        const fileSnapshot = exists(path) ? readFile(path) : "{}";
         try {
-            const data = JSON.parse(snapshot);
+            const data = JSON.parse(fileSnapshot);
             if (typeof data !== "object")
                 throw new Error("JSON data was not an object.");
-            return new this<Schema>(module, data);
+            this.snapshot = data;  
         } catch (err: any) {
             window.Aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
-            return new this<Schema>(module, {} as Schema);
+            this.snapshot = {} as Schema;
         }
     }
-
     /**
      * Get a settings item
      * @param key Key
@@ -85,7 +71,7 @@ export class Settings<Schema> {
      * @param key Key
      * @param value New value
      */
-    public async set<K extends keyof Schema>(key: K, value: Schema[K]) {
+    public set<K extends keyof Schema>(key: K, value: Schema[K]) {
         const { snapshot } = this;
         snapshot[key] = value;
         return this._persist();
@@ -95,14 +81,14 @@ export class Settings<Schema> {
      * Delete a setting
      * @param key Key
      */
-    public async delete<K extends keyof Schema>(key: K) {
+    public delete<K extends keyof Schema>(key: K) {
         if (key in this.snapshot) {
             delete this.snapshot[key];
             return this._persist();
         }
     }
 
-    private async _persist(): Promise<void> {
+    private _persist() {
         writeFile(getPath(this.module), JSON.stringify(this.snapshot, null, 2));
     }
 }

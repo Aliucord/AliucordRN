@@ -11,4 +11,6 @@ export * as utils from "./utils";
 window.swcHelpers = swcHelpers;
 window.Aliucord = Aliucord;
 
-Aliucord.load();
+// setImmediate is necessary here as otherwise this function is called before
+// the bundle returned, meaning global.aliucord won't be ready.
+setImmediate(Aliucord.load);

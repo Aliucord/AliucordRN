@@ -1,4 +1,5 @@
 import { sha } from "aliucord-version";
+import { isPluginEnabled, plugins as installedPlugins } from "../api/PluginManager";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import { Plugin } from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
@@ -10,7 +11,7 @@ export default class CoreCommands extends Plugin {
         const ClydeUtils = getByProps("sendBotMessage");
         this.commands.registerCommand({
             name: "echo",
-            description: "Creates Clyde message",
+            description: "Creates a Clyde message",
             options: [
                 {
                     name: "message",
@@ -25,8 +26,37 @@ export default class CoreCommands extends Plugin {
         });
 
         this.commands.registerCommand({
+            name: "plugins",
+            description: "Lists all installed Aliucord plugins",
+            options: [],
+            execute: (args, ctx) => {
+                const enabledPlugins: string[] = [];
+                const disabledPlugins: string[] = [];
+
+                for (const plugin in installedPlugins) {
+                    if (isPluginEnabled(plugin)) {
+                        enabledPlugins.push(plugin);
+                    } else {
+                        disabledPlugins.push(plugin);
+                    }
+                }
+
+                const plugins = `
+                **Total plugins**: **${Object.keys(installedPlugins).length}**
+                
+                **Enabled plugins**: **${enabledPlugins.length}**
+                > ${enabledPlugins.join(", ") ? enabledPlugins.join(", ") : "None."}
+                
+                **Disabled plugins**: **${disabledPlugins.length}**
+                > ${disabledPlugins.join(", ") ? disabledPlugins.join(", ") : "None."}`;
+
+                ClydeUtils.sendBotMessage(ctx.channel.id, plugins.replaceAll("    ", ""));
+            }
+        });
+
+        this.commands.registerCommand({
             name: "eval",
-            description: "Eval javascript",
+            description: "Evaluate JavaScript",
             options: [
                 {
                     name: "code",
@@ -61,7 +91,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha}
+                        > Aliucord: ${sha} (${Object.keys(installedPlugins).length} plugins)
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}

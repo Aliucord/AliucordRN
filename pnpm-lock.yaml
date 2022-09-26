@@ -2,7 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@aliucord/react-devtools-core': ^4.24.4-aliucord.1
-  '@aliucord/rollup-plugin': 0.1.0
+  '@aliucord/rollup-plugin': ^0.1.1
   '@rollup/plugin-commonjs': ^22.0.0
   '@rollup/plugin-node-resolve': ^13.3.0
   '@rollup/plugin-typescript': ^8.3.2
@@ -23,7 +23,7 @@ dependencies:
   '@swc/helpers': 0.3.13
 
 devDependencies:
-  '@aliucord/rollup-plugin': 0.1.0_eyifcpdotnlh4b6mr6kb6ii2rq
+  '@aliucord/rollup-plugin': 0.1.1_eyifcpdotnlh4b6mr6kb6ii2rq
   '@rollup/plugin-commonjs': 22.0.0_rollup@2.72.0
   '@rollup/plugin-node-resolve': 13.3.0_rollup@2.72.0
   '@rollup/plugin-typescript': 8.3.2_s6zbpzdkhlvcqzhawas6jkergu
@@ -61,8 +61,8 @@ packages:
       rollup: 2.72.0
     dev: true
 
-  /@aliucord/rollup-plugin/0.1.0_eyifcpdotnlh4b6mr6kb6ii2rq:
-    resolution: {integrity: sha512-mWyd9P/hpEg8ovCbM1i4EV7oDT+w/vkwV6NwvEhW+glZ4Sl+a02JTB0coPc/f5lqXwdV9EvKN9jwJUCxL86wvg==}
+  /@aliucord/rollup-plugin/0.1.1_eyifcpdotnlh4b6mr6kb6ii2rq:
+    resolution: {integrity: sha512-4v6XrCdjS37Z1KRUDHXIGRVmQbBSiceQ4lqQ6wkR1vSDXOTiWkLlCPGLr95mgFU+CpKIBM1j1rU1CIWChghdaQ==}
     dependencies:
       '@aliucord/rollup-plugin-swc': 0.2.2_y64hket5wuietnlfvz4mcgqzeu
       '@swc/core': 1.2.178

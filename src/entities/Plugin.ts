@@ -1,5 +1,6 @@
 import { Commands, Patcher, Settings } from "../api";
 import { Logger } from "../utils/Logger";
+import { PluginManifest } from "./types";
 
 /**
  * Plugin class
@@ -10,8 +11,9 @@ export class Plugin<SettingsSchema = any> {
     public readonly commands = new Commands(this.name);
     public readonly logger = new Logger(this.name);
     public readonly patcher = new Patcher(this.name);
+    public readonly settings = new Settings<SettingsSchema>(this.name);
 
-    public constructor(public readonly settings: Settings<SettingsSchema>) { }
+    public constructor(public readonly manifest: PluginManifest) { }
 
     public get name() {
         return this.constructor.name;

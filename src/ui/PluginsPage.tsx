@@ -2,35 +2,15 @@ import { disablePlugin, enablePlugin, isPluginEnabled } from "../api/PluginManag
 import { PluginManifest } from "../entities/types";
 import { Constants, Forms, React, ReactNative, Styles } from "../metro";
 import { getByProps } from "../metro/index";
+import { getAssetId } from "../utils/getAssetId";
 
-const { View, Text, FlatList } = ReactNative;
-
-// Dummy data for now lmao
-const plugins: PluginManifest[] = [
-    {
-        name: "Test",
-        description: "Test Plugin",
-        version: "1.0.0",
-        authors: [
-            {
-                username: "Pot of Avarice",
-                id: "950095902922661988"
-            },
-            {
-                username: "Discord",
-                id: "643945264868098049"
-            }
-        ]
-    }
-];
-for (let i = 1; i < 5; i++) {
-    const copy = { ...plugins[i - 1] };
-    copy.name += "a";
-    copy.description += copy.description;
-    plugins[i] = copy;
-}
+const { View, Text, FlatList, Image } = ReactNative;
 
 const styles = Styles.createThemedStyleSheet({
+    container: {
+        flex: 1,
+        padding: 5
+    },
     list: {
         padding: 10,
     },
@@ -61,6 +41,19 @@ const styles = Styles.createThemedStyleSheet({
         fontSize: 16,
         lineHeight: 22,
         color: Styles.ThemeColorMap.TEXT_LINK
+    },
+    noPlugins: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        alignSelf: "center",
+        marginTop: "50%"
+    },
+    noPluginsText: {
+        marginTop: 10,
+        color: Styles.ThemeColorMap.TEXT_NORMAL,
+        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
+        textAlign: "center"
     }
 });
 
@@ -102,15 +95,34 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 }
 
 export default function PluginsPage() {
+    const plugins: PluginManifest[] = Object.values(window.Aliucord.pluginManager.plugins).map((plugin) => (
+        {
+            name: plugin.name,
+            description: plugin.manifest.description,
+            version: plugin.manifest.version,
+            authors: plugin.manifest.authors
+        }
+    ));
     return (
-        <FlatList
-            data={plugins}
-            renderItem={({ item }) => <PluginCard
-                key={item.name}
-                plugin={item}
-            />}
-            keyExtractor={plugin => plugin.name}
-            style={styles.list}
-        />
+        <View style={styles.container}>
+            {!plugins.length ?
+                <View style={styles.noPlugins}>
+                    <Image source={getAssetId("img_connection_empty_dark")} />
+                    <Text style={styles.noPluginsText}>
+                        You dont have any plugins installed.
+                    </Text>
+                </View>
+                :
+                <FlatList
+                    data={plugins}
+                    renderItem={({ item }) => <PluginCard
+                        key={item.name}
+                        plugin={item}
+                    />}
+                    keyExtractor={plugin => plugin.name}
+                    style={styles.list}
+                />
+            }
+        </View>
     );
 }

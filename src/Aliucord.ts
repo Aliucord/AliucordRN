@@ -31,7 +31,7 @@ export async function load() {
         mkdir(THEME_DIRECTORY);
         mkdir(SETTINGS_DIRECTORY);
 
-        settings = await Settings.make("Aliucord");
+        settings = new Settings("Aliucord");
         patchSettings();
 
         startPlugins();
