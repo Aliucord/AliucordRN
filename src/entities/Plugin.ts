@@ -7,13 +7,13 @@ import { PluginManifest } from "./types";
  * You may pass a Settings Schema to have calls to
  * this.settings.get and this.settings.set validated and typed strongly
  */
-export class Plugin<SettingsSchema = any> {
+export class Plugin {
     public readonly commands = new Commands(this.name);
     public readonly logger = new Logger(this.name);
     public readonly patcher = new Patcher(this.name);
-    public manifest!: PluginManifest;
+    public readonly settings = new Settings(this.name);
 
-    public constructor(public readonly settings: Settings<SettingsSchema>) { }
+    public constructor(public readonly manifest: PluginManifest) { }
 
     public get name() {
         return this.constructor.name;

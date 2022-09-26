@@ -8,7 +8,6 @@ import { readdir } from "../native/fs";
 import { getAssetId } from "../utils";
 import { PLUGINS_DIRECTORY } from "../utils/constants";
 import { Logger } from "../utils/Logger";
-import { Settings } from "./Settings";
 
 const logger = new Logger("PluginManager");
 export const plugins = {} as Record<string, Plugin>;
@@ -40,24 +39,25 @@ export async function startPlugins() {
             const zip = new ZipFile(PLUGINS_DIRECTORY + file.name, 0, "r");
             try {
                 zip.openEntry("manifest.json");
-                const manifestBuffer = JSON.parse(zip.readEntry("text")) as any;
+                const manifest = JSON.parse(zip.readEntry("text"));
                 zip.closeEntry();
 
                 zip.openEntry("index.js.bundle");
                 const pluginBuffer = zip.readEntry("binary");
                 zip.closeEntry();
 
-                if (manifestBuffer.name in plugins) throw new Error(`Plugin ${manifestBuffer.name} already registered`);
+                if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
+                if (!isPluginEnabled(manifest.name)) continue;
                 const pluginClass = AliuHermes.run(file.name, pluginBuffer) as typeof Plugin;
-
-                const { name } = pluginClass;
                 try {
-                    logger.info(`Loading Plugin ${name}...`);
-                    const plugin = plugins[name] = new pluginClass(new Settings(name));
-                    plugin.manifest = manifestBuffer;
-                    if (isPluginEnabled(plugin.name)) plugin.start();
+                    if (pluginClass.prototype instanceof Plugin) {
+                        if (manifest.name !== pluginClass.name) throw new Error(`Plugin ${manifest.name} must export a class named ${manifest.name}`);
+                        logger.info(`Loading Plugin ${manifest.name}...`);
+                        const plugin = plugins[manifest] = new pluginClass(manifest);
+                        if (isPluginEnabled(plugin.name)) plugin.start();
+                    } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
                 } catch (err) {
-                    logger.error(`Failed while loading Plugin: ${name}\n`, err);
+                    logger.error(`Failed while loading Plugin: ${manifest.name}\n`, err);
                 }
             } catch (err) {
                 logger.error(`Failed while loading Plugin ZIP: ${file.name}\n`, err);
@@ -74,7 +74,7 @@ export function startCorePlugins() {
         const { name } = pluginClass;
         try {
             logger.info("Loading CorePlugin: " + name);
-            new pluginClass(window.Aliucord.settings).start();
+            new pluginClass({ name, description: "", version: "1.0.0", authors: [{ username: "Aliucord", id: "000000000000000000" }] }).start();
         } catch (e) {
             logger.error("Failed to start CorePlugin: " + name, e);
         }
