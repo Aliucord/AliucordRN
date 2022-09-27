@@ -36,10 +36,10 @@ export default class CoreCommands extends Plugin {
                 const plugins = `
                 **Total plugins**: **${enabledplugins.length + disabledplugins.length}**
                 
-                **Enabled plugins**: **${enabledplugins.length}**
+                **Enabled plugins**: **${enabledplugins.length ? enabledplugins.length : 0}**
                 > ${enabledplugins.join(", ") ? enabledplugins.join(", ") : "None."}
                 
-                **Disabled plugins**: **${disabledPlugins.length}**
+                **Disabled plugins**: **${disabledPlugins.length ? disabledPlugins.length : 0}**
                 > ${disabledplugins.join(", ") ? disabledplugins.join(", ") : "None."}`;
 
                 ClydeUtils.sendBotMessage(ctx.channel.id, plugins.replaceAll("    ", ""));
