@@ -20,15 +20,12 @@ export function isPluginEnabled(plugin: string) {
 
 export function enablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
+    if (plugins[plugin] == true) throw new Error(`Plugin ${plugin} is already enabled.`);
     plugins[plugin] = true;
     window.Aliucord.settings.set("plugins", plugins);
 
-    const bundleZip = new ZipFile(PLUGINS_DIRECTORY + `${plugin}.zip`, 0, "r");
-    bundleZip.openEntry("index.js.bundle");
-    const pluginBuffer = bundleZip.readEntry("binary");
-    bundleZip.closeEntry();
-    
-    bundleZip.close();
+    const pluginBuffer = loadPluginBundle(plugin);
+
     const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
     new pluginClass(plugins[plugin].manifest).start();
 
@@ -95,4 +92,16 @@ export function startCorePlugins() {
             logger.error("Failed to start CorePlugin: " + name, e);
         }
     }
+}
+
+function loadPluginBundle(plugin: string) { 
+    const bundleZip = new ZipFile(PLUGINS_DIRECTORY + `${plugin}.zip`, 0, "r");
+
+    bundleZip.openEntry("index.js.bundle");
+    const pluginBuffer = bundleZip.readEntry("binary");
+    bundleZip.closeEntry();
+
+    bundleZip.close();
+
+    return pluginBuffer;
 }
