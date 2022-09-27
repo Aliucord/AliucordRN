@@ -2,6 +2,7 @@ import Badges from "../core-plugins/Badges";
 import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
+import { PluginManifest } from "../entities";
 import { Plugin } from "../entities/Plugin";
 import { Toasts } from "../metro";
 import { readdir } from "../native/fs";
@@ -11,6 +12,7 @@ import { Logger } from "../utils/Logger";
 
 const logger = new Logger("PluginManager");
 export const plugins = {} as Record<string, Plugin>;
+export const disabledPlugins = {} as Record<string, PluginManifest>;
 
 export function isPluginEnabled(plugin: string) {
     return window.Aliucord.settings.get("plugins", {})[plugin] === true;
@@ -20,6 +22,16 @@ export function enablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
     plugins[plugin] = true;
     window.Aliucord.settings.set("plugins", plugins);
+
+    const bundleZip = new ZipFile(PLUGINS_DIRECTORY + `${plugin}.zip`, 0, "r");
+    bundleZip.openEntry("index.js.bundle");
+    const pluginBuffer = bundleZip.readEntry("binary");
+    bundleZip.closeEntry();
+    
+    bundleZip.close();
+    const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
+    new pluginClass(plugins[plugin].manifest).start();
+
     Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
     logger.info(`Enabled plugin: ${plugin}`);
 }
@@ -43,7 +55,10 @@ export async function startPlugins() {
                 zip.closeEntry();
 
                 if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
-                if (!isPluginEnabled(manifest.name)) continue;
+                if (!isPluginEnabled(manifest.name)) {
+                    disabledPlugins[manifest.name] = (manifest.name, manifest);
+                    continue;
+                }
 
                 zip.openEntry("index.js.bundle");
                 const pluginBuffer = zip.readEntry("binary");

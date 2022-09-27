@@ -1,5 +1,5 @@
 import { sha } from "aliucord-version";
-import { isPluginEnabled, plugins as installedPlugins } from "../api/PluginManager";
+import { disabledPlugins, plugins as installedPlugins } from "../api/PluginManager";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import { Plugin } from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
@@ -30,25 +30,21 @@ export default class CoreCommands extends Plugin {
             description: "Lists all installed Aliucord plugins",
             options: [],
             execute: (args, ctx) => {
-                const enabledPlugins: string[] = [];
-                const disabledPlugins: string[] = [];
-
-                for (const plugin in installedPlugins) {
-                    if (isPluginEnabled(plugin)) {
-                        enabledPlugins.push(plugin);
-                    } else {
-                        disabledPlugins.push(plugin);
-                    }
-                }
+                const enabledplugins = Object.values(installedPlugins).map((plugin) => {
+                    return plugin.manifest.name;
+                });
+                const disabledplugins = Object.values(disabledPlugins).map((plugin) => {
+                    return plugin.name;
+                });
 
                 const plugins = `
-                **Total plugins**: **${Object.keys(installedPlugins).length}**
+                **Total plugins**: **${enabledplugins.length + disabledplugins.length}**
                 
-                **Enabled plugins**: **${enabledPlugins.length}**
-                > ${enabledPlugins.join(", ") ? enabledPlugins.join(", ") : "None."}
+                **Enabled plugins**: **${enabledplugins.length}**
+                > ${enabledplugins.join(", ") ? enabledplugins.join(", ") : "None."}
                 
                 **Disabled plugins**: **${disabledPlugins.length}**
-                > ${disabledPlugins.join(", ") ? disabledPlugins.join(", ") : "None."}`;
+                > ${disabledplugins.join(", ") ? disabledplugins.join(", ") : "None."}`;
 
                 ClydeUtils.sendBotMessage(ctx.channel.id, plugins.replaceAll("    ", ""));
             }
@@ -91,7 +87,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha} (${Object.keys(installedPlugins).length} plugins)
+                        > Aliucord: ${sha} (${Object.keys(installedPlugins).length + Object.keys(disabledPlugins).length} plugins)
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}
