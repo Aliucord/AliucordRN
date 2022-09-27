@@ -30,12 +30,8 @@ export default class CoreCommands extends Plugin {
             description: "Lists all installed Aliucord plugins",
             options: [],
             execute: (args, ctx) => {
-                const enabledplugins = Object.values(installedPlugins).map((plugin) => {
-                    return plugin.manifest.name;
-                });
-                const disabledplugins = Object.values(disabledPlugins).map((plugin) => {
-                    return plugin.name;
-                });
+                const enabledplugins = Object.values(installedPlugins).map(p => p.manifest.name);
+                const disabledplugins = Object.values(disabledPlugins).map(p => p.name);
 
                 const plugins = `
                 **Total plugins**: **${enabledplugins.length + disabledplugins.length}**
