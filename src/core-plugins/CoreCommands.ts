@@ -34,13 +34,13 @@ export default class CoreCommands extends Plugin {
                 const disabledplugins = Object.values(disabledPlugins).map(p => p.name);
 
                 const plugins = `
-                **Total plugins**: **${enabledplugins.length + disabledplugins.length}**
+                **Total plugins**: **${enabledplugins.length + disabledplugins.length || 0}**
                 
-                **Enabled plugins**: **${enabledplugins.length ? enabledplugins.length : 0}**
-                > ${enabledplugins.join(", ") ? enabledplugins.join(", ") : "None."}
+                **Enabled plugins**: **${enabledplugins.length || 0}**
+                > ${enabledplugins.join(", ") || "None."}
                 
-                **Disabled plugins**: **${disabledPlugins.length ? disabledPlugins.length : 0}**
-                > ${disabledplugins.join(", ") ? disabledplugins.join(", ") : "None."}`;
+                **Disabled plugins**: **${disabledplugins.length || 0}**
+                > ${disabledplugins.join(", ") || "None."}`;
 
                 ClydeUtils.sendBotMessage(ctx.channel.id, plugins.replaceAll("    ", ""));
             }
@@ -83,7 +83,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha} (${Object.keys(installedPlugins).length + Object.keys(disabledPlugins).length} plugins)
+                        > Aliucord: ${sha} (${Object.keys(installedPlugins).length + Object.keys(disabledPlugins).length || 0} plugins)
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}
