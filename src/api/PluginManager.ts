@@ -14,7 +14,7 @@ export const plugins = {} as Record<string, Plugin>;
 
 export function isPluginEnabled(plugin: string) {
     const pluginEntry = window.Aliucord.settings.get("plugins", {})[plugin];
-    return pluginEntry === undefined ? true : window.Aliucord.settings.get("plugins", {})[plugin] === true;
+    return pluginEntry === undefined ? true : pluginEntry === true;
 }
 
 export function enablePlugin(plugin: string) {
