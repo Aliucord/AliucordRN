@@ -54,7 +54,10 @@ export async function startPlugins() {
 
                 if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
                 if (!isPluginEnabled(manifest.name)) {
-                    disabledPlugins[manifest.name] = manifest;
+                    plugins[manifest.name] = new Plugin(manifest);
+                    const settingsPlugins = window.Aliucord.settings.get("plugins", {});
+                    settingsPlugins[manifest.name] = false;
+                    window.Aliucord.settings.set("plugins", settingsPlugins);
                     continue;
                 }
 
