@@ -43,7 +43,7 @@ export async function startPlugins() {
                 zip.closeEntry();
 
                 if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
-                if (!isPluginEnabled(manifest.name)) continue;
+                if (isPluginEnabled(manifest.name)) continue;
 
                 zip.openEntry("index.js.bundle");
                 const pluginBuffer = zip.readEntry("binary");
