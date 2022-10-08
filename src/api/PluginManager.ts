@@ -61,9 +61,7 @@ export async function startPlugins() {
                     continue;
                 }
 
-                zip.openEntry("index.js.bundle");
-                const pluginBuffer = zip.readEntry("binary");
-                zip.closeEntry();
+                const pluginBuffer = loadPluginBundle(zip);
 
                 const pluginClass = AliuHermes.run(file.name, pluginBuffer) as typeof Plugin;
                 try {
@@ -78,9 +76,7 @@ export async function startPlugins() {
                 }
             } catch (err) {
                 logger.error(`Failed while loading Plugin ZIP: ${file.name}\n`, err);
-                zip.close();
-            } finally {
-                await zip.close();
+                if (zip) zip.close();
             }
         }
     }
