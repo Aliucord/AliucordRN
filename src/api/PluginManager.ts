@@ -13,8 +13,7 @@ const logger = new Logger("PluginManager");
 export const plugins = {} as Record<string, Plugin>;
 
 export function isPluginEnabled(plugin: string) {
-    const pluginEntry = window.Aliucord.settings.get("plugins", {})[plugin];
-    return pluginEntry === undefined ? true : pluginEntry === true;
+    return window.Aliucord.settings.get("plugins", {})[plugin] !== false;
 }
 
 export function enablePlugin(plugin: string) {
