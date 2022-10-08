@@ -74,7 +74,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                                 style={styles.link}
                                 onPress={() => getByProps("showUserProfile").showUserProfile({ userId: a.id })}
                             >
-                                {a.username}{i !== plugin.authors.length - 1 && ","}
+                                {a.name}{i !== plugin.authors.length - 1 && ","}
                             </Text>
                         ))}
                     </View>)}

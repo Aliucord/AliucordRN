@@ -20,7 +20,7 @@ export function isPluginEnabled(plugin: string) {
 
 export function enablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
-    if (plugins[plugin] == true) throw new Error(`Plugin ${plugin} is already enabled.`);   
+    if (plugins[plugin] == true) throw new Error(`Plugin ${plugin} is already enabled.`);
     plugins[plugin] = true;
     window.Aliucord.settings.set("plugins", plugins);
 
@@ -67,7 +67,7 @@ export async function startPlugins() {
                     if (pluginClass.prototype instanceof Plugin) {
                         if (manifest.name !== pluginClass.name) throw new Error(`Plugin ${manifest.name} must export a class named ${manifest.name}`);
                         logger.info(`Loading Plugin ${manifest.name}...`);
-                        const plugin = plugins[manifest] = new pluginClass(manifest);
+                        const plugin = plugins[manifest.name] = new pluginClass(manifest);
                         plugin.start();
                     } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
                 } catch (err) {
@@ -88,7 +88,7 @@ export function startCorePlugins() {
         const { name } = pluginClass;
         try {
             logger.info("Loading CorePlugin: " + name);
-            new pluginClass({ name, description: "", version: "1.0.0", authors: [{ username: "Aliucord", id: "000000000000000000" }] }).start();
+            new pluginClass({ name, description: "", version: "1.0.0", authors: [{ name: "Aliucord", id: "000000000000000000" }] }).start();
         } catch (e) {
             logger.error("Failed to start CorePlugin: " + name, e);
         }
