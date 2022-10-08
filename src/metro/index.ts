@@ -257,7 +257,7 @@ export const SelectedChannelStore = getByStoreName("SelectedChannelStore");
 
 export const ModalActions = getByProps("closeModal");
 export const MessageActions = getByProps("sendMessage", "receiveMessage");
-export const FluxDispatcher = getByProps("isDispatching");
+export const FluxDispatcher = getByProps("subscribe", "isDispatching");
 export const FetchUserActions = getByProps("fetchProfile");
 export const ContextMenuActions = getByProps("openContextMenu");
 export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
