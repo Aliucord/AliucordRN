@@ -20,7 +20,7 @@ export function isPluginEnabled(plugin: string) {
 
 export function enablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
-    if (plugins[plugin] == true) throw new Error(`Plugin ${plugin} is already enabled.`);
+    if (plugins[plugin] !== false) throw new Error(`Plugin ${plugin} is already enabled.`);
     delete disabledPlugins[plugin];
     plugins[plugin] = true;
     window.Aliucord.settings.set("plugins", plugins);
