@@ -21,6 +21,7 @@ export function isPluginEnabled(plugin: string) {
 export function enablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
     if (plugins[plugin] == true) throw new Error(`Plugin ${plugin} is already enabled.`);
+    delete disabledPlugins[plugin];
     plugins[plugin] = true;
     window.Aliucord.settings.set("plugins", plugins);
 
@@ -36,6 +37,7 @@ export function enablePlugin(plugin: string) {
 
 export function disablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
+    disabledPlugins[plugin] = window.Aliucord.pluginManager.plugins[plugin].manifest;
     plugins[plugin] = false;
     window.Aliucord.settings.set("plugins", plugins);
     logger.info(`Disabled plugin: ${plugin}`);
@@ -54,10 +56,7 @@ export async function startPlugins() {
 
                 if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
                 if (!isPluginEnabled(manifest.name)) {
-                    plugins[manifest.name] = new Plugin(manifest);
-                    const settingsPlugins = window.Aliucord.settings.get("plugins", {});
-                    settingsPlugins[manifest.name] = false;
-                    window.Aliucord.settings.set("plugins", settingsPlugins);
+                    disabledPlugins[manifest.name] = manifest;
                     continue;
                 }
 

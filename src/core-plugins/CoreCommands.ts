@@ -1,6 +1,6 @@
 import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
-import { plugins } from "../api/PluginManager";
+import { disabledPlugins, plugins } from "../api/PluginManager";
 import { Plugin } from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
@@ -30,10 +30,8 @@ export default class CoreCommands extends Plugin {
             description: "Lists all installed Aliucord plugins",
             options: [],
             execute: (args, ctx) => {
-                const settingsPlugins = window.Aliucord.settings.get("plugins", {});
-                const installedPlugins = Object.values(plugins).map(p => p.manifest.name);
-                const enabledplugins = installedPlugins.filter(p => settingsPlugins[p] === true);
-                const disabledplugins = installedPlugins.filter(p => settingsPlugins[p] === false);
+                const enabledplugins = Object.values(plugins).map(p => p.manifest.name).filter(name => disabledPlugins[name] === undefined);
+                const disabledplugins = Object.values(disabledPlugins).map(p => p.name);
 
                 const message = `
                 **Total plugins**: **${enabledplugins.length + disabledplugins.length || 0}**
@@ -85,7 +83,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha} (${Object.keys(plugins).length || 0} plugins)
+                        > Aliucord: ${sha} (${Object.keys(plugins).length + Object.keys(disabledPlugins).length} plugins)
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}
