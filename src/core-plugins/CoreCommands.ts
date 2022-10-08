@@ -34,7 +34,7 @@ export default class CoreCommands extends Plugin {
                 const disabledplugins = Object.values(disabledPlugins).map(p => p.name);
 
                 const message = `
-                **Total plugins**: **${enabledplugins.length + disabledplugins.length || 0}**
+                **Total plugins**: **${enabledplugins.length + disabledplugins.length}**
                 
                 **Enabled plugins**: **${enabledplugins.length || 0}**
                 > ${enabledplugins.join(", ") || "None."}
