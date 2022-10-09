@@ -20,13 +20,15 @@ export function isPluginEnabled(plugin: string) {
 
 export function enablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
-    if (plugins[plugin] === true) throw new Error(`Plugin ${plugin} is already enabled.`);
+    if (isPluginEnabled(plugin)) throw new Error(`Plugin ${plugin} is already enabled.`);
     delete disabledPlugins[plugin];
     plugins[plugin] = true;
     window.Aliucord.settings.set("plugins", plugins);
 
     const bundleZip = new ZipFile(PLUGINS_DIRECTORY + `${plugin}.zip`, 0, "r");
     const pluginBuffer = loadPluginBundle(bundleZip);
+
+    bundleZip.close();
 
     const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
     plugins[plugin] = new pluginClass(plugins[plugin].manifest).start();
@@ -38,6 +40,7 @@ export function enablePlugin(plugin: string) {
 export function disablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
     disabledPlugins[plugin] = window.Aliucord.pluginManager.plugins[plugin].manifest;
+
     window.Aliucord.pluginManager.plugins[plugin].stop();
     delete window.Aliucord.pluginManager.plugins[plugin];
 
@@ -77,7 +80,8 @@ export async function startPlugins() {
                 }
             } catch (err) {
                 logger.error(`Failed while loading Plugin ZIP: ${file.name}\n`, err);
-                zip?.close();
+            } finally {
+                zip.close();
             }
         }
     }
@@ -99,8 +103,6 @@ function loadPluginBundle(zip: ZipFile) {
     zip.openEntry("index.js.bundle");
     const pluginBuffer = zip.readEntry("binary");
     zip.closeEntry();
-
-    zip.close();
 
     return pluginBuffer;
 }

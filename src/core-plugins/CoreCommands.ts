@@ -1,6 +1,6 @@
 import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
-import { disabledPlugins, plugins } from "../api/PluginManager";
+import { disabledPlugins, plugins, } from "../api/PluginManager";
 import { Plugin } from "../entities/Plugin";
 import { getByProps, i18n, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
@@ -30,16 +30,16 @@ export default class CoreCommands extends Plugin {
             description: "Lists all installed Aliucord plugins",
             options: [],
             execute: (args, ctx) => {
-                const enabledplugins = Object.values(plugins).map(p => p.manifest.name).filter(name => disabledPlugins[name] === undefined);
+                const enabledplugins = Object.values(plugins).map(p => p.manifest.name);
                 const disabledplugins = Object.values(disabledPlugins).map(p => p.name);
 
                 const message = `
                 **Total plugins**: **${enabledplugins.length + disabledplugins.length}**
                 
-                **Enabled plugins**: **${enabledplugins.length || 0}**
+                **Enabled plugins**: **${enabledplugins.length}**
                 > ${enabledplugins.join(", ") || "None."}
                 
-                **Disabled plugins**: **${disabledplugins.length || 0}**
+                **Disabled plugins**: **${disabledplugins.length}**
                 > ${disabledplugins.join(", ") || "None."}`;
 
                 ClydeUtils.sendBotMessage(ctx.channel.id, message.replaceAll("    ", ""));
