@@ -20,7 +20,7 @@ export function isPluginEnabled(plugin: string) {
 
 export function enablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
-    if (plugins[plugin] !== false) throw new Error(`Plugin ${plugin} is already enabled.`);
+    if (plugins[plugin] === true) throw new Error(`Plugin ${plugin} is already enabled.`);
     delete disabledPlugins[plugin];
     plugins[plugin] = true;
     window.Aliucord.settings.set("plugins", plugins);
@@ -29,7 +29,7 @@ export function enablePlugin(plugin: string) {
     const pluginBuffer = loadPluginBundle(bundleZip);
 
     const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
-    new pluginClass(plugins[plugin].manifest).start();
+    plugins[plugin] = new pluginClass(plugins[plugin].manifest).start();
 
     Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
     logger.info(`Enabled plugin: ${plugin}`);
@@ -38,7 +38,9 @@ export function enablePlugin(plugin: string) {
 export function disablePlugin(plugin: string) {
     const plugins = window.Aliucord.settings.get("plugins", {});
     disabledPlugins[plugin] = window.Aliucord.pluginManager.plugins[plugin].manifest;
-    plugins[plugin] = false;
+    window.Aliucord.pluginManager.plugins[plugin].stop();
+    delete window.Aliucord.pluginManager.plugins[plugin];
+
     window.Aliucord.settings.set("plugins", plugins);
     logger.info(`Disabled plugin: ${plugin}`);
     Toasts.open({ content: `Disabled ${plugin}`, source: getAssetId("Small") });
@@ -75,7 +77,7 @@ export async function startPlugins() {
                 }
             } catch (err) {
                 logger.error(`Failed while loading Plugin ZIP: ${file.name}\n`, err);
-                if (zip) zip.close();
+                zip?.close();
             }
         }
     }
