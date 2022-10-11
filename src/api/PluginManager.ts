@@ -18,11 +18,10 @@ export function isPluginEnabled(plugin: string) {
     return window.Aliucord.settings.get("plugins", {})[plugin] !== false;
 }
 
-export function enablePlugin(plugin: string) {
+export async function enablePlugin(plugin: string) {
     const settingsPlugins = window.Aliucord.settings.get("plugins", {});
     if (isPluginEnabled(plugin)) throw new Error(`Plugin ${plugin} is already enabled.`);
-    
-    delete disabledPlugins[plugin];
+
     settingsPlugins[plugin] = true;
     window.Aliucord.settings.set("plugins", settingsPlugins);
 
@@ -32,20 +31,30 @@ export function enablePlugin(plugin: string) {
     bundleZip.close();
 
     const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
-    const enabledPlugin = plugins[plugin] = new pluginClass(settingsPlugins[plugin].manifest);
-    enabledPlugin.start();
+    const enabledPlugin = plugins[plugin] = new pluginClass(disabledPlugins[plugin]);
+    delete disabledPlugins[plugin];
+
+    try {
+        await enabledPlugin.start();
+    } catch (err) {
+        logger.error(`Failed while trying to start plugin: ${enabledPlugin.manifest.name}`, err);
+    }
 
     Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
     logger.info(`Enabled plugin: ${plugin}`);
 }
 
-export function disablePlugin(plugin: string) {
+export async function disablePlugin(plugin: string) {
     const settingsPlugins = window.Aliucord.settings.get("plugins", {});
     disabledPlugins[plugin] = plugins[plugin].manifest;
 
-    plugins[plugin].stop();
-    settingsPlugins[plugin] = false;
-    delete plugins[plugin];
+    try {
+        await plugins[plugin].stop();
+        settingsPlugins[plugin] = false;
+        delete plugins[plugin];
+    } catch (err) {
+        logger.error(`Failed while stopping plugin: ${plugin}\n`, err);
+    }
 
     window.Aliucord.settings.set("plugins", settingsPlugins);
     logger.info(`Disabled plugin: ${plugin}`);
@@ -76,7 +85,11 @@ export async function startPlugins() {
                         if (manifest.name !== pluginClass.name) throw new Error(`Plugin ${manifest.name} must export a class named ${manifest.name}`);
                         logger.info(`Loading Plugin ${manifest.name}...`);
                         const plugin = plugins[manifest.name] = new pluginClass(manifest);
-                        plugin.start();
+                        try {
+                            await plugin.start();
+                        } catch (err) {
+                            logger.error(`Failed while trying to start plugin: ${plugin.manifest.name}`, err);
+                        }
                     } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
                 } catch (err) {
                     logger.error(`Failed while loading Plugin: ${manifest.name}\n`, err);
