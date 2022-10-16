@@ -1,10 +1,10 @@
 import { disablePlugin, enablePlugin, isPluginEnabled } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
-import { Constants, Forms, React, ReactNative, Styles } from "../metro";
-import { getByProps } from "../metro/index";
+import { Constants, Forms, React, ReactNative, Styles, getModule, getByProps } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList, Image } = ReactNative;
+const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -54,6 +54,16 @@ const styles = Styles.createThemedStyleSheet({
         color: Styles.ThemeColorMap.TEXT_NORMAL,
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         textAlign: "center"
+    },
+    search: {
+        margin: 0,
+        marginBottom: 0,
+        paddingBottom: 5,
+        paddingRight: 15,
+        paddingLeft: 15,
+        backgroundColor: "none",
+        borderBottomWidth: 0,
+        background: "none"
     }
 });
 
@@ -99,18 +109,49 @@ export default function PluginsPage() {
         ...Object.values(window.Aliucord.pluginManager.plugins).map(p => p.manifest),
         ...Object.values(window.Aliucord.pluginManager.disabledPlugins)
     ];
-    return (
+    const [search, setSearch] = React.useState(String);
+
+    const entities = search ? plugins.filter(p => {
+        if (p.name.toLowerCase().includes(search.toLowerCase())) {
+            return true;
+        }
+
+        if (p.description.toLowerCase().includes(search.toLowerCase())) {
+            return true;
+        }
+
+        if (p.authors?.find?.(a => (a.name ?? a).toLowerCase().includes(search.toLowerCase()))) {
+            return true;
+        }
+
+        return false;
+    }) : plugins;
+
+    return (<>
+        <Search
+            style={styles.search}
+            placeholder='Search plugins...'
+            onChangeText={(v: string) => setSearch(v)}
+        />
         <View style={styles.container}>
-            {!plugins.length ?
-                <View style={styles.noPlugins}>
-                    <Image source={getAssetId("img_connection_empty_dark")} />
-                    <Text style={styles.noPluginsText}>
-                        You dont have any plugins installed.
-                    </Text>
-                </View>
+            {!entities.length ?
+                search ?
+                    <View style={styles.noPlugins}>
+                        <Image source={getAssetId("img_connection_empty_dark")} />
+                        <Text style={styles.noPluginsText}>
+                            No results were found.
+                        </Text>
+                    </View>
+                    :
+                    <View style={styles.noPlugins}>
+                        <Image source={getAssetId("img_connection_empty_dark")} />
+                        <Text style={styles.noPluginsText}>
+                            You dont have any plugins installed.
+                        </Text>
+                    </View>
                 :
                 <FlatList
-                    data={plugins}
+                    data={entities}
                     renderItem={({ item }) => <PluginCard
                         key={item.name}
                         plugin={item}
@@ -120,5 +161,6 @@ export default function PluginsPage() {
                 />
             }
         </View>
+    </>
     );
 }
