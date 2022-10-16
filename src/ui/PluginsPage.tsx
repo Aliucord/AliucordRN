@@ -20,7 +20,8 @@ const styles = Styles.createThemedStyleSheet({
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
     },
     header: {
-        flexDirection: "row"
+        flexDirection: "row",
+        flexWrap: "wrap"
     },
     bodyCard: {
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
