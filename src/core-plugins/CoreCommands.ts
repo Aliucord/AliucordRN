@@ -2,7 +2,7 @@ import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import { disabledPlugins, plugins, } from "../api/PluginManager";
 import { Plugin } from "../entities/Plugin";
-import { getByProps, i18n, MessageActions } from "../metro";
+import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
 
@@ -15,7 +15,7 @@ export default class CoreCommands extends Plugin {
             options: [
                 {
                     name: "message",
-                    description: i18n.Messages.COMMAND_SHRUG_MESSAGE_DESCRIPTION,
+                    description: Locale.Messages.COMMAND_SHRUG_MESSAGE_DESCRIPTION,
                     required: true,
                     type: ApplicationCommandOptionType.STRING
                 }

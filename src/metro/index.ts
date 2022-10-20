@@ -297,13 +297,13 @@ export const Toasts = getModule(m => (
 };
 
 export const RestAPI = getByProps("getAPIBaseURL", "get");
-export const i18n = getByProps("Messages");
 export const Flux = getByProps("connectStores");
 export const React = getByProps("createElement") as typeof import("react");
 export const ReactNative = getByProps("Text", "Image") as typeof import("react-native");
 export const Constants = getByProps("Fonts") as import("./constants").default;
 export const URLOpener = getByProps("openURL", "handleSupportedURL");
 export const Forms = getByProps("FormSection");
+export const Scenes = getByName("getScreens", { default: false });
 
 // Abandon all hope, ye who enter here
 type Style = ViewStyle & ImageStyle & TextStyle;
