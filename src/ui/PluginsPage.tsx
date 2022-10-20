@@ -107,7 +107,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 
 export default function PluginsPage() {
     const plugins: PluginManifest[] = [
-        ...Object.values(window.Aliucord.pluginManager.plugins).map(p => p.manifest),
+        ...Object.values(window.Aliucord.pluginManager.enabledPlugins).map(p => p.manifest),
         ...Object.values(window.Aliucord.pluginManager.disabledPlugins)
     ];
     const [search, setSearch] = React.useState(String);
