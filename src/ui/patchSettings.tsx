@@ -7,6 +7,7 @@ import AliucordPage from "./AliucordPage";
 import PluginsPage from "./PluginsPage";
 import UpdaterPage from "./UpdaterPage";
 import ThemesPage from "./ThemesPage";
+import ErrorsPage from "./ErrorsPage";
 
 export default function patchSettings() {
     const { FormSection, FormDivider, FormRow } = Forms;
@@ -34,6 +35,11 @@ export default function patchSettings() {
                 key: "AliucordUpdater",
                 title: "Updater",
                 render: UpdaterPage
+            },
+            AliucordErrors: {
+                key: "AliucordErrors",
+                title: "Errors",
+                render: ErrorsPage
             }
         };
 
@@ -94,6 +100,15 @@ export default function patchSettings() {
                         trailing={FormRow.Arrow}
                         onPress={() =>
                             navigation.push("AliucordUpdater", { navigation })
+                        }
+                    />
+                    <FormDivider />
+                    <FormRow
+                        leading={<FormRow.Icon source={getAssetId("ic_settings")} />}
+                        label="Errors"
+                        trailing={FormRow.Arrow}
+                        onPress={() =>
+                            navigation.push("AliucordErrors", { navigation })
                         }
                     />
                 </FormSection>

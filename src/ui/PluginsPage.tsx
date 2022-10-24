@@ -3,7 +3,7 @@ import { PluginManifest } from "../entities/types";
 import { Constants, Forms, React, ReactNative, Styles, getModule, getByProps } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
-const { View, Text, FlatList, Image } = ReactNative;
+const { View, Text, FlatList, Image, ScrollView } = ReactNative;
 const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
@@ -48,7 +48,7 @@ const styles = Styles.createThemedStyleSheet({
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        marginTop: "50%"
+        marginTop: "10%"
     },
     noPluginsText: {
         marginTop: 10,
@@ -134,7 +134,7 @@ export default function PluginsPage() {
             placeholder='Search plugins...'
             onChangeText={(v: string) => setSearch(v)}
         />
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             {!entities.length ?
                 search ?
                     <View style={styles.noPlugins}>
@@ -161,7 +161,6 @@ export default function PluginsPage() {
                     style={styles.list}
                 />
             }
-        </View>
-    </>
-    );
+        </ScrollView>
+    </>);
 }

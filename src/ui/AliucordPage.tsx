@@ -1,16 +1,17 @@
 import { useSettings } from "../api/Settings";
-import { Forms, React } from "../metro";
+import { Forms, React, ReactNative } from "../metro";
 import { URLOpener } from "../metro/index";
 import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../utils/constants";
 import { getAssetId } from "../utils/getAssetId";
 
 const { FormSection, FormSwitch, FormRow } = Forms;
+const { ScrollView } = ReactNative;
 
 export default function AliucordPage() {
     const settings = useSettings(window.Aliucord.settings);
 
-    return (
-        <>
+    return (<>
+        <ScrollView>
             <FormSection title="Settings" /* Nice prop name discord */ android_noDivider={true}>
                 <FormRow
                     label="Automatically disable plugins on crash"
@@ -45,6 +46,6 @@ export default function AliucordPage() {
                     onPress={() => URLOpener.openURL(ALIUCORD_PATREON)}
                 />
             </FormSection>
-        </>
-    );
+        </ScrollView>
+    </>);
 }

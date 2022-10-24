@@ -87,8 +87,9 @@ export async function startPlugins() {
                         const plugin = enabledPlugins[manifest.name] = new pluginClass(manifest);
                         try {
                             await plugin.start();
-                        } catch (err) {
+                        } catch (err: any) {
                             logger.error(`Failed while trying to start plugin: ${plugin.manifest.name}`, err);
+                            plugin.errors = err.stack;
                         }
                     } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
                 } catch (err) {
