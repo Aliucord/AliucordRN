@@ -89,6 +89,7 @@ export async function startPlugins() {
                             await plugin.start();
                         } catch (err: any) {
                             logger.error(`Failed while trying to start plugin: ${plugin.manifest.name}`, err);
+                            Toasts.open({ content: `${plugin.manifest.name} had an error.`, source: getAssetId("Small")});
                             plugin.errors = err.stack;
                         }
                     } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
