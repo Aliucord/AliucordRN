@@ -22,24 +22,29 @@ export async function enablePlugin(plugin: string) {
 
     settingsPlugins[plugin] = true;
     window.Aliucord.settings.set("plugins", settingsPlugins);
-
-    const bundleZip = new ZipFile(PLUGINS_DIRECTORY + `${plugin}.zip`, 0, "r");
-    const pluginBuffer = loadPluginBundle(bundleZip);
-
-    bundleZip.close();
-
-    const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
-    const enabledPlugin = plugins[plugin] = new pluginClass(plugins[plugin].manifest);
-
     try {
-        await enabledPlugin.start();
-        enabledPlugin.enabled = true;
+        const bundleZip = new ZipFile(PLUGINS_DIRECTORY + `${plugin}.zip`, 0, "r");
+        const pluginBuffer = loadPluginBundle(bundleZip);
+
+        bundleZip.close();
+
+        const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
+        const enabledPlugin = plugins[plugin] = new pluginClass(plugins[plugin].manifest);
+
+        try {
+            await enabledPlugin.start();
+            enabledPlugin.enabled = true;
+        } catch (err) {
+            logger.error(`Failed while trying to start plugin: ${enabledPlugin.manifest.name}`, err);
+        }
+
+        Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
+        logger.info(`Enabled plugin: ${plugin}`);
     } catch (err) {
-        logger.error(`Failed while trying to start plugin: ${enabledPlugin.manifest.name}`, err);
+        logger.error(`Failed while trying to start plugin: ${plugin}`, err);
     }
 
-    Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
-    logger.info(`Enabled plugin: ${plugin}`);
+
 }
 
 export async function disablePlugin(plugin: string) {

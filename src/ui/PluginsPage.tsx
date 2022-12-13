@@ -1,4 +1,4 @@
-import { disablePlugin, enablePlugin, isPluginEnabled } from "../api/PluginManager";
+import { disablePlugin, enablePlugin, isPluginEnabled, plugins } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
 import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
@@ -106,26 +106,25 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 }
 
 export default function PluginsPage() {
-    const plugins: PluginManifest[] = [
-        ...Object.values(window.Aliucord.pluginManager.plugins).map(p => p.manifest)
-    ];
     const [search, setSearch] = React.useState(String);
 
-    const entities = search ? plugins.filter(p => {
-        if (p.name.toLowerCase().includes(search.toLowerCase())) {
+    const entities = search ? Object.values(plugins).filter(p => {
+        const { name, description, authors } = p.manifest;
+
+        if (name.toLowerCase().includes(search.toLowerCase())) {
             return true;
         }
 
-        if (p.description.toLowerCase().includes(search.toLowerCase())) {
+        if (description.toLowerCase().includes(search.toLowerCase())) {
             return true;
         }
 
-        if (p.authors?.find?.(a => (a.name ?? a).toLowerCase().includes(search.toLowerCase()))) {
+        if (authors?.find?.(a => (a.name ?? a).toLowerCase().includes(search.toLowerCase()))) {
             return true;
         }
 
         return false;
-    }) : plugins;
+    }) : Object.values(plugins);
 
     return (<>
         <Search
@@ -154,7 +153,7 @@ export default function PluginsPage() {
                     data={entities}
                     renderItem={({ item }) => <PluginCard
                         key={item.name}
-                        plugin={item}
+                        plugin={item.manifest}
                     />}
                     keyExtractor={plugin => plugin.name}
                     style={styles.list}
