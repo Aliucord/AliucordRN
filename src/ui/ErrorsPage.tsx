@@ -1,5 +1,5 @@
-import { enabledPlugins } from "../api";
-import { Constants, React, Styles, ReactNative, Forms } from "../metro";
+import { plugins } from "../api";
+import { Constants, Forms, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils";
 
 const { Image, ScrollView, View, Text, FlatList } = ReactNative;
@@ -8,7 +8,7 @@ interface PluginLogs {
     plugin: {
         version: string;
         name: string;
-    }
+    };
     errors: Record<string, string>;
 }[];
 
@@ -74,7 +74,7 @@ function ErrorCard({ log }: { log: PluginLogs; }) {
                             {log.plugin.name} (v{log.plugin.version}) had an error.
                         </Text>
                     </View>)
-                }/>
+                } />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText}>{log.errors}</Forms.FormText>
             </View>
@@ -84,7 +84,7 @@ function ErrorCard({ log }: { log: PluginLogs; }) {
 
 export default function ErrorsPage() {
     const errors = [
-        ...Object.values(enabledPlugins).map(p => {
+        ...Object.values(plugins).map(p => {
             let logs!: PluginLogs;
             if (Object.keys(p.errors).length) logs = { plugin: { name: p.manifest.name, version: p.manifest.version }, errors: p.errors };
 

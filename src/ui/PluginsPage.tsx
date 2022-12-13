@@ -1,6 +1,6 @@
 import { disablePlugin, enablePlugin, isPluginEnabled } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
-import { Constants, Forms, React, ReactNative, Styles, getModule, getByProps } from "../metro";
+import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList, Image, ScrollView } = ReactNative;
@@ -107,8 +107,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 
 export default function PluginsPage() {
     const plugins: PluginManifest[] = [
-        ...Object.values(window.Aliucord.pluginManager.enabledPlugins).map(p => p.manifest),
-        ...Object.values(window.Aliucord.pluginManager.disabledPlugins)
+        ...Object.values(window.Aliucord.pluginManager.plugins).map(p => p.manifest)
     ];
     const [search, setSearch] = React.useState(String);
 

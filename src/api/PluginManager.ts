@@ -2,7 +2,6 @@ import Badges from "../core-plugins/Badges";
 import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
-import { PluginManifest } from "../entities";
 import { Plugin } from "../entities/Plugin";
 import { Toasts } from "../metro";
 import { readdir } from "../native/fs";
@@ -11,8 +10,7 @@ import { PLUGINS_DIRECTORY } from "../utils/constants";
 import { Logger } from "../utils/Logger";
 
 const logger = new Logger("PluginManager");
-export const enabledPlugins = {} as Record<string, Plugin>;
-export const disabledPlugins = {} as Record<string, PluginManifest>;
+export const plugins = {} as Record<string, Plugin>;
 
 export function isPluginEnabled(plugin: string) {
     return window.Aliucord.settings.get("plugins", {})[plugin] !== false;
@@ -31,11 +29,11 @@ export async function enablePlugin(plugin: string) {
     bundleZip.close();
 
     const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
-    const enabledPlugin = enabledPlugins[plugin] = new pluginClass(disabledPlugins[plugin]);
-    delete disabledPlugins[plugin];
+    const enabledPlugin = plugins[plugin] = new pluginClass(plugins[plugin].manifest);
 
     try {
         await enabledPlugin.start();
+        enabledPlugin.enabled = true;
     } catch (err) {
         logger.error(`Failed while trying to start plugin: ${enabledPlugin.manifest.name}`, err);
     }
@@ -46,12 +44,11 @@ export async function enablePlugin(plugin: string) {
 
 export async function disablePlugin(plugin: string) {
     const settingsPlugins = window.Aliucord.settings.get("plugins", {});
-    disabledPlugins[plugin] = enabledPlugins[plugin].manifest;
 
     try {
-        await enabledPlugins[plugin].stop();
+        await plugins[plugin].stop();
+        plugins[plugin].enabled = false;
         settingsPlugins[plugin] = false;
-        delete enabledPlugins[plugin];
     } catch (err) {
         logger.error(`Failed while stopping plugin: ${plugin}\n`, err);
     }
@@ -71,11 +68,7 @@ export async function startPlugins() {
                 const manifest = JSON.parse(zip.readEntry("text"));
                 zip.closeEntry();
 
-                if (manifest.name in enabledPlugins) throw new Error(`Plugin ${manifest.name} already registered`);
-                if (!isPluginEnabled(manifest.name)) {
-                    disabledPlugins[manifest.name] = manifest;
-                    continue;
-                }
+                if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
 
                 const pluginBuffer = loadPluginBundle(zip);
 
@@ -84,12 +77,17 @@ export async function startPlugins() {
                     if (pluginClass.prototype instanceof Plugin) {
                         if (manifest.name !== pluginClass.name) throw new Error(`Plugin ${manifest.name} must export a class named ${manifest.name}`);
                         logger.info(`Loading Plugin ${manifest.name}...`);
-                        const plugin = enabledPlugins[manifest.name] = new pluginClass(manifest);
+                        const plugin = plugins[manifest.name] = new pluginClass(manifest);
+                        if (!isPluginEnabled(manifest.name)) {
+                            plugin.enabled = false;
+                            continue;
+                        }
                         try {
                             await plugin.start();
+                            plugin.enabled = true;
                         } catch (err: any) {
                             logger.error(`Failed while trying to start plugin: ${plugin.manifest.name}`, err);
-                            Toasts.open({ content: `${plugin.manifest.name} had an error.`, source: getAssetId("Small")});
+                            Toasts.open({ content: `${plugin.manifest.name} had an error.`, source: getAssetId("Small") });
                             plugin.errors = err.stack;
                         }
                     } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
