@@ -13,7 +13,7 @@ export class Plugin<SettingsSchema = any> {
     public readonly patcher = new Patcher(this.name);
     public readonly settings = new Settings<SettingsSchema>(this.name);
     public errors = {} as Record<string, string>;
-    public enabled = {} as Boolean;
+    public enabled = {} as boolean;
     public constructor(public readonly manifest: PluginManifest) { }
 
     public get name() {
