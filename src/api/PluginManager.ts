@@ -99,9 +99,11 @@ export async function startPlugins() {
                     } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
                 } catch (err) {
                     logger.error(`Failed while loading Plugin: ${manifest.name}\n`, err);
+                    Toasts.open({ content: `Failed while loading Plugin: ${manifest.name}`, source: getAssetId("Small") });
                 }
             } catch (err) {
                 logger.error(`Failed while loading Plugin ZIP: ${file.name}\n`, err);
+                Toasts.open({ content: `Failed while loading Plugin ZIP: ${file.name}`, source: getAssetId("Small") });
             } finally {
                 zip.close();
             }
