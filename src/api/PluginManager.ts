@@ -42,6 +42,7 @@ export async function enablePlugin(plugin: string) {
         logger.info(`Enabled plugin: ${plugin}`);
     } catch (err) {
         logger.error(`Failed while trying to start plugin: ${plugin}`, err);
+        Toasts.open({ content: `${plugin} had an error.`, source: getAssetId("Small") });
     }
 
 
