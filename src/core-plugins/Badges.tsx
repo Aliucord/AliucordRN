@@ -2,7 +2,7 @@ import { Plugin } from "../entities";
 import { getByName, React, ReactNative, Styles, Toasts } from "../metro";
 import { after } from "../utils/patcher";
 
-const { View, Image, TouchableOpacity } = ReactNative;
+const { View, Image, Pressable } = ReactNative;
 
 interface BadgeOwner {
     roles: string[];
@@ -33,40 +33,45 @@ const roles = {
 
 export default class Badges extends Plugin {
     start() {
-        const ProfileBadges = getByName("ProfileBadges");
+        const ProfileBadges = getByName("ProfileBadges", { default: false });
 
         const styles = Styles.createThemedStyleSheet({
             container: {
-                marginTop: -40,
-                justifyContent: "flex-end"
+                flexDirection: "row",
+                alignItems: "center",
+                flexWrap: "wrap",
+                justifyContent: "flex-end",
             },
             img: {
                 width: 24,
                 height: 24,
-                resizeMode: "contain"
+                resizeMode: "contain",
+                marginHorizontal: 2
             }
         });
 
         const cache: Record<string, Badge[]> = {};
 
-        after(ProfileBadges, "default", (ctx, component) => {
+        after(ProfileBadges, "default", (ctx) => {
             const user = ctx.args[0]?.user;
             if (user === undefined) return;
 
             const badges = cache[user.id];
             if (badges !== undefined) {
                 const renderedBadges = badges.map(badge => {
-                    return <TouchableOpacity key={badge.url} onPress={() => {
+                    return <Pressable key={badge.url} onPress={() => {
                         Toasts.open({
                             content: badge.text,
                             source: { uri: badge.url }
                         });
                     }}>
                         <Image source={{ uri: badge.url }} style={styles.img} />
-                    </TouchableOpacity>;
+                    </Pressable>;
                 });
 
-                ctx.result = [component, <View key="aliu-badges" style={styles.container}>{renderedBadges}</View>];
+                if (!ctx.result) return <View key="aliu-badges" style={styles.container}>{renderedBadges}</View>;
+
+                ctx.result.props.children.push(<View key="aliu-badges" style={styles.container}>{renderedBadges}</View>);
                 return;
             }
 

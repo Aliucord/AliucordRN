@@ -1,5 +1,5 @@
 import { sha } from "aliucord-version";
-import { Forms, getByName, Locale, React } from "../metro";
+import { Forms, getByName, Locale, React, Scenes } from "../metro";
 import { findInReactTree } from "../utils/findInReactTree";
 import { after } from "../utils/patcher";
 import { getAssetId } from "../utils/getAssetId";
@@ -7,26 +7,40 @@ import AliucordPage from "./AliucordPage";
 import PluginsPage from "./PluginsPage";
 import UpdaterPage from "./UpdaterPage";
 import ThemesPage from "./ThemesPage";
+import ErrorsPage from "./ErrorsPage";
 
 export default function patchSettings() {
-    const { FormSection, FormRow } = Forms;
+    const { FormSection, FormDivider, FormRow } = Forms;
     const UserSettingsOverviewWrapper = getByName("UserSettingsOverviewWrapper", { default: false });
-    after(getByName("getScreens"), "default", (_, res) => {
-        res.ASettings = {
-            title: "Aliucord",
-            render: AliucordPage
-        };
-        res.APlugins = {
-            title: "Plugins",
-            render: PluginsPage
-        };
-        res.AThemes = {
-            title: "Themes",
-            render: ThemesPage
-        };
-        res.AUpdater = {
-            title: "Updater",
-            render: UpdaterPage
+
+    after(Scenes, "default", (_, res) => {
+        return {
+            ...res,
+            Aliucord: {
+                key: "Aliucord",
+                title: "Aliucord",
+                render: AliucordPage
+            },
+            AliucordPlugins: {
+                key: "AliucordPlugins",
+                title: "Plugins",
+                render: PluginsPage
+            },
+            AliucordThemes: {
+                key: "AliucordThemes",
+                title: "Themes",
+                render: ThemesPage
+            },
+            AliucordUpdater: {
+                key: "AliucordUpdater",
+                title: "Updater",
+                render: UpdaterPage
+            },
+            AliucordErrors: {
+                key: "AliucordErrors",
+                title: "Errors",
+                render: ErrorsPage
+            }
         };
 
         // TODO: add APluginWrapper and make it work?
@@ -44,8 +58,9 @@ export default function patchSettings() {
             }
         });
 
-        after(Overview.type.prototype, "render", (_, { props }) => {
+        after(Overview.type.prototype, "render", (res, { props }) => {
             const { children } = props;
+            const { navigation } = res.thisObject.props;
 
             const searchable = [Locale.Messages["BILLING_SETTINGS"], Locale.Messages["PREMIUM_SETTINGS"]];
             const index = children.findIndex(x => searchable.includes(x.props.title));
@@ -57,31 +72,43 @@ export default function patchSettings() {
                         label="Aliucord"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            Overview.props.navigation.push("ASettings")
+                            navigation.push("Aliucord", { navigation })
                         }
                     />
+                    <FormDivider />
                     <FormRow
                         leading={<FormRow.Icon source={getAssetId("ic_settings")} />}
                         label="Plugins"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            Overview.props.navigation.push("APlugins")
+                            navigation.push("AliucordPlugins", { navigation })
                         }
                     />
+                    <FormDivider />
                     <FormRow
                         leading={<FormRow.Icon source={getAssetId("ic_theme_24px")} />}
                         label="Themes"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            Overview.props.navigation.push("AThemes")
+                            navigation.push("AliucordThemes", { navigation })
                         }
                     />
+                    <FormDivider />
                     <FormRow
                         leading={<FormRow.Icon source={getAssetId("ic_share_ios")} />}
                         label="Updater"
                         trailing={FormRow.Arrow}
                         onPress={() =>
-                            Overview.props.navigation.push("AUpdater")
+                            navigation.push("AliucordUpdater", { navigation })
+                        }
+                    />
+                    <FormDivider />
+                    <FormRow
+                        leading={<FormRow.Icon source={getAssetId("ic_settings")} />}
+                        label="Errors"
+                        trailing={FormRow.Arrow}
+                        onPress={() =>
+                            navigation.push("AliucordErrors", { navigation })
                         }
                     />
                 </FormSection>

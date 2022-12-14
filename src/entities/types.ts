@@ -7,5 +7,5 @@ export interface PluginManifest {
 
 export interface PluginAuthor {
     id: string;
-    username: string;
+    name: string;
 }

@@ -1,15 +1,19 @@
 import { Constants, React, Styles, ReactNative } from "../metro";
 import { getAssetId } from "../utils";
 
-const { Image, View, Text } = ReactNative;
+const { Image, View, Text, ScrollView } = ReactNative;
 
 const styles = Styles.createThemedStyleSheet({
+    container: {
+        flex: 1,
+        padding: 5
+    },
     noThemes: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        marginTop: "50%"
+        marginTop: "10%"
     },
     noThemesText: {
         marginTop: 10,
@@ -20,14 +24,14 @@ const styles = Styles.createThemedStyleSheet({
 });
 
 export default function ThemesPage() {
-    return (
-        <>
+    return (<>
+        <ScrollView style={styles.container}>
             <View style={styles.noThemes}>
                 <Image source={getAssetId("img_connection_empty_dark")} />
                 <Text style={styles.noThemesText}>
                     Themes are coming soon.
                 </Text>
             </View>
-        </>
-    );
+        </ScrollView>
+    </>);
 }

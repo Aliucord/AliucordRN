@@ -1,10 +1,10 @@
-import { disablePlugin, enablePlugin, isPluginEnabled } from "../api/PluginManager";
+import { disablePlugin, enablePlugin, isPluginEnabled, plugins } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
-import { Constants, Forms, React, ReactNative, Styles } from "../metro";
-import { getByProps } from "../metro/index";
+import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
-const { View, Text, FlatList, Image } = ReactNative;
+const { View, Text, FlatList, Image, ScrollView } = ReactNative;
+const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -20,7 +20,8 @@ const styles = Styles.createThemedStyleSheet({
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
     },
     header: {
-        flexDirection: "row"
+        flexDirection: "row",
+        flexWrap: "wrap"
     },
     bodyCard: {
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
@@ -47,13 +48,23 @@ const styles = Styles.createThemedStyleSheet({
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
-        marginTop: "50%"
+        marginTop: "10%"
     },
     noPluginsText: {
         marginTop: 10,
         color: Styles.ThemeColorMap.TEXT_NORMAL,
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         textAlign: "center"
+    },
+    search: {
+        margin: 0,
+        marginBottom: 0,
+        paddingBottom: 5,
+        paddingRight: 15,
+        paddingLeft: 15,
+        backgroundColor: "none",
+        borderBottomWidth: 0,
+        background: "none"
     }
 });
 
@@ -74,7 +85,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                                 style={styles.link}
                                 onPress={() => getByProps("showUserProfile").showUserProfile({ userId: a.id })}
                             >
-                                {a.username}{i !== plugin.authors.length - 1 && ","}
+                                {a.name}{i !== plugin.authors.length - 1 && ","}
                             </Text>
                         ))}
                     </View>)}
@@ -95,34 +106,59 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 }
 
 export default function PluginsPage() {
-    const plugins: PluginManifest[] = Object.values(window.Aliucord.pluginManager.plugins).map((plugin) => (
-        {
-            name: plugin.name,
-            description: plugin.manifest.description,
-            version: plugin.manifest.version,
-            authors: plugin.manifest.authors
+    const [search, setSearch] = React.useState(String);
+
+    const entities = search ? Object.values(plugins).filter(p => {
+        const { name, description, authors } = p.manifest;
+
+        if (name.toLowerCase().includes(search.toLowerCase())) {
+            return true;
         }
-    ));
-    return (
-        <View style={styles.container}>
-            {!plugins.length ?
-                <View style={styles.noPlugins}>
-                    <Image source={getAssetId("img_connection_empty_dark")} />
-                    <Text style={styles.noPluginsText}>
-                        You dont have any plugins installed.
-                    </Text>
-                </View>
+
+        if (description.toLowerCase().includes(search.toLowerCase())) {
+            return true;
+        }
+
+        if (authors?.find?.(a => (a.name ?? a).toLowerCase().includes(search.toLowerCase()))) {
+            return true;
+        }
+
+        return false;
+    }) : Object.values(plugins);
+
+    return (<>
+        <Search
+            style={styles.search}
+            placeholder='Search plugins...'
+            onChangeText={(v: string) => setSearch(v)}
+        />
+        <ScrollView style={styles.container}>
+            {!entities.length ?
+                search ?
+                    <View style={styles.noPlugins}>
+                        <Image source={getAssetId("img_connection_empty_dark")} />
+                        <Text style={styles.noPluginsText}>
+                            No results were found.
+                        </Text>
+                    </View>
+                    :
+                    <View style={styles.noPlugins}>
+                        <Image source={getAssetId("img_connection_empty_dark")} />
+                        <Text style={styles.noPluginsText}>
+                            You dont have any plugins installed.
+                        </Text>
+                    </View>
                 :
                 <FlatList
-                    data={plugins}
+                    data={entities}
                     renderItem={({ item }) => <PluginCard
                         key={item.name}
-                        plugin={item}
+                        plugin={item.manifest}
                     />}
                     keyExtractor={plugin => plugin.name}
                     style={styles.list}
                 />
             }
-        </View>
-    );
+        </ScrollView>
+    </>);
 }

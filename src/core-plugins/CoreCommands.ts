@@ -1,8 +1,8 @@
 import { sha } from "aliucord-version";
-import { isPluginEnabled, plugins as installedPlugins } from "../api/PluginManager";
 import { ApplicationCommandOptionType } from "../api/Commands";
+import { plugins } from "../api/PluginManager";
 import { Plugin } from "../entities/Plugin";
-import { getByProps, i18n, MessageActions } from "../metro";
+import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
 
@@ -15,7 +15,7 @@ export default class CoreCommands extends Plugin {
             options: [
                 {
                     name: "message",
-                    description: i18n.Messages.COMMAND_SHRUG_MESSAGE_DESCRIPTION,
+                    description: Locale.Messages.COMMAND_SHRUG_MESSAGE_DESCRIPTION,
                     required: true,
                     type: ApplicationCommandOptionType.STRING
                 }
@@ -30,27 +30,19 @@ export default class CoreCommands extends Plugin {
             description: "Lists all installed Aliucord plugins",
             options: [],
             execute: (args, ctx) => {
-                const enabledPlugins: string[] = [];
-                const disabledPlugins: string[] = [];
+                const enabledplugins = Object.values(plugins).filter(p => p.enabled === true).map(p => p.manifest.name);
+                const disabledplugins = Object.values(plugins).filter(p => p.enabled === false).map(p => p.manifest.name);
 
-                for (const plugin in installedPlugins) {
-                    if (isPluginEnabled(plugin)) {
-                        enabledPlugins.push(plugin);
-                    } else {
-                        disabledPlugins.push(plugin);
-                    }
-                }
-
-                const plugins = `
-                **Total plugins**: **${Object.keys(installedPlugins).length}**
+                const message = `
+                **Total plugins**: **${Object.keys(plugins).length}**
                 
-                **Enabled plugins**: **${enabledPlugins.length}**
-                > ${enabledPlugins.join(", ") ? enabledPlugins.join(", ") : "None."}
+                **Enabled plugins**: **${enabledplugins.length}**
+                > ${enabledplugins.join(", ") || "None."}
                 
-                **Disabled plugins**: **${disabledPlugins.length}**
-                > ${disabledPlugins.join(", ") ? disabledPlugins.join(", ") : "None."}`;
+                **Disabled plugins**: **${disabledplugins.length}**
+                > ${disabledplugins.join(", ") || "None."}`;
 
-                ClydeUtils.sendBotMessage(ctx.channel.id, plugins.replaceAll("    ", ""));
+                ClydeUtils.sendBotMessage(ctx.channel.id, message.replaceAll("    ", ""));
             }
         });
 
@@ -91,7 +83,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha} (${Object.keys(installedPlugins).length} plugins)
+                        > Aliucord: ${sha} (${Object.keys(plugins).length} plugins)
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}
