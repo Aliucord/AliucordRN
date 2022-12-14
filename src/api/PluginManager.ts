@@ -34,7 +34,6 @@ export async function enablePlugin(plugin: string) {
         try {
             await enabledPlugin.start();
             enabledPlugin.enabled = true;
-            Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
             logger.info(`Enabled plugin: ${plugin}`);
         } catch (err) {
             logger.error(`Failed while trying to start plugin: ${enabledPlugin.manifest.name}`, err);
@@ -61,7 +60,6 @@ export async function disablePlugin(plugin: string) {
 
     window.Aliucord.settings.set("plugins", settingsPlugins);
     logger.info(`Disabled plugin: ${plugin}`);
-    Toasts.open({ content: `Disabled ${plugin}`, source: getAssetId("Small") });
 }
 
 export async function startPlugins() {
