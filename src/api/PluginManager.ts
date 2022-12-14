@@ -34,12 +34,12 @@ export async function enablePlugin(plugin: string) {
         try {
             await enabledPlugin.start();
             enabledPlugin.enabled = true;
+            Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
+            logger.info(`Enabled plugin: ${plugin}`);
         } catch (err) {
             logger.error(`Failed while trying to start plugin: ${enabledPlugin.manifest.name}`, err);
+            Toasts.open({ content: `${enabledPlugin.manifest.name} had an error while starting.`, source: getAssetId("Small") });
         }
-
-        Toasts.open({ content: `Enabled ${plugin}`, source: getAssetId("Check") });
-        logger.info(`Enabled plugin: ${plugin}`);
     } catch (err) {
         logger.error(`Failed while trying to start plugin: ${plugin}`, err);
         Toasts.open({ content: `${plugin} had an error.`, source: getAssetId("Small") });
