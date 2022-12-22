@@ -34,8 +34,8 @@ export async function load() {
         settings = new Settings("Aliucord");
         patchSettings();
 
-        startPlugins();
-        startCorePlugins();
+        await startCorePlugins();
+        await startPlugins();
         startReactDevTools();
         startDebugWs();
     } catch (err) {

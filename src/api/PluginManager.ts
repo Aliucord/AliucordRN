@@ -11,6 +11,7 @@ import { Logger } from "../utils/Logger";
 
 const logger = new Logger("PluginManager");
 export const plugins = {} as Record<string, Plugin>;
+export const corePlugins = {} as Record<string, Plugin>;
 
 export function isPluginEnabled(plugin: string) {
     return window.Aliucord.settings.get("plugins", {})[plugin] !== false;
@@ -35,7 +36,7 @@ export async function disablePlugin(plugin: string) {
         await plugins[plugin].stop();
         plugins[plugin].enabled = false;
     } catch (err) {
-        logger.error(`Failed while stopping plugin: ${plugin}\n`, err);
+        logger.error(`Failed to stop plugin ${plugin}\n`, err);
     }
 
     settingsPlugins[plugin] = false;
@@ -55,24 +56,39 @@ export async function startPlugins() {
     }
 }
 
-export function startCorePlugins() {
-    for (const pluginClass of [Badges, CommandHandler, CoreCommands, NoTrack]) {
+export async function startCorePlugins() {
+    const pluginClasses = [
+        Badges,
+        CommandHandler,
+        CoreCommands,
+        NoTrack,
+    ];
+
+    for (const pluginClass of pluginClasses) {
         const { name } = pluginClass;
+
         try {
             logger.info(`Starting core plugin ${name}`);
-            new pluginClass({
+
+            const plugin = await new pluginClass({
                 name,
                 description: "",
                 version: "1.0.0",
                 authors: [{ name: "Aliucord", id: "000000000000000000" }]
-            }).start();
-        } catch (e) {
-            logger.error("Failed to start " + name, e);
+            });
+
+            corePlugins[name] = plugin;
+            await plugin.start();
+        } catch (err: any) {
+            if (plugins[name]) plugins[name].errors = err.stack;
+            logger.error("Failed to start " + name, err);
         }
     }
 }
 
 async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
+    if (plugins[pluginZip]) return plugins[pluginZip];
+
     logger.info(`Loading plugin from ${pluginZip}.zip`);
 
     let pluginName: string | null = null;
@@ -85,6 +101,13 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
         pluginName = manifest.name;
         zip.closeEntry();
 
+        if (!pluginName)
+            throw new Error(`Plugin ${pluginZip}.zip contains invalid manifest`);
+        if (plugins[pluginName]) {
+            logger.info(`Plugin ${pluginName} already loaded, skipping`);
+            return plugins[manifest.name];
+        }
+
         zip.openEntry("index.js.bundle");
         const pluginBuffer = zip.readEntry("binary");
         zip.closeEntry();
@@ -95,8 +118,6 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
             throw new Error(`Plugin ${pluginName} does not export a valid Plugin`);
         if (pluginName !== pluginClass.name)
             throw new Error(`Plugin ${pluginName} must export a class named ${pluginName}`);
-        if (plugins[pluginName])
-            throw new Error(`Plugin ${pluginName} already loaded!`);
 
         const loadedPlugin = new pluginClass(manifest);
         // @ts-ignore
@@ -117,8 +138,10 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
 
 async function startPlugin(plugin: string) {
     const loadedPlugin = plugins[plugin];
-    if (!loadedPlugin) throw new Error(`Plugin ${plugin} has not been loaded!`);
-    if (loadedPlugin.enabled) return;
+    if (!loadedPlugin)
+        throw new Error(`Plugin ${plugin} has not been loaded!`);
+    if (loadedPlugin.enabled)
+        return;
 
     try {
         logger.info(`Starting plugin ${plugin}`);
