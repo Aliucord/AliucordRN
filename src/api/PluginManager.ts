@@ -70,7 +70,7 @@ export async function startCorePlugins() {
         try {
             logger.info(`Starting core plugin ${name}`);
 
-            const plugin = await new pluginClass({
+            const plugin = new pluginClass({
                 name,
                 description: "",
                 version: "1.0.0",
