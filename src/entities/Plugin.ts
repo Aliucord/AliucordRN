@@ -8,6 +8,7 @@ import { PluginManifest } from "./types";
  * this.settings.get and this.settings.set validated and typed strongly
  */
 export class Plugin<SettingsSchema = any> {
+    private pluginBuffer?: ArrayBuffer;
     public readonly commands = new Commands(this.name);
     public readonly logger = new Logger(this.name);
     public readonly patcher = new Patcher(this.name);

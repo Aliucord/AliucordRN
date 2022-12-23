@@ -11,120 +11,148 @@ import { Logger } from "../utils/Logger";
 
 const logger = new Logger("PluginManager");
 export const plugins = {} as Record<string, Plugin>;
+export const corePlugins = {} as Record<string, Plugin>;
 
 export function isPluginEnabled(plugin: string) {
     return window.Aliucord.settings.get("plugins", {})[plugin] !== false;
 }
 
 export async function enablePlugin(plugin: string) {
+    if (isPluginEnabled(plugin)) return;
     const settingsPlugins = window.Aliucord.settings.get("plugins", {});
-    if (isPluginEnabled(plugin)) throw new Error(`Plugin ${plugin} is already enabled.`);
-
     settingsPlugins[plugin] = true;
     window.Aliucord.settings.set("plugins", settingsPlugins);
-    try {
-        const bundleZip = new ZipFile(PLUGINS_DIRECTORY + `${plugin}.zip`, 0, "r");
-        const pluginBuffer = loadPluginBundle(bundleZip);
 
-        bundleZip.close();
-
-        const pluginClass = AliuHermes.run(plugin, pluginBuffer) as typeof Plugin;
-        const enabledPlugin = plugins[plugin] = new pluginClass(plugins[plugin].manifest);
-
-        try {
-            await enabledPlugin.start();
-            enabledPlugin.enabled = true;
-            logger.info(`Enabled plugin: ${plugin}`);
-        } catch (err) {
-            logger.error(`Failed while trying to start plugin: ${enabledPlugin.manifest.name}`, err);
-            Toasts.open({ content: `${enabledPlugin.manifest.name} had an error while starting.`, source: getAssetId("Small") });
-        }
-    } catch (err) {
-        logger.error(`Failed while trying to start plugin: ${plugin}`, err);
-        Toasts.open({ content: `${plugin} had an error.`, source: getAssetId("Small") });
-    }
-
-
+    await loadPlugin(plugin);
+    await startPlugin(plugin);
 }
 
 export async function disablePlugin(plugin: string) {
+    if (!isPluginEnabled(plugin)) return;
     const settingsPlugins = window.Aliucord.settings.get("plugins", {});
 
     try {
+        logger.info(`Stopping plugin ${plugin}`);
         await plugins[plugin].stop();
         plugins[plugin].enabled = false;
-        settingsPlugins[plugin] = false;
     } catch (err) {
-        logger.error(`Failed while stopping plugin: ${plugin}\n`, err);
+        logger.error(`Failed to stop plugin ${plugin}\n`, err);
     }
 
+    settingsPlugins[plugin] = false;
     window.Aliucord.settings.set("plugins", settingsPlugins);
-    logger.info(`Disabled plugin: ${plugin}`);
 }
 
 export async function startPlugins() {
     for (const file of readdir(PLUGINS_DIRECTORY)) {
-        if (file.name.endsWith(".zip")) {
-            logger.info(`Running Plugin ZIP: ${file.name}`);
-            const zip = new ZipFile(PLUGINS_DIRECTORY + file.name, 0, "r");
-            try {
-                zip.openEntry("manifest.json");
-                const manifest = JSON.parse(zip.readEntry("text"));
-                zip.closeEntry();
+        if (!file.name.endsWith(".zip")) return;
 
-                if (manifest.name in plugins) throw new Error(`Plugin ${manifest.name} already registered`);
+        const plugin = await loadPlugin(file.name);
+        if (!plugin) continue;
 
-                const pluginBuffer = loadPluginBundle(zip);
-
-                const pluginClass = AliuHermes.run(file.name, pluginBuffer) as typeof Plugin;
-                try {
-                    if (pluginClass.prototype instanceof Plugin) {
-                        if (manifest.name !== pluginClass.name) throw new Error(`Plugin ${manifest.name} must export a class named ${manifest.name}`);
-                        logger.info(`Loading Plugin ${manifest.name}...`);
-                        const plugin = plugins[manifest.name] = new pluginClass(manifest);
-                        if (!isPluginEnabled(manifest.name)) {
-                            plugin.enabled = false;
-                            continue;
-                        }
-                        try {
-                            await plugin.start();
-                            plugin.enabled = true;
-                        } catch (err: any) {
-                            logger.error(`Failed while trying to start plugin: ${plugin.manifest.name}`, err);
-                            Toasts.open({ content: `${plugin.manifest.name} had an error.`, source: getAssetId("Small") });
-                            plugin.errors = err.stack;
-                        }
-                    } else throw new Error(`Plugin ${manifest.name} does not export a valid Plugin`);
-                } catch (err) {
-                    logger.error(`Failed while loading Plugin: ${manifest.name}\n`, err);
-                    Toasts.open({ content: `Failed while loading Plugin: ${manifest.name}`, source: getAssetId("Small") });
-                }
-            } catch (err) {
-                logger.error(`Failed while loading Plugin ZIP: ${file.name}\n`, err);
-                Toasts.open({ content: `Failed while loading Plugin ZIP: ${file.name}`, source: getAssetId("Small") });
-            } finally {
-                zip.close();
-            }
+        if (isPluginEnabled(plugin.name)) {
+            await startPlugin(plugin.name);
         }
     }
 }
 
-export function startCorePlugins() {
-    for (const pluginClass of [Badges, CommandHandler, CoreCommands, NoTrack]) {
+export async function startCorePlugins() {
+    const pluginClasses = [
+        Badges,
+        CommandHandler,
+        CoreCommands,
+        NoTrack,
+    ];
+
+    for (const pluginClass of pluginClasses) {
         const { name } = pluginClass;
+
         try {
-            logger.info("Loading CorePlugin: " + name);
-            new pluginClass({ name, description: "", version: "1.0.0", authors: [{ name: "Aliucord", id: "000000000000000000" }] }).start();
-        } catch (e) {
-            logger.error("Failed to start CorePlugin: " + name, e);
+            logger.info(`Starting core plugin ${name}`);
+
+            const plugin = new pluginClass({
+                name,
+                description: "",
+                version: "1.0.0",
+                authors: [{ name: "Aliucord", id: "000000000000000000" }]
+            });
+
+            corePlugins[name] = plugin;
+            await plugin.start();
+        } catch (err: any) {
+            if (plugins[name]) plugins[name].errors = err.stack;
+            logger.error("Failed to start " + name, err);
         }
     }
 }
 
-function loadPluginBundle(zip: ZipFile) {
-    zip.openEntry("index.js.bundle");
-    const pluginBuffer = zip.readEntry("binary");
-    zip.closeEntry();
+async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
+    if (plugins[pluginZip]) return plugins[pluginZip];
 
-    return pluginBuffer;
+    logger.info(`Loading plugin from ${pluginZip}.zip`);
+
+    let pluginName: string | null = null;
+
+    try {
+        const zip = new ZipFile(PLUGINS_DIRECTORY + pluginZip, 0, "r");
+
+        zip.openEntry("manifest.json");
+        const manifest = JSON.parse(zip.readEntry("text"));
+        pluginName = manifest.name;
+        zip.closeEntry();
+
+        if (!pluginName)
+            throw new Error(`Plugin ${pluginZip}.zip contains invalid manifest`);
+        if (plugins[pluginName]) {
+            logger.info(`Plugin ${pluginName} already loaded, skipping`);
+            return plugins[manifest.name];
+        }
+
+        zip.openEntry("index.js.bundle");
+        const pluginBuffer = zip.readEntry("binary");
+        zip.closeEntry();
+        zip.close();
+
+        const pluginClass = AliuHermes.run(pluginZip, pluginBuffer) as typeof Plugin;
+        if (!(pluginClass?.prototype instanceof Plugin))
+            throw new Error(`Plugin ${pluginName} does not export a valid Plugin`);
+        if (pluginName !== pluginClass.name)
+            throw new Error(`Plugin ${pluginName} must export a class named ${pluginName}`);
+
+        const loadedPlugin = new pluginClass(manifest);
+        // @ts-ignore
+        loadedPlugin.pluginBuffer = pluginBuffer;
+        loadedPlugin.enabled = false;
+        plugins[manifest.name] = loadedPlugin;
+
+        return loadedPlugin;
+    } catch (err) {
+        logger.error(`Error loading plugin ${pluginName} from ${pluginZip}`, err);
+        Toasts.open({
+            content: `Error trying to load plugin ${pluginName}`,
+            source: getAssetId("Small")
+        });
+        return null;
+    }
+}
+
+async function startPlugin(plugin: string) {
+    const loadedPlugin = plugins[plugin];
+    if (!loadedPlugin)
+        throw new Error(`Plugin ${plugin} has not been loaded!`);
+    if (loadedPlugin.enabled)
+        return;
+
+    try {
+        logger.info(`Starting plugin ${plugin}`);
+        await loadedPlugin.start();
+        loadedPlugin.enabled = true;
+    } catch (err: any) {
+        loadedPlugin.errors = err.stack;
+        logger.error(`Failed while starting plugin: ${loadedPlugin.manifest.name}`, err);
+        Toasts.open({
+            content: `${loadedPlugin.manifest.name} had an error while starting.`,
+            source: getAssetId("Small")
+        });
+    }
 }
