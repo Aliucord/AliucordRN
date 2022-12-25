@@ -45,7 +45,7 @@ export async function disablePlugin(plugin: string) {
 
 export async function startPlugins() {
     for (const file of readdir(PLUGINS_DIRECTORY)) {
-        if (!file.name.endsWith(".zip")) return;
+        if (!file.name.endsWith(".zip")) continue;
 
         const plugin = await loadPlugin(file.name);
         if (!plugin) continue;
