@@ -250,6 +250,7 @@ export function searchByKeyword(keyword: string, skipConstants = true) {
 
 export const UserStore = getByStoreName("UserStore");
 export const GuildStore = getByStoreName("GuildStore");
+export const ThemeStore = getByStoreName("ThemeStore");
 export const ChannelStore = getByStoreName("ChannelStore");
 export const MessageStore = getByStoreName("MessageStore");
 export const GuildMemberStore = getByStoreName("GuildMemberStore");
@@ -262,6 +263,7 @@ export const FetchUserActions = getByProps("fetchProfile");
 export const ContextMenuActions = getByProps("openContextMenu");
 export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
 export const Locale = getByProps("Messages");
+export const AMOLEDThemeManager = getByProps("setAMOLEDThemeEnabled");
 
 export const Clipboard = getByProps("getString", "setString") as {
     getString(): Promise<string>,
@@ -304,6 +306,7 @@ export const Constants = getByProps("Fonts") as import("./constants").default;
 export const URLOpener = getByProps("openURL", "handleSupportedURL");
 export const Forms = getByProps("FormSection");
 export const Scenes = getByName("getScreens", { default: false });
+export const ThemeManager = getByProps("updateTheme", "overrideTheme");
 
 // Abandon all hope, ye who enter here
 type Style = ViewStyle & ImageStyle & TextStyle;

@@ -2,6 +2,7 @@ import { startCorePlugins, startPlugins } from "./api/PluginManager";
 import { Settings } from "./api/Settings";
 import { mkdir } from "./native/fs";
 import patchSettings from "./ui/patchSettings";
+import patchTheme from "./ui/patchTheme";
 import { PLUGINS_DIRECTORY, SETTINGS_DIRECTORY, THEME_DIRECTORY } from "./utils/constants";
 import { startDebugWs } from "./utils/debug/DebugWS";
 import { startReactDevTools } from "./utils/debug/ReactDevTools";
@@ -12,6 +13,7 @@ interface SettingsSchema {
     autoUpdatePlugins: boolean;
     disablePluginsOnCrash: boolean;
     plugins: Record<string, boolean>;
+    enableAMOLEDTheme: boolean;
 }
 
 export * as pluginManager from "./api/PluginManager";
@@ -33,6 +35,7 @@ export async function load() {
 
         settings = new Settings("Aliucord");
         patchSettings();
+        patchTheme();
 
         await startCorePlugins();
         await startPlugins();
