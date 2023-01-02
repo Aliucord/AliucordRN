@@ -1,22 +1,17 @@
 import { logger } from "../Aliucord";
-import { AMOLEDThemeManager, FluxDispatcher, ThemeManager, ThemeStore } from "../metro";
-import { patcher } from "../utils";
+import { AMOLEDThemeManager, FluxDispatcher, getByProps, ThemeManager, ThemeStore } from "../metro";
 
 export default function patchTheme() {
     logger.info("Patching theme...");
 
+    const AMOLEDState = getByProps("useAMOLEDTheme").useAMOLEDTheme;
     try {
         // Can't figure out where the AMOLED theme toggle is stored, so we'll just store it in Aliucord's settings
         if (AMOLEDThemeManager) {
-            if (window.Aliucord.settings.get("enableAMOLEDTheme", false)) {
+            if (AMOLEDState === 2) {
                 AMOLEDThemeManager.enableAMOLEDThemeOption();
                 logger.info("Enabled AMOLED theme");
             }
-
-            patcher.before(AMOLEDThemeManager, "setAMOLEDThemeEnabled", (_, enabled) => {
-                logger.info(`Setting AMOLED theme to ${enabled}`);
-                window.Aliucord.settings.set("enableAMOLEDTheme", enabled);
-            });
         } else {
             logger.error("Could not get AMOLEDThemeManager");
         }
