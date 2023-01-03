@@ -32,6 +32,10 @@ export function applyTheme() {
         Constants.Colors[key] = currentTheme.colors[key];
     }
 
+    if (currentTheme.unsafe_colors && currentTheme.unsafe_colors["CHAT_GREY"]) {
+        Constants.ThemeColorMap.CHAT_BACKGROUND[2] = currentTheme.unsafe_colors["CHAT_GREY"];
+    }
+
     AMOLEDThemeManager.enableAMOLEDThemeOption();
 }
 

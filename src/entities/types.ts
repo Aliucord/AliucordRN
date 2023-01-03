@@ -17,4 +17,6 @@ export type Theme = {
     version: string;
     theme_color_map: string[];
     colors: string[];
+    //Enmity only, just for compat
+    unsafe_colors?: string[];
 };

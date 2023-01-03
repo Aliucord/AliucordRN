@@ -24,10 +24,9 @@ export default class CommandHandler extends Plugin {
                 context.result = Commands._aliucordSection.icon;
         });
 
-        // borrowed from enmity
-        after(SearchStore.default, 'getQueryCommands', (ctx) => {
+        after(SearchStore.default, "getQueryCommands", (ctx) => {
             const [, , query] = ctx.args;
-            if (!query || query.startsWith('/')) return;
+            if (!query || query.startsWith("/")) return;
             ctx.result ??= [];
 
             for (const command of Commands._commands) {
@@ -45,7 +44,7 @@ export default class CommandHandler extends Plugin {
             }
         });
 
-        after(SearchStore, 'useDiscoveryState', (ctx) => {
+        after(SearchStore, "useDiscoveryState", (ctx) => {
             const [, type] = ctx.args;
             if (type !== 1) return;
 
@@ -84,10 +83,10 @@ export default class CommandHandler extends Plugin {
              * section to the section rail
              */
 
-            const builtIn = ctx.result.sectionDescriptors.filter(s => s.id === '-1');
+            const builtIn = ctx.result.sectionDescriptors.filter(s => s.id === "-1");
             if (builtIn.length > 1) {
-                ctx.result.sectionDescriptors = ctx.result.sectionDescriptors.filter(s => s.id !== '-1');
-                ctx.result.sectionDescriptors.push(builtIn.find(r => r.id === '-1'));
+                ctx.result.sectionDescriptors = ctx.result.sectionDescriptors.filter(s => s.id !== "-1");
+                ctx.result.sectionDescriptors.push(builtIn.find(r => r.id === "-1"));
             }
         });
     }
