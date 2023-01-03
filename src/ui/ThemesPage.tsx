@@ -1,4 +1,4 @@
-import { setTheme, themes } from "../api/Themer";
+import { currentTheme, setTheme, themes } from "../api/Themer";
 import { Theme } from "../entities";
 import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
@@ -69,7 +69,7 @@ const styles = Styles.createThemedStyleSheet({
 });
 
 function PluginCard({ theme }: { theme: Theme; }) {
-    //const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
+    const [isEnabled, setIsEnabled] = React.useState(currentTheme?.name === theme.name);
     return (
         <View style={styles.card}>
             <Forms.FormRow
@@ -88,8 +88,10 @@ function PluginCard({ theme }: { theme: Theme; }) {
                             </Text>
                         ))}
                     </View>)}
-                trailing={<Forms.FormSwitch value={false} onValueChange={v => {
+                trailing={<Forms.FormSwitch value={isEnabled} onValueChange={v => {
                     setTheme(theme);
+
+                    setIsEnabled(v);
                 }} />}
             />
             <View style={styles.bodyCard}>
@@ -123,7 +125,7 @@ export default function PluginsPage() {
     return (<>
         <Search
             style={styles.search}
-            placeholder='Search plugins...'
+            placeholder='Search themes...'
             onChangeText={(v: string) => setSearch(v)}
         />
         <ScrollView style={styles.container}>
@@ -139,7 +141,7 @@ export default function PluginsPage() {
                     <View style={styles.noThemes}>
                         <Image source={getAssetId("img_connection_empty_dark")} />
                         <Text style={styles.noThemesText}>
-                            You dont have any themes installed.
+                            You don't have any themes installed.
                         </Text>
                     </View>
                 :

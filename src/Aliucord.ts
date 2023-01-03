@@ -39,7 +39,7 @@ export async function load() {
         patchSettings();
         patchTheme();
 
-        themerInit();
+        await themerInit();
         await startCorePlugins();
         await startPlugins();
         startReactDevTools();

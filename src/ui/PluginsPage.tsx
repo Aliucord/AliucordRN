@@ -145,7 +145,7 @@ export default function PluginsPage() {
                     <View style={styles.noPlugins}>
                         <Image source={getAssetId("img_connection_empty_dark")} />
                         <Text style={styles.noPluginsText}>
-                            You dont have any plugins installed.
+                            You don't have any plugins installed.
                         </Text>
                     </View>
                 :

@@ -10,13 +10,14 @@ export const themes = {} as Record<string, Theme>;
 export let currentTheme: Theme;
 
 export function setTheme(theme: Theme) {
+    window.Aliucord.settings.set("theme", theme.name);
     currentTheme = theme;
     applyTheme();
 }
 
 export function applyTheme() {
+    if (currentTheme === undefined) return;
     AMOLEDThemeManager.setAMOLEDThemeEnabled(false);
-    window.Aliucord.settings.set("theme", currentTheme.name);
     for (const key in Constants.ThemeColorMap) {
         Constants.ThemeColorMap[key][2] = Constants.ThemeColorMap[key][0];
         if (currentTheme.theme_color_map[key]) {
@@ -35,8 +36,6 @@ export function applyTheme() {
 }
 
 export function themerInit() {
-    currentTheme = themes[window.Aliucord.settings.get("theme", "")];
-
     // Only those two are used
     AliuHermes.unfreeze(Constants.ThemeColorMap);
     AliuHermes.unfreeze(Constants.Colors);
@@ -48,6 +47,9 @@ export function themerInit() {
         themes[themeFile.name] = themeFile;
     }
 
+    currentTheme = themes[window.Aliucord.settings.get("theme", "")];
+
+    // Chat Box
     after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
         if (currentTheme === undefined) return;
 
