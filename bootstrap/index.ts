@@ -64,7 +64,6 @@
         const etag = is_latest.headers.get("etag")?.replaceAll('"', "").replace("W/", "");
 
         const internalBundlePath = `${cacheDirectory}/Aliucord.${etag}.js.bundle`;
-        console.log(internalBundlePath);
         if (!AliuFS.exists(internalBundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
 
         globalThis.aliucord = AliuHermes.run(internalBundlePath);
