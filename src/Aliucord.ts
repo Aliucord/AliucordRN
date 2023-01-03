@@ -1,5 +1,6 @@
 import { startCorePlugins, startPlugins } from "./api/PluginManager";
 import { Settings } from "./api/Settings";
+import { themerInit } from "./api/Themer";
 import { mkdir } from "./native/fs";
 import patchSettings from "./ui/patchSettings";
 import patchTheme from "./ui/patchTheme";
@@ -37,6 +38,7 @@ export async function load() {
         patchSettings();
         patchTheme();
 
+        themerInit();
         await startCorePlugins();
         await startPlugins();
         startReactDevTools();

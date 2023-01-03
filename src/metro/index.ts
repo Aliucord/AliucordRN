@@ -255,6 +255,7 @@ export const ChannelStore = getByStoreName("ChannelStore");
 export const MessageStore = getByStoreName("MessageStore");
 export const GuildMemberStore = getByStoreName("GuildMemberStore");
 export const SelectedChannelStore = getByStoreName("SelectedChannelStore");
+export const UnsyncedUserSettingsStore = getByStoreName("UnsyncedUserSettingsStore");
 
 export const ModalActions = getByProps("closeModal");
 export const MessageActions = getByProps("sendMessage", "receiveMessage");
