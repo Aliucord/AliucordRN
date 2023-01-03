@@ -38,9 +38,9 @@
         }
 
         const commits = await fetch("https://api.github.com/repos/Aliucord/AliucordRN/commits?sha=builds&path=Aliucord.js.bundle&per_page=1");
-        if (commits.status === 403) {
+        if (commits.status !== 200) {
             const internalBundlePath = `${codeCacheDirectory}/Aliucord.js.bundle`;
-            if (!AliuFS.exists(internalBundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
+            await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
             globalThis.aliucord = AliuHermes.run(internalBundlePath);
 
             return;
