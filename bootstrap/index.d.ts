@@ -2,6 +2,7 @@ declare global {
     const nativeModuleProxy: {
         AliucordNative: {
             externalStorageDirectory: string,
+            codeCacheDirectory: string,
             download: (url: string, path: string) => Promise<void>;
             requestPermissions: () => Promise<boolean>;
             checkPermissions: () => Promise<boolean>;

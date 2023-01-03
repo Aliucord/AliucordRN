@@ -1,5 +1,6 @@
+
 (async () => {
-    const { externalStorageDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
+    const { externalStorageDirectory, codeCacheDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
     try {
         const granted = await checkPermissions();
         const constants = nativeModuleProxy.DialogManagerAndroid.getConstants();
@@ -35,7 +36,7 @@
         const latestCommit = json[0].sha;
 
         const externalBundlePath = `${aliucordDir}/Aliucord.js.bundle`;
-        const internalBundlePath = `${aliucordDir}/${latestCommit}.js.bundle`;
+        const internalBundlePath = `${codeCacheDirectory}/${latestCommit}.js.bundle`;
         if (AliuFS.exists(externalBundlePath)) {
             globalThis.aliucord = AliuHermes.run(externalBundlePath);
             return;
