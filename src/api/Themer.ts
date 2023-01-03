@@ -53,14 +53,13 @@ export function themerInit() {
     after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
         if (currentTheme === undefined) return;
 
-        console.log(currentTheme.name);
         comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_SECONDARY"][1];
     });
 
     // Navigation Bar
     after(getByName("ChannelSafeAreaBottom"), "default", (_, comp) => {
         if (currentTheme === undefined) return;
-        console.log(currentTheme.name);
+
         comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_SECONDARY"][1];
     });
 

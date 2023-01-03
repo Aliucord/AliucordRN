@@ -88,7 +88,7 @@ function PluginCard({ theme }: { theme: Theme; }) {
                             </Text>
                         ))}
                     </View>)}
-                trailing={<Forms.FormSwitch value={isEnabled} onValueChange={v => {
+                trailing={<Forms.FormRadio value={isEnabled} checked={isEnabled} onChange={v => {
                     setTheme(theme);
 
                     setIsEnabled(v);
@@ -141,7 +141,7 @@ export default function PluginsPage() {
                     <View style={styles.noThemes}>
                         <Image source={getAssetId("img_connection_empty_dark")} />
                         <Text style={styles.noThemesText}>
-                            You don't have any themes installed.
+                            You dont have any themes installed.
                         </Text>
                     </View>
                 :
