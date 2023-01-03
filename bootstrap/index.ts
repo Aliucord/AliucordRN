@@ -67,8 +67,6 @@
         if (!AliuFS.exists(internalBundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
 
         globalThis.aliucord = AliuHermes.run(internalBundlePath);
-
-
     } catch (error) {
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
