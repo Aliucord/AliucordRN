@@ -27,13 +27,22 @@
             }
         }
 
-        const aliucordDir = externalStorageDirectory + "/AliucordRN";
+        const aliucordDir = `${externalStorageDirectory}/AliucordRN`;
         AliuFS.mkdir(aliucordDir);
 
-        const bundlePath = aliucordDir + "/Aliucord.js.bundle";
-        if (!AliuFS.exists(bundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", bundlePath);
+        const commits = await fetch("https://api.github.com/repos/Aliucord/AliucordRN/commits?sha=builds");
+        const json = await commits.json();
+        const latestCommit = json[0].sha;
 
-        globalThis.aliucord = AliuHermes.run(bundlePath);
+        const externalBundlePath = `${aliucordDir}/Aliucord.js.bundle`;
+        const internalBundlePath = `${aliucordDir}/${latestCommit}.js.bundle`;
+        if (AliuFS.exists(externalBundlePath)) {
+            globalThis.aliucord = AliuHermes.run(externalBundlePath);
+            return;
+        }
+        if (!AliuFS.exists(internalBundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
+
+        globalThis.aliucord = AliuHermes.run(internalBundlePath);
     } catch (error) {
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
