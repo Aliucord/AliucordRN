@@ -1,12 +1,47 @@
-import { Constants, React, Styles, ReactNative } from "../metro";
-import { getAssetId } from "../utils";
+import { applyTheme, themes } from "../api/Themer";
+import { Theme } from "../entities";
+import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
+import { getAssetId } from "../utils/getAssetId";
 
-const { Image, View, Text, ScrollView } = ReactNative;
+const { View, Text, FlatList, Image, ScrollView } = ReactNative;
+const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
     container: {
         flex: 1,
         padding: 5
+    },
+    list: {
+        padding: 10,
+    },
+    card: {
+        borderRadius: 5,
+        margin: 10,
+        backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
+    },
+    header: {
+        flexDirection: "row",
+        flexWrap: "wrap"
+    },
+    bodyCard: {
+        backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
+    },
+    bodyText: {
+        color: Styles.ThemeColorMap.TEXT_NORMAL,
+        padding: 16,
+    },
+    text: {
+        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
+        color: Styles.ThemeColorMap.TEXT_NORMAL,
+        fontSize: 16,
+        lineHeight: 22
+    },
+    link: {
+        marginLeft: 5,
+        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
+        fontSize: 16,
+        lineHeight: 22,
+        color: Styles.ThemeColorMap.TEXT_LINK
     },
     noThemes: {
         display: "flex",
@@ -21,17 +56,111 @@ const styles = Styles.createThemedStyleSheet({
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         textAlign: "center"
     },
+    search: {
+        margin: 0,
+        marginBottom: 0,
+        paddingBottom: 5,
+        paddingRight: 15,
+        paddingLeft: 15,
+        backgroundColor: "none",
+        borderBottomWidth: 0,
+        background: "none"
+    }
 });
 
-export default function ThemesPage() {
-    return (<>
-        <ScrollView style={styles.container}>
-            <View style={styles.noThemes}>
-                <Image source={getAssetId("img_connection_empty_dark")} />
-                <Text style={styles.noThemesText}>
-                    Themes are coming soon.
-                </Text>
+function PluginCard({ theme }: { theme: Theme; }) {
+    //const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
+
+    return (
+        <View style={styles.card}>
+            <Forms.FormRow
+                label={(
+                    <View style={styles.header}>
+                        <Text style={styles.text}>
+                            {theme.name} v{theme.version} by
+                        </Text>
+                        {theme.authors.map((a, i) => (
+                            <Text
+                                key={a.id}
+                                style={styles.link}
+                                onPress={() => getByProps("showUserProfile").showUserProfile({ userId: a.id })}
+                            >
+                                {a.name}{i !== theme.authors.length - 1 && ","}
+                            </Text>
+                        ))}
+                    </View>)}
+                trailing={<Forms.FormSwitch value={false} onValueChange={v => {
+                    applyTheme(theme);
+                    // if (v)
+                    //     enablePlugin(plugin.name);
+                    // else
+                    //     disablePlugin(plugin.name);
+
+                    // setIsEnabled(v);
+                }} />}
+            />
+            <View style={styles.bodyCard}>
+                <Forms.FormText style={styles.bodyText}>{theme.description}</Forms.FormText>
             </View>
+        </View>
+    );
+}
+
+export default function PluginsPage() {
+    const [search, setSearch] = React.useState(String);
+
+    const entities = search ? Object.values(themes).filter(theme => {
+        const { name, description, authors } = theme;
+
+        if (name.toLowerCase().includes(search.toLowerCase())) {
+            return true;
+        }
+
+        if (description.toLowerCase().includes(search.toLowerCase())) {
+            return true;
+        }
+
+        if (authors?.find?.(a => (a.name ?? a).toLowerCase().includes(search.toLowerCase()))) {
+            return true;
+        }
+
+        return false;
+    }) : Object.values(themes);
+
+    return (<>
+        <Search
+            style={styles.search}
+            placeholder='Search plugins...'
+            onChangeText={(v: string) => setSearch(v)}
+        />
+        <ScrollView style={styles.container}>
+            {!entities.length ?
+                search ?
+                    <View style={styles.noThemes}>
+                        <Image source={getAssetId("img_connection_empty_dark")} />
+                        <Text style={styles.noThemesText}>
+                            No results were found.
+                        </Text>
+                    </View>
+                    :
+                    <View style={styles.noThemes}>
+                        <Image source={getAssetId("img_connection_empty_dark")} />
+                        <Text style={styles.noThemesText}>
+                            You dont have any themes installed.
+                        </Text>
+                    </View>
+                :
+                <FlatList
+                    data={entities}
+                    renderItem={({ item }) => <PluginCard
+                        key={item.name}
+                        theme={item}
+                    />}
+                    keyExtractor={plugin => plugin.name}
+                    style={styles.list}
+                />
+            }
         </ScrollView>
     </>);
 }
+
