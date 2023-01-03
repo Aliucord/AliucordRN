@@ -37,27 +37,37 @@
             return;
         }
 
-        const commits = await fetch("https://api.github.com/repos/Aliucord/AliucordRN/commits?sha=builds&path=Aliucord.js.bundle&per_page=1");
-        if (commits.status !== 200) {
-            const internalBundlePath = `${codeCacheDirectory}/Aliucord.js.bundle`;
-            await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
+        let latest_file = "";
+
+        for (const file of AliuFS.readdir(codeCacheDirectory)) {
+            if (!file.name.endsWith(".bundle") && !file.name.startsWith("Aliucord.")) continue;
+
+            latest_file = file.name;
+            break;
+        }
+
+        const is_latest = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
+            headers: {
+                "If-None-Match": `"${latest_file.replace("Aliucord.", "").replace(".js.bundle", "")}"`
+            }
+        });
+
+        if (is_latest.status === 304) {
+            const internalBundlePath = `${codeCacheDirectory}/${latest_file}`;
+
             globalThis.aliucord = AliuHermes.run(internalBundlePath);
-            const body = await commits.text();
-            nativeModuleProxy.DialogManagerAndroid.showAlert({
-                title: "Error",
-                message: body,
-                cancelable: true,
-                buttonPositive: "Ok"
-            }, () => null, () => null);
             return;
         }
-        const json = await commits.json();
-        const latestCommit = json[0].sha;
 
-        const internalBundlePath = `${codeCacheDirectory}/Aliucord.${latestCommit}.js.bundle`;
+        const etag = is_latest.headers.get("etag")?.replaceAll('"', "").replace("W/", "");
+
+        const internalBundlePath = `${codeCacheDirectory}/Aliucord.${etag}.js.bundle`;
+        console.log(internalBundlePath);
         if (!AliuFS.exists(internalBundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
 
         globalThis.aliucord = AliuHermes.run(internalBundlePath);
+
+
     } catch (error) {
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",

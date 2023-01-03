@@ -38,7 +38,6 @@ export default defineConfig([
             {
                 name: "escaper",
                 renderChunk(code, id) {
-                    code = code.replaceAll("\\n", "\\\\n").replaceAll("\"", "'").replaceAll("?", "\\?");
                     code = "(()=>{" + code + "})();";
                     return { code, id };
                 }
