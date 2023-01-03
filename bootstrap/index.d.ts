@@ -3,6 +3,7 @@ declare global {
         AliucordNative: {
             externalStorageDirectory: string,
             codeCacheDirectory: string,
+            cacheDirectory: string,
             packageCodePath: string,
             download: (url: string, path: string) => Promise<void>;
             requestPermissions: () => Promise<boolean>;

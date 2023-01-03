@@ -1,6 +1,6 @@
 
 (async () => {
-    const { externalStorageDirectory, codeCacheDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
+    const { externalStorageDirectory, cacheDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
     try {
         const granted = await checkPermissions();
         const constants = nativeModuleProxy.DialogManagerAndroid.getConstants();
@@ -37,31 +37,33 @@
             return;
         }
 
-        let latest_file = "";
+        const files: string[] = [];
 
-        for (const file of AliuFS.readdir(codeCacheDirectory)) {
+        for (const file of AliuFS.readdir(cacheDirectory)) {
             if (!file.name.endsWith(".bundle") && !file.name.startsWith("Aliucord.")) continue;
 
-            latest_file = file.name;
-            break;
+            files.push(file.name);
         }
 
         const is_latest = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
             headers: {
-                "If-None-Match": `"${latest_file.replace("Aliucord.", "").replace(".js.bundle", "")}"`
+                "If-None-Match": `"${files.length !== 0 ? files[0].replace("Aliucord.", "").replace(".js.bundle", "") : ''}"`
             }
         });
 
         if (is_latest.status === 304) {
-            const internalBundlePath = `${codeCacheDirectory}/${latest_file}`;
+            const internalBundlePath = `${cacheDirectory}/${files[0]}`;
 
             globalThis.aliucord = AliuHermes.run(internalBundlePath);
             return;
         }
 
+        for (const file in files)
+            AliuFS.remove(`${cacheDirectory}/${file}`);
+
         const etag = is_latest.headers.get("etag")?.replaceAll('"', "").replace("W/", "");
 
-        const internalBundlePath = `${codeCacheDirectory}/Aliucord.${etag}.js.bundle`;
+        const internalBundlePath = `${cacheDirectory}/Aliucord.${etag}.js.bundle`;
         console.log(internalBundlePath);
         if (!AliuFS.exists(internalBundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
 
