@@ -42,7 +42,13 @@
             const internalBundlePath = `${codeCacheDirectory}/Aliucord.js.bundle`;
             await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
             globalThis.aliucord = AliuHermes.run(internalBundlePath);
-
+            const body = await commits.text();
+            nativeModuleProxy.DialogManagerAndroid.showAlert({
+                title: "Error",
+                message: body,
+                cancelable: true,
+                buttonPositive: "Ok"
+            }, () => null, () => null);
             return;
         }
         const json = await commits.json();
