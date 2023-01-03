@@ -88,11 +88,12 @@ function PluginCard({ theme }: { theme: Theme; }) {
                             </Text>
                         ))}
                     </View>)}
-                trailing={<Forms.FormRadio value={isEnabled} checked={isEnabled} onChange={v => {
+                trailing={<Forms.FormRadio selected={isEnabled} />}
+                onPress={() => {
                     setTheme(theme);
 
-                    setIsEnabled(v);
-                }} />}
+                    setIsEnabled(!isEnabled);
+                }}
             />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText}>{theme.description}</Forms.FormText>
