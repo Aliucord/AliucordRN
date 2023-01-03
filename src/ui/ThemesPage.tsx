@@ -1,4 +1,4 @@
-import { applyTheme, themes } from "../api/Themer";
+import { setTheme, themes } from "../api/Themer";
 import { Theme } from "../entities";
 import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
@@ -70,7 +70,6 @@ const styles = Styles.createThemedStyleSheet({
 
 function PluginCard({ theme }: { theme: Theme; }) {
     //const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
-
     return (
         <View style={styles.card}>
             <Forms.FormRow
@@ -90,13 +89,7 @@ function PluginCard({ theme }: { theme: Theme; }) {
                         ))}
                     </View>)}
                 trailing={<Forms.FormSwitch value={false} onValueChange={v => {
-                    applyTheme(theme);
-                    // if (v)
-                    //     enablePlugin(plugin.name);
-                    // else
-                    //     disablePlugin(plugin.name);
-
-                    // setIsEnabled(v);
+                    setTheme(theme);
                 }} />}
             />
             <View style={styles.bodyCard}>
