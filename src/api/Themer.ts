@@ -1,5 +1,5 @@
 import { Theme } from "../entities";
-import { AMOLEDThemeManager, Constants, getByName } from "../metro";
+import { Constants, getByName, setAMOLEDThemeEnabledBypass } from "../metro";
 import { readdir } from "../native/fs";
 import { Logger } from "../utils";
 import { THEME_DIRECTORY } from "../utils/constants";
@@ -17,7 +17,7 @@ export function setTheme(theme: Theme) {
 
 export function applyTheme() {
     if (currentTheme === undefined) return;
-    AMOLEDThemeManager.setAMOLEDThemeEnabled(false);
+    setAMOLEDThemeEnabledBypass(false);
     for (const key in Constants.ThemeColorMap) {
         Constants.ThemeColorMap[key][2] = Constants.ThemeColorMap[key][0];
         if (currentTheme.theme_color_map[key]) {
@@ -38,7 +38,7 @@ export function applyTheme() {
         Constants.ThemeColorMap.CHAT_BACKGROUND[0] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][0];
     }
 
-    AMOLEDThemeManager.setAMOLEDThemeEnabled(true);
+    setAMOLEDThemeEnabledBypass(true);
     logger.info("Theme applied: ", currentTheme.name);
 }
 

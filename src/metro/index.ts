@@ -272,6 +272,16 @@ export const Clipboard = getByProps("getString", "setString") as {
     setString(str: string): Promise<void>;
 };
 
+export enum AMOLEDThemeState {
+    HIDDEN = 0,
+    OFF = 1,
+    ON = 2
+}
+
+export const setAMOLEDThemeEnabledBypass = (state) => {
+    FluxDispatcher.dispatch({ type: 'UNSYNCED_USER_SETTINGS_UPDATE', settings: { useAMOLEDTheme: state ? AMOLEDThemeState.ON : AMOLEDThemeState.OFF } });
+};
+
 export const Dialog = getByProps("show", "openLazy", "confirm", "close") as {
     show(options: {
         title?: string,
