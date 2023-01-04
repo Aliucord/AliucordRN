@@ -1,6 +1,13 @@
-
+/// <reference path="index.d.ts"/>
+// @ts-ignore
 (async () => {
-    const { externalStorageDirectory, cacheDirectory, requestPermissions, download, checkPermissions } = nativeModuleProxy.AliucordNative;
+    const {
+        externalStorageDirectory,
+        cacheDirectory,
+        requestPermissions,
+        checkPermissions
+    } = nativeModuleProxy.AliucordNative;
+
     try {
         const granted = await checkPermissions();
         const constants = nativeModuleProxy.DialogManagerAndroid.getConstants();
@@ -37,34 +44,36 @@
             return;
         }
 
-        const files: string[] = [];
+        const bundlePrefix = "Aliucord.js.bundle.";
+        const bundles = AliuFS.readdir(cacheDirectory)
+            .filter(f => f.type == "file" && f.name.startsWith(bundlePrefix))
+            .map(f => f.name);
+        const bundleETags = bundles.map(b => b.slice(bundlePrefix.length));
 
-        for (const file of AliuFS.readdir(cacheDirectory)) {
-            if (!file.name.endsWith(".bundle") && !file.name.startsWith("Aliucord.")) continue;
-
-            files.push(file.name);
-        }
-
-        const is_latest = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
+        const bundleResponse = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
             headers: {
-                "If-None-Match": `"${files.length !== 0 ? files[0].replace("Aliucord.", "").replace(".js.bundle", "") : ''}"`
+                "If-None-Match": bundleETags
+                    .map(tag => `"${tag}"`)
+                    .join(", ")
             }
         });
 
-        if (is_latest.status === 304) {
-            const internalBundlePath = `${cacheDirectory}/${files[0]}`;
-
-            globalThis.aliucord = AliuHermes.run(internalBundlePath);
-            return;
+        if (!(bundleResponse.status in [200, 304])) {
+            throw new Error(`Failed to fetch Aliucord bundle: ${bundleResponse.status} ${await bundleResponse.text()}`);
         }
 
-        for (const file in files)
-            AliuFS.remove(`${cacheDirectory}/${file}`);
+        const eTag = bundleResponse.headers.get("etag")?.replaceAll("\"", "");
+        const internalBundlePath = `${cacheDirectory}/Aliucord.js.bundle.${eTag}`;
+        if (!eTag || eTag.includes(",") || eTag.startsWith("W/") || !bundleETags.includes(eTag)) {
+            // GitHub doesn't return multiple ETags or weak validators so if it ever starts doing then fix
+            throw new Error("Unknown ETag");
+        }
 
-        const etag = is_latest.headers.get("etag")?.replaceAll('"', "").replace("W/", "");
-
-        const internalBundlePath = `${cacheDirectory}/Aliucord.${etag}.js.bundle`;
-        if (!AliuFS.exists(internalBundlePath)) await download("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", internalBundlePath);
+        // status 304 (unmodified) falls through
+        if (bundleResponse.status === 200) {
+            bundles.forEach(b => AliuFS.remove(`${cacheDirectory}/${b}`));
+            AliuFS.writeFile(internalBundlePath, await bundleResponse.arrayBuffer());
+        }
 
         globalThis.aliucord = AliuHermes.run(internalBundlePath);
     } catch (error) {
