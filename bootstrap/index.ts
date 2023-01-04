@@ -58,7 +58,7 @@
             }
         });
 
-        if (!(bundleResponse.status in [200, 304])) {
+        if (!bundleResponse.ok && bundleResponse.status !== 304) {
             throw new Error(`Failed to fetch Aliucord bundle: ${bundleResponse.status} ${await bundleResponse.text()}`);
         }
 
