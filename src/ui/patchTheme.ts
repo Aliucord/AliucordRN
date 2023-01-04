@@ -14,7 +14,7 @@ export default function patchTheme() {
 
                 if (AMOLEDThemeManager) {
                     if (UnsyncedUserSettingsStore.useAMOLEDTheme === 2) {
-                        AMOLEDThemeManager.enableAMOLEDThemeOption();
+                        AMOLEDThemeManager.setAMOLEDThemeEnabled(true);
                         logger.info("Enabled AMOLED theme");
                     }
                 }

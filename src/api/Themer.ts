@@ -21,10 +21,10 @@ export function applyTheme() {
     for (const key in Constants.ThemeColorMap) {
         Constants.ThemeColorMap[key][2] = Constants.ThemeColorMap[key][0];
         if (currentTheme.theme_color_map[key]) {
+            // 0 = Dark, 1 = Light, 2 = AMOLED
             Constants.ThemeColorMap[key][2] = currentTheme.theme_color_map[key]?.[0];
             Constants.ThemeColorMap[key][1] = currentTheme.theme_color_map[key]?.[1];
-
-            logger.info("Patched theme color", key);
+            Constants.ThemeColorMap[key][0] = currentTheme.theme_color_map[key]?.[0];
         }
     }
 
@@ -32,11 +32,14 @@ export function applyTheme() {
         Constants.Colors[key] = currentTheme.colors[key];
     }
 
-    if (currentTheme.unsafe_colors && currentTheme.unsafe_colors["CHAT_GREY"]) {
-        Constants.ThemeColorMap.CHAT_BACKGROUND[2] = currentTheme.unsafe_colors["CHAT_GREY"];
+    if (currentTheme.unsafe_colors && !currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
+        Constants.ThemeColorMap.CHAT_BACKGROUND[2] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][0];
+        Constants.ThemeColorMap.CHAT_BACKGROUND[1] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][1];
+        Constants.ThemeColorMap.CHAT_BACKGROUND[0] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][0];
     }
 
-    AMOLEDThemeManager.enableAMOLEDThemeOption();
+    AMOLEDThemeManager.setAMOLEDThemeEnabled(true);
+    logger.info("Theme applied: ", currentTheme.name);
 }
 
 export function themerInit() {
@@ -53,18 +56,18 @@ export function themerInit() {
 
     currentTheme = themes[window.Aliucord.settings.get("theme", "")];
 
-    // Chat Box
+    // Chat Input background
     after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
         if (currentTheme === undefined) return;
 
-        comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_SECONDARY"][0];
+        comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][0];
     });
 
     // Navigation Bar
     after(getByName("ChannelSafeAreaBottom"), "default", (_, comp) => {
         if (currentTheme === undefined) return;
 
-        comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_SECONDARY"][0];
+        comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][0];
     });
 
     applyTheme();
