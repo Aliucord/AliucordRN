@@ -38,7 +38,7 @@ export function applyTheme() {
     }
 
     if (currentTheme.unsafe_colors && !currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
-        Constants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.DARK] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
+        Constants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.AMOLED] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
         Constants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.LIGHT] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.LIGHT];
         Constants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.DARK] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
     }
