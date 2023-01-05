@@ -273,9 +273,9 @@ export const Clipboard = getByProps("getString", "setString") as {
 };
 
 export enum AMOLEDThemeState {
-    HIDDEN = 0,
-    OFF = 1,
-    ON = 2
+    HIDDEN,
+    OFF,
+    ON
 }
 
 export const setAMOLEDThemeEnabledBypass = (state) => {
