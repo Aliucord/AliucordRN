@@ -9,6 +9,12 @@ const logger = new Logger("Themer");
 export const themes = {} as Record<string, Theme>;
 export let currentTheme: Theme;
 
+enum ThemeType {
+    AMOLED = 2,
+    LIGHT = 1,
+    DARK = 0
+}
+
 export function setTheme(theme: Theme) {
     window.Aliucord.settings.set("theme", theme.name);
     currentTheme = theme;
@@ -19,12 +25,11 @@ export function applyTheme() {
     if (currentTheme === undefined) return;
     setAMOLEDThemeEnabledBypass(false);
     for (const key in Constants.ThemeColorMap) {
-        Constants.ThemeColorMap[key][2] = Constants.ThemeColorMap[key][0];
+        Constants.ThemeColorMap[key][ThemeType.AMOLED] = Constants.ThemeColorMap[key][ThemeType.DARK];
         if (currentTheme.theme_color_map[key]) {
-            // 0 = Dark, 1 = Light, 2 = AMOLED
-            Constants.ThemeColorMap[key][2] = currentTheme.theme_color_map[key]?.[0];
-            Constants.ThemeColorMap[key][1] = currentTheme.theme_color_map[key]?.[1];
-            Constants.ThemeColorMap[key][0] = currentTheme.theme_color_map[key]?.[0];
+            Constants.ThemeColorMap[key][ThemeType.AMOLED] = currentTheme.theme_color_map[key]?.[ThemeType.DARK];
+            Constants.ThemeColorMap[key][ThemeType.LIGHT] = currentTheme.theme_color_map[key]?.[ThemeType.LIGHT];
+            Constants.ThemeColorMap[key][ThemeType.DARK] = currentTheme.theme_color_map[key]?.[ThemeType.DARK];
         }
     }
 
@@ -33,9 +38,9 @@ export function applyTheme() {
     }
 
     if (currentTheme.unsafe_colors && !currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
-        Constants.ThemeColorMap.CHAT_BACKGROUND[2] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][0];
-        Constants.ThemeColorMap.CHAT_BACKGROUND[1] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][1];
-        Constants.ThemeColorMap.CHAT_BACKGROUND[0] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][0];
+        Constants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.DARK] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
+        Constants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.LIGHT] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.LIGHT];
+        Constants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.DARK] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
     }
 
     setAMOLEDThemeEnabledBypass(true);
@@ -64,14 +69,14 @@ export function themerInit() {
     after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
         if (currentTheme === undefined) return;
 
-        comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][0];
+        comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
     });
 
     // Navigation Bar
     after(getByName("ChannelSafeAreaBottom"), "default", (_, comp) => {
         if (currentTheme === undefined) return;
 
-        comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][0];
+        comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
     });
 
     applyTheme();
