@@ -68,7 +68,7 @@ const styles = Styles.createThemedStyleSheet({
     }
 });
 
-function PluginCard({ theme }: { theme: Theme; }) {
+function ThemeCard({ theme }: { theme: Theme; }) {
     const [isEnabled, setIsEnabled] = React.useState(currentTheme?.name === theme.name);
     return (
         <View style={styles.card}>
@@ -102,7 +102,7 @@ function PluginCard({ theme }: { theme: Theme; }) {
     );
 }
 
-export default function PluginsPage() {
+export default function ThemesPage() {
     const [search, setSearch] = React.useState(String);
 
     const entities = search ? Object.values(themes).filter(theme => {
@@ -148,11 +148,11 @@ export default function PluginsPage() {
                 :
                 <FlatList
                     data={entities}
-                    renderItem={({ item }) => <PluginCard
+                    renderItem={({ item }) => <ThemeCard
                         key={item.name}
                         theme={item}
                     />}
-                    keyExtractor={plugin => plugin.name}
+                    keyExtractor={theme => theme.name}
                     style={styles.list}
                 />
             }
