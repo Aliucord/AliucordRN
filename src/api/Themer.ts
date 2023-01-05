@@ -54,7 +54,11 @@ export function themerInit() {
         themes[themeFile.name] = themeFile;
     }
 
-    currentTheme = themes[window.Aliucord.settings.get("theme", "")];
+    if (themes[window.Aliucord.settings.get("theme", "")] !== undefined) {
+        currentTheme = themes[window.Aliucord.settings.get("theme", "")];
+    } else {
+        window.Aliucord.settings.set("theme", "");
+    }
 
     // Chat Input background
     after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
