@@ -10,9 +10,9 @@ export const themes = {} as Record<string, Theme>;
 export let currentTheme: Theme;
 
 enum ThemeType {
-    AMOLED = 2,
-    LIGHT = 1,
-    DARK = 0
+    DARK,
+    LIGHT,
+    AMOLED
 }
 
 export function setTheme(theme: Theme) {
