@@ -1,5 +1,5 @@
 import { Theme } from "../entities";
-import { Constants, getByName, setAMOLEDThemeEnabledBypass } from "../metro";
+import { Constants, Dialog, getByName, ReactNative, setAMOLEDThemeEnabledBypass } from "../metro";
 import { readdir } from "../native/fs";
 import { Logger } from "../utils";
 import { THEME_DIRECTORY } from "../utils/constants";
@@ -61,23 +61,36 @@ export function themerInit() {
 
     if (themes[window.Aliucord.settings.get("theme", "")] !== undefined) {
         currentTheme = themes[window.Aliucord.settings.get("theme", "")];
+
+        // Chat Input background
+        after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
+            if (currentTheme === undefined) return;
+
+            comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
+        });
+
+        // Navigation Bar
+        after(getByName("ChannelSafeAreaBottom"), "default", (_, comp) => {
+            if (currentTheme === undefined) return;
+
+            comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
+        });
+
+        applyTheme();
     } else {
         window.Aliucord.settings.set("theme", "");
     }
-
-    // Chat Input background
-    after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
-        if (currentTheme === undefined) return;
-
-        comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
-    });
-
-    // Navigation Bar
-    after(getByName("ChannelSafeAreaBottom"), "default", (_, comp) => {
-        if (currentTheme === undefined) return;
-
-        comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
-    });
-
-    applyTheme();
 } 
+
+export function useDiscordThemes() {
+    window.Aliucord.settings.set("theme", "");
+
+    logger.info("Using Discord's themes");
+    Dialog.show({
+        title: "Restart to apply",
+        body: "Restart the app for Discord to use its own themes.",
+        confirmText: "Restart",
+        isDismissable: false,
+        onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
+    });
+}

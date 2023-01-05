@@ -1,6 +1,6 @@
-import { currentTheme, setTheme, themes } from "../api/Themer";
+import { currentTheme, setTheme, themes, useDiscordThemes } from "../api/Themer";
 import { Theme } from "../entities";
-import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
+import { Constants, Dialog, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList, Image, ScrollView } = ReactNative;
@@ -90,9 +90,22 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                     </View>)}
                 trailing={<Forms.FormRadio selected={isEnabled} />}
                 onPress={() => {
-                    setTheme(theme);
-
-                    setIsEnabled(!isEnabled);
+                    if (currentTheme?.name !== theme.name) {
+                        setTheme(theme);
+                        setIsEnabled(!isEnabled);
+                        if (currentTheme !== undefined) {
+                            Dialog.show({
+                                title: "Restart for theme to apply",
+                                body: "Restart the app for the theme to apply correctly.",
+                                confirmText: "Restart",
+                                isDismissable: false,
+                                onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
+                            });
+                        }
+                    } else {
+                        useDiscordThemes();
+                        setIsEnabled(!isEnabled);
+                    }
                 }}
             />
             <View style={styles.bodyCard}>

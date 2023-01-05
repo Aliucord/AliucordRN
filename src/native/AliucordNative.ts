@@ -9,7 +9,10 @@ export const AliucordNative = ReactNative.NativeModules.AliucordNative as {
     checkPermissions: () => Promise<boolean>;
     requestPermissions: () => Promise<boolean>;
     download: (url: string, path: string) => Promise<void>;
+    restartApp: () => void;
 
     externalStorageDirectory: string;
     codeCacheDirectory: string;
+    cacheDirectory: string,
+    packageCodePath: string,
 };
