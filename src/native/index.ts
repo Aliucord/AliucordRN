@@ -6,6 +6,9 @@ import { AliucordNative } from "./AliucordNative";
  */
 export const listNativeModules = AliucordNative.listNativeModules;
 
+/**
+ * Restarts the app
+ */
 export const restartApp = AliucordNative.restartApp;
 
 export * as fs from "./fs";
