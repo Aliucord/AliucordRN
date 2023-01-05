@@ -1,13 +1,13 @@
 import { ApplicationCommand, ApplicationCommandType, Commands } from "../api/Commands";
 import { Plugin } from "../entities/Plugin";
-import { ContextMenuActions, getByProps, SearchStore } from "../metro";
+import { getByProps, SearchStore } from "../metro";
 import { after } from "../utils/patcher";
 
 export default class CommandHandler extends Plugin {
     start() {
         const sections = getByProps("getApplicationSections");
         after(sections, "getApplicationSections", (ctx) => {
-            if (ContextMenuActions.result.some((section) => section.id == Commands._aliucordSection.id)) return;
+            if (ctx.result.some((section) => section.id === Commands._aliucordSection.id)) return;
             ctx.result = [Commands._aliucordSection, ...ctx.result];
         });
 
