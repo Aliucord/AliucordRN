@@ -9,6 +9,8 @@ const logger = new Logger("Themer");
 export const themes = {} as Record<string, Theme>;
 export let currentTheme: Theme;
 
+let unpatchInput, unpatchNav;
+
 enum ThemeType {
     DARK,
     LIGHT,
@@ -46,8 +48,12 @@ export function applyTheme() {
 
         setAMOLEDThemeEnabledBypass(true);
         logger.info("Theme applied: ", currentTheme.name);
+
     } catch (e) {
         logger.error("Failed to apply theme: ", e);
+        
+        unpatchInput();
+        unpatchNav();
     }
 }
 
@@ -68,14 +74,14 @@ export function themerInit() {
             currentTheme = themes[window.Aliucord.settings.get("theme", "")];
 
             // Chat Input background
-            after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
+            unpatchInput = after(getByName("ChatInput").default.prototype, "render", (_, comp) => {
                 if (currentTheme === undefined) return;
 
                 comp.props.children[2].props.children.props.style[0].backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
             });
 
             // Navigation Bar
-            after(getByName("ChannelSafeAreaBottom"), "default", (_, comp) => {
+            unpatchNav = after(getByName("ChannelSafeAreaBottom"), "default", (_, comp) => {
                 if (currentTheme === undefined) return;
 
                 comp.props.style.backgroundColor = currentTheme.theme_color_map["BACKGROUND_MOBILE_SECONDARY"][ThemeType.DARK];
