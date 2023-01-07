@@ -19,7 +19,6 @@ export default class ChatGuard extends Plugin {
     MESSAGE_SHORT = "PLEASE READ: This is not a support channel, do not ask for help!";
 
     public async start() {
-        // @ts-ignore
         const settings = window.Aliucord.settings;
 
         const styles = Styles.createThemedStyleSheet({
