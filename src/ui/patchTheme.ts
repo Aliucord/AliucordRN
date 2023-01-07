@@ -1,9 +1,9 @@
 import { logger } from "../Aliucord";
-import { currentTheme, themeApplied, themeErrorReason } from "../api/Themer";
-import { AMOLEDThemeManager, Dialog, FluxDispatcher, ReactNative, ThemeManager, ThemeStore, UnsyncedUserSettingsStore } from "../metro";
+import { currentTheme, themeApplied, themerErrored, themeErrorReason } from "../api/Themer";
+import { AMOLEDThemeManager, Clipboard, Dialog, FluxDispatcher, ReactNative, ThemeManager, ThemeStore, UnsyncedUserSettingsStore } from "../metro";
 
 export default function patchTheme() {
-    if (!themeApplied && themeErrorReason) {
+    if (!themeApplied && !themerErrored && themeErrorReason) {
         logger.error("Failed to apply theme: ", themeErrorReason);
         Dialog.show({
             title: "Failed to apply theme",
@@ -17,6 +17,15 @@ export default function patchTheme() {
         window.Aliucord.settings.set("theme", "");
     } else if (themeApplied) {
         logger.log("Applied theme: ", currentTheme.name);
+    } else if (themerErrored && themeErrorReason) {
+        logger.error("Themer failed to start: ", themeErrorReason);
+        Dialog.show({
+            title: "Failed to start Themer",
+            body: "Themer failed to start. You can copy the error and report the issue.",
+            confirmText: "Copy",
+            onConfirm: () => { Clipboard.setString(themeErrorReason); },
+            cancelText: "Close"
+        });
     }
 
     try {

@@ -3,7 +3,7 @@ import { Constants, Dialog, ReactNative } from "../metro";
 
 export const themes = {} as Record<string, Theme>;
 export let currentTheme: Theme;
-export let themeApplied: boolean, themeErrorReason;
+export let themeApplied: boolean, themerErrored: boolean, themeErrorReason;
 let discordConstants: typeof Constants;
 enum ThemeType {
     DARK,
@@ -31,7 +31,7 @@ export function setTheme(theme: Theme) {
 // WARNING: this function is called before the Aliucord loads, meaning we're having limited access.
 export function themerInit(constants: typeof Constants) {
     try {
-        if (!AliuFS.exists(SETTINGS_DIRECTORY + "Aliucord.json")) return;
+        if (!AliuFS.exists(SETTINGS_DIRECTORY + "Aliucord.json")) throw new Error("Settings file does not exist.");
         discordConstants = constants;
         AliuHermes.unfreeze(constants.ThemeColorMap);
         AliuHermes.unfreeze(constants.Colors);
@@ -44,9 +44,9 @@ export function themerInit(constants: typeof Constants) {
 
             const themeFile = JSON.parse(AliuFS.readFile(THEMES_DIRECTORY + file.name, "text") as string) as Theme;
 
-            if (!themeFile?.name || !themeFile?.theme_color_map || !themeFile?.colors) throw new Error(`Theme file ${file.name} does not contain a name, theme_color_map or colors key.`);
+            if (!themeFile?.name || !themeFile?.theme_color_map) throw new Error(`Theme file ${file.name} does not contain a name, theme_color_map or colors key.`);
             if (themes[themeFile.name]) throw new Error(`A theme called ${themeFile.name} already exists.`);
-            
+
             themes[themeFile.name] = themeFile;
         }
 
@@ -56,7 +56,7 @@ export function themerInit(constants: typeof Constants) {
             applyTheme();
         }
     } catch (e) {
-        themeApplied = false;
+        themerErrored = false;
         themeErrorReason = e;
     }
 }
