@@ -63,8 +63,8 @@ export function applyTheme() {
         window.Aliucord.settings.set("theme", "");
         
         // Unpatch components
-        unpatchInput;
-        unpatchNav;
+        unpatchInput?.();
+        unpatchNav?.();
     }
 }
 
