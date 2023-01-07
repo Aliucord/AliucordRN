@@ -49,14 +49,6 @@ export function applyTheme() {
         setAMOLEDThemeEnabledBypass(true);
         logger.info("Theme applied: ", currentTheme.name);
 
-        Dialog.show({
-            title: "Restart for theme to apply",
-            body: "Restart the app for the theme to apply correctly.",
-            confirmText: "Restart",
-            isDismissable: false,
-            onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
-        });
-
     } catch (e) {
         Dialog.show({
             title: "Failed to apply theme",
