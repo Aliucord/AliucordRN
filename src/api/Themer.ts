@@ -54,8 +54,6 @@ export function themerInit(constants: typeof Constants) {
             currentTheme = themes[settings.theme];
 
             applyTheme();
-        } else {
-            return;
         }
     } catch (e) {
         themeApplied = false;
