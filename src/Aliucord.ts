@@ -14,6 +14,7 @@ interface SettingsSchema {
     disablePluginsOnCrash: boolean;
     plugins: Record<string, boolean>;
     enableAMOLEDTheme: boolean;
+    theme: string;
 }
 
 export * as pluginManager from "./api/PluginManager";

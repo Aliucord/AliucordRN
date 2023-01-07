@@ -7343,6 +7343,7 @@ interface Constants {
         CHANNEL_TEXT_AREA_PLACEHOLDER: string[];
         CONTROL_BRAND_FOREGROUND: string[];
         CONTROL_BRAND_FOREGROUND_NEW: string[];
+        CHAT_BACKGROUND: string[];
         DEPRECATED_CARD_BG: string[];
         DEPRECATED_CARD_EDITABLE_BG: string[];
         DEPRECATED_QUICKSWITCHER_INPUT_BACKGROUND: string[];
