@@ -68,9 +68,8 @@ export function applyTheme() {
         for (const key in currentTheme.theme_color_map) {
             if (!discordConstants.ThemeColorMap[key]) continue;
 
-            discordConstants.ThemeColorMap[key][ThemeType.AMOLED] = discordConstants.ThemeColorMap[key][ThemeType.DARK];
             if (currentTheme.theme_color_map[key]) {
-                discordConstants.ThemeColorMap[key][ThemeType.AMOLED] = currentTheme.theme_color_map[key]?.[ThemeType.DARK];
+                if (currentTheme.theme_color_map[key]?.[ThemeType.AMOLED]) discordConstants.ThemeColorMap[key][ThemeType.AMOLED] = currentTheme.theme_color_map[key]?.[ThemeType.AMOLED];
                 discordConstants.ThemeColorMap[key][ThemeType.LIGHT] = currentTheme.theme_color_map[key]?.[ThemeType.LIGHT];
                 discordConstants.ThemeColorMap[key][ThemeType.DARK] = currentTheme.theme_color_map[key]?.[ThemeType.DARK];
             }
@@ -90,17 +89,17 @@ export function applyTheme() {
                 discordConstants.Colors[key] = currentTheme.colours[key];
             }
         }
+        // Enmity compat for chat background & fallback if it doesnt exist anyways
+        if (!currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
+            if (currentTheme.theme_color_map["CHAT_BACKGROUND"]?.[ThemeType.AMOLED]) discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.AMOLED] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
+            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.LIGHT] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.LIGHT];
+            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.DARK] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
+        }
 
         for (const key in currentTheme.unsafe_colors) {
             if (!discordConstants.UNSAFE_Colors[key]) continue;
 
             discordConstants.UNSAFE_Colors[key] = currentTheme.unsafe_colors[key];
-        }
-
-        if (!currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
-            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.AMOLED] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
-            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.LIGHT] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.LIGHT];
-            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.DARK] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
         }
 
         themeApplied = true;
@@ -111,7 +110,7 @@ export function applyTheme() {
 }
 
 export function useDiscordThemes() {
-    window.Aliucord.settings.set("theme", "");
+    window.Aliucord.settings.delete("theme");
 
     console.info("Using Discord's themes");
     Dialog.show({
