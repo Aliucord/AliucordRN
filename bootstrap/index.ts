@@ -1,5 +1,6 @@
 /// <reference path="index.d.ts"/>
-// @ts-ignore
+import "./arrayBuffer.js";
+
 (async () => {
     const {
         externalStorageDirectory,
@@ -50,39 +51,65 @@
             .map(f => f.name);
         const bundleETags = bundles.map(b => b.slice(bundlePrefix.length));
 
-        const bundleResponse = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
-            headers: {
-                "If-None-Match": bundleETags
-                    .map(tag => `"${tag}"`)
-                    .join(", ")
+        let bundleResponse: Response | null;
+        try {
+            bundleResponse = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
+                headers: {
+                    // !! returns a different ETag (weak-validator) !!
+                    "Accept-Encoding": "gzip",
+                    "If-None-Match": bundleETags
+                        .map(tag => `"${tag}"`)
+                        .join(", "),
+                },
+            });
+
+            if (!bundleResponse.ok && bundleResponse.status !== 304) {
+                throw new Error(`Failed to fetch Aliucord bundle: ${bundleResponse.status} ${await bundleResponse.text()}`);
             }
-        });
+        } catch (e) {
+            bundleResponse = null;
+            console.error("Failed to fetch Aliucord bundle");
+            console.error((e as Error)?.stack ?? e);
 
-        if (!bundleResponse.ok && bundleResponse.status !== 304) {
-            throw new Error(`Failed to fetch Aliucord bundle: ${bundleResponse.status} ${await bundleResponse.text()}`);
+            nativeModuleProxy.DialogManagerAndroid.showAlert({
+                title: "Error",
+                message: bundles.length > 0 ?
+                    "Failed to fetch update info! Loading existing Aliucord, which may be outdated! You have been warned." :
+                    "Failed to fetch Aliucord! Please check your internet connection and try again.",
+                cancelable: true,
+                buttonPositive: "Ok"
+            }, () => null, () => null);
         }
 
-        const eTag = bundleResponse.headers.get("etag")?.replaceAll("\"", "");
-        const internalBundlePath = `${cacheDirectory}/Aliucord.js.bundle.${eTag}`;
-        if (!eTag || eTag.includes(",") || eTag.startsWith("W/") || !bundleETags.includes(eTag)) {
-            // GitHub doesn't return multiple ETags or weak validators so if it ever starts doing then fix
-            throw new Error("Unknown ETag");
-        }
+        if (bundleResponse) {
+            const eTag = bundleResponse.headers.get("etag")
+                ?.replaceAll("\"", "")
+                .replace("W/", "");
+            const internalBundlePath = `${cacheDirectory}/Aliucord.js.bundle.${eTag}`;
+            if (!eTag || eTag.includes(",")) {
+                // GitHub doesn't return multiple ETags so if it ever starts doing then fix
+                throw new Error(`Unknown ETag ${eTag}`);
+            }
 
-        // status 304 (unmodified) falls through
-        if (bundleResponse.status === 200) {
-            bundles.forEach(b => AliuFS.remove(`${cacheDirectory}/${b}`));
-            AliuFS.writeFile(internalBundlePath, await bundleResponse.arrayBuffer());
-        }
+            // status 304 (unmodified) falls through
+            if (bundleResponse.status === 200) {
+                bundles.forEach(b => AliuFS.remove(`${cacheDirectory}/${b}`));
+                AliuFS.writeFile(internalBundlePath, await bundleResponse.arrayBuffer());
+            }
 
-        globalThis.aliucord = AliuHermes.run(internalBundlePath);
+            globalThis.aliucord = AliuHermes.run(internalBundlePath);
+        } else if (bundles.length > 0) {
+            globalThis.aliucord = AliuHermes.run(`${cacheDirectory}/${bundles[0]}`);
+        }
     } catch (error) {
+        console.error("Failed to load Aliucord bundle");
+        console.error((error as Error)?.stack ?? error);
+
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
-            message: "Something went wrong while loading aliucord, check logs for the specific error.",
+            message: "Something went wrong while loading Aliucord! Please check the logs for more details.",
             cancelable: true,
             buttonPositive: "Ok"
         }, () => null, () => null);
-        console.error((error as Error).stack);
     }
 })();
