@@ -80,7 +80,7 @@ export function applyTheme() {
         for (const key in colors) {
             if (!discordConstants.Colors[key]) continue;
 
-            discordConstants.Colors[key] = currentTheme.colors[key];
+            discordConstants.Colors[key] = colors[key];
         }
         // Enmity compat for chat background & fallback if it doesnt exist anyways
         if (!currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
