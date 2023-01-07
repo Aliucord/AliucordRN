@@ -1,21 +1,10 @@
 import { Plugin } from "../entities";
 // @ts-ignore
-import { getModule, React, ReactNative, Dialog, Forms, Styles} from "../metro";
+import { getModule, React, ReactNative, Dialog, Forms, Styles, getByName} from "../metro";
 const { FormRow } = Forms;
 import { getAssetId } from "../utils";
-type FilterOptions = {
-    exports?: boolean;
-    default?: false;
-} | {
-    exports?: true;
-    default?: true;
-};
 
 export default class ChatGuard extends Plugin {
-    private getByName(defaultName: string, options?: FilterOptions) {
-        return getModule(m => m?.default?.name === defaultName, options);
-    }
-
     CHANNEL_IDS = [
         "811255667469582420", // #offtopic
         "811261478875299840", // #plugin-development
@@ -45,7 +34,7 @@ export default class ChatGuard extends Plugin {
             }
         });
 
-        const ChatInputGuard = this.getByName("ChatInputGuard");
+        const ChatInputGuard = getByName("ChatInputGuard");
         this.patcher.after(ChatInputGuard.default.prototype, "render", (_, component: any) => {
             const chatInput = component.props.children.find(c => c?.props?.accessibilityLabel != undefined);
             const channelId = chatInput?.props?.channel?.id;
