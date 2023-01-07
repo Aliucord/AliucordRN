@@ -65,6 +65,7 @@ export function themerInit(constants: typeof Constants) {
 export function applyTheme() {
     try {
         if (currentTheme === undefined) return;
+        const colors = currentTheme.colors ?? currentTheme.colours;
         for (const key in currentTheme.theme_color_map) {
             if (!discordConstants.ThemeColorMap[key]) continue;
 
@@ -76,18 +77,10 @@ export function applyTheme() {
         }
 
         // Enmity compat
-        if (currentTheme.colors && !currentTheme.colours) {
-            for (const key in currentTheme.colors) {
-                if (!discordConstants.Colors[key]) continue;
+        for (const key in colors) {
+            if (!discordConstants.Colors[key]) continue;
 
-                discordConstants.Colors[key] = currentTheme.colors[key];
-            }
-        } else {
-            for (const key in currentTheme.colours) {
-                if (!discordConstants.Colors[key]) continue;
-
-                discordConstants.Colors[key] = currentTheme.colours[key];
-            }
+            discordConstants.Colors[key] = currentTheme.colors[key];
         }
         // Enmity compat for chat background & fallback if it doesnt exist anyways
         if (!currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
