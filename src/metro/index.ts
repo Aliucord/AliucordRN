@@ -1,4 +1,5 @@
 import type { ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
+import { themerInit } from "../api/Themer";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -29,6 +30,7 @@ function blacklist(id: number) {
     });
 }
 
+let themeModuleFound = false;
 let nullProxyFound = false;
 
 for (const key in modules) {
@@ -42,6 +44,14 @@ for (const key in modules) {
             nullProxyFound = true;
             continue;
         }
+    }
+
+    if (!themeModuleFound && module?.publicModule?.exports?.ThemeColorMap) {
+        // Theme colors are overwritten here
+        themerInit(module.publicModule.exports);
+
+        themeModuleFound = true;
+        continue;
     }
 
     if (module.factory) {

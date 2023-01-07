@@ -1,12 +1,26 @@
 import { logger } from "../Aliucord";
-import { AMOLEDThemeManager, FluxDispatcher, ThemeManager, ThemeStore, UnsyncedUserSettingsStore } from "../metro";
+import { currentTheme, themeApplied, themeErrorReason } from "../api/Themer";
+import { AMOLEDThemeManager, Dialog, FluxDispatcher, ReactNative, ThemeManager, ThemeStore, UnsyncedUserSettingsStore } from "../metro";
 
 export default function patchTheme() {
-    logger.info("Patching theme...");
+    if (!themeApplied && themeErrorReason) {
+        logger.error("Failed to apply theme: ", themeErrorReason);
+        Dialog.show({
+            title: "Failed to apply theme",
+            body: `${currentTheme?.name} failed to apply. Please report this issue. Theme will be disabled on restart.`,
+            isDismissable: false,
+            cancelText: "Do not restart",
+            confirmText: "Restart",
+            onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
+        });
+
+        window.Aliucord.settings.set("theme", "");
+    }
 
     try {
         // 'I18N_LOAD_START' dispatch is the best time I can find to override the theme without breaking it.
         // Therefore, there's no guarantee that this will fix it for everyone
+        logger.info("Patching theme...");
         if (ThemeStore) {
             const overrideTheme = () => {
                 ThemeManager.overrideTheme(ThemeStore.theme ?? "dark");
