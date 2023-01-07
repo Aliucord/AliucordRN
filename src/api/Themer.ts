@@ -87,12 +87,17 @@ export function applyTheme() {
                 discordConstants.Colors[key] = currentTheme.colours[key];
             }
         }
-        
 
         for (const key in currentTheme.unsafe_colors) {
             if (!discordConstants.UNSAFE_Colors[key]) continue;
 
             discordConstants.UNSAFE_Colors[key] = currentTheme.unsafe_colors[key];
+        }
+
+        if (!currentTheme.theme_color_map["CHAT_BACKGROUND"]) {
+            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.AMOLED] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
+            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.LIGHT] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.LIGHT];
+            discordConstants.ThemeColorMap.CHAT_BACKGROUND[ThemeType.DARK] = currentTheme.theme_color_map["BACKGROUND_PRIMARY"][ThemeType.DARK];
         }
 
         themeApplied = true;
