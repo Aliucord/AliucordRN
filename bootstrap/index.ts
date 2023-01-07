@@ -1,5 +1,6 @@
 /// <reference path="index.d.ts"/>
-// @ts-ignore
+import "./arrayBuffer.js";
+
 (async () => {
     const {
         externalStorageDirectory,
@@ -52,25 +53,29 @@
 
         const bundleResponse = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
             headers: {
+                // !! returns a different ETag (weak-validator) !!
+                "Accept-Encoding": "gzip",
                 "If-None-Match": bundleETags
                     .map(tag => `"${tag}"`)
-                    .join(", ")
-            }
+                    .join(", "),
+            },
         });
 
         if (!bundleResponse.ok && bundleResponse.status !== 304) {
             throw new Error(`Failed to fetch Aliucord bundle: ${bundleResponse.status} ${await bundleResponse.text()}`);
         }
 
-        const eTag = bundleResponse.headers.get("etag")?.replaceAll("\"", "");
+        const eTag = bundleResponse.headers.get("etag")
+            ?.replaceAll("\"", "")
+            .replace("W/", "");
         const internalBundlePath = `${cacheDirectory}/Aliucord.js.bundle.${eTag}`;
-        if (!eTag || eTag.includes(",") || eTag.startsWith("W/") || !bundleETags.includes(eTag)) {
-            // GitHub doesn't return multiple ETags or weak validators so if it ever starts doing then fix
-            throw new Error("Unknown ETag");
+        if (!eTag || eTag.includes(",")) {
+            // GitHub doesn't return multiple ETags so if it ever starts doing then fix
+            throw new Error(`Unknown ETag ${eTag}`);
         }
 
         // status 304 (unmodified) falls through
-        if (bundleResponse.status === 200) {
+        if (bundleResponse.status === 200 || !bundleETags.includes(eTag)) {
             bundles.forEach(b => AliuFS.remove(`${cacheDirectory}/${b}`));
             AliuFS.writeFile(internalBundlePath, await bundleResponse.arrayBuffer());
         }
@@ -79,10 +84,12 @@
     } catch (error) {
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
-            message: "Something went wrong while loading aliucord, check logs for the specific error.",
+            message: "Something went wrong while loading Aliucord! Please check the logs for more details.",
             cancelable: true,
             buttonPositive: "Ok"
         }, () => null, () => null);
-        console.error((error as Error).stack);
+
+        console.error("Failed to load Aliucord bundle");
+        console.error((error as Error)?.stack ?? error);
     }
 })();
