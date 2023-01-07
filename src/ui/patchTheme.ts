@@ -15,6 +15,8 @@ export default function patchTheme() {
         });
 
         window.Aliucord.settings.set("theme", "");
+    } else if (themeApplied) {
+        logger.log("Applied theme: ", currentTheme.name);
     }
 
     try {
