@@ -75,7 +75,7 @@ import "./arrayBuffer.js";
         }
 
         // status 304 (unmodified) falls through
-        if (bundleResponse.status === 200 || !bundleETags.includes(eTag)) {
+        if (bundleResponse.status === 200) {
             bundles.forEach(b => AliuFS.remove(`${cacheDirectory}/${b}`));
             AliuFS.writeFile(internalBundlePath, await bundleResponse.arrayBuffer());
         }
