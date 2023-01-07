@@ -18,6 +18,6 @@ export default class CommandHandler extends Plugin {
             if (props.id === Commands._aliucordSection.id)
                 context.result = Commands._aliucordSection.icon;
         });
-        
+
     }
 }

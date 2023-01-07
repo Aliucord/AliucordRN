@@ -1,4 +1,5 @@
 import type { ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
+import { themerInit } from "../api/Themer";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -29,6 +30,7 @@ function blacklist(id: number) {
     });
 }
 
+let themeModuleFound = false;
 let nullProxyFound = false;
 
 for (const key in modules) {
@@ -44,6 +46,14 @@ for (const key in modules) {
         }
     }
 
+    if (!themeModuleFound && module?.publicModule?.exports?.ThemeColorMap) {
+        // Theme colors are overwritten here
+        themerInit(module.publicModule.exports);
+
+        themeModuleFound = true;
+        continue;
+    }
+
     if (module.factory) {
         const strings = AliuHermes.findStrings(module.factory);
 
@@ -57,6 +67,10 @@ for (const key in modules) {
 
 if (!nullProxyFound) {
     console.warn("Null proxy not found, expect problems");
+}
+
+if (!themeModuleFound) {
+    logger.error("Discord theme module wasn't found. Themes will be disabled.");
 }
 
 /**
@@ -255,6 +269,8 @@ export const ChannelStore = getByStoreName("ChannelStore");
 export const MessageStore = getByStoreName("MessageStore");
 export const GuildMemberStore = getByStoreName("GuildMemberStore");
 export const SelectedChannelStore = getByStoreName("SelectedChannelStore");
+export const UnsyncedUserSettingsStore = getByStoreName("UnsyncedUserSettingsStore");
+export const SearchStore = getByProps("useDiscoveryState", "useQueryState");
 
 export const ModalActions = getByProps("closeModal");
 export const MessageActions = getByProps("sendMessage", "receiveMessage");
@@ -268,6 +284,16 @@ export const AMOLEDThemeManager = getByProps("setAMOLEDThemeEnabled");
 export const Clipboard = getByProps("getString", "setString") as {
     getString(): Promise<string>,
     setString(str: string): Promise<void>;
+};
+
+export enum AMOLEDThemeState {
+    HIDDEN,
+    OFF,
+    ON
+}
+
+export const setAMOLEDThemeEnabledBypass = (state) => {
+    FluxDispatcher.dispatch({ type: "UNSYNCED_USER_SETTINGS_UPDATE", settings: { useAMOLEDTheme: state ? AMOLEDThemeState.ON : AMOLEDThemeState.OFF } });
 };
 
 export const Dialog = getByProps("show", "openLazy", "confirm", "close") as {
