@@ -13,8 +13,7 @@ enum ThemeType {
 
 const { externalStorageDirectory } = window.nativeModuleProxy.AliucordNative;
 const SETTINGS_DIRECTORY = externalStorageDirectory + "/AliucordRN/settings/";
-const THEME_DIRECTORY = externalStorageDirectory + "/AliucordRN/themes/";
-const settings = JSON.parse(AliuFS.readFile(SETTINGS_DIRECTORY + "Aliucord.json", "text") as string);
+const THEMES_DIRECTORY = externalStorageDirectory + "/AliucordRN/themes/";
 
 export function setTheme(theme: Theme) {
     currentTheme = themes[theme.name];
@@ -32,20 +31,26 @@ export function setTheme(theme: Theme) {
 // WARNING: this function is called before the Aliucord loads, meaning we're having limited access.
 export function themerInit(constants: typeof Constants) {
     try {
+        if (!AliuFS.exists(SETTINGS_DIRECTORY + "Aliucord.json")) return;
         discordConstants = constants;
         AliuHermes.unfreeze(constants.ThemeColorMap);
         AliuHermes.unfreeze(constants.Colors);
         AliuHermes.unfreeze(constants.UNSAFE_Colors);
 
-        for (const file of AliuFS.readdir(THEME_DIRECTORY)) {
+        const settings = JSON.parse(AliuFS.readFile(SETTINGS_DIRECTORY + "Aliucord.json", "text") as string);
+
+        for (const file of AliuFS.readdir(THEMES_DIRECTORY)) {
             if (!file.name.endsWith(".json")) continue;
 
-            const themeFile = JSON.parse(AliuFS.readFile(THEME_DIRECTORY + file.name, "text") as string) as Theme;
+            const themeFile = JSON.parse(AliuFS.readFile(THEMES_DIRECTORY + file.name, "text") as string) as Theme;
 
+            if (!themeFile?.name || !themeFile?.theme_color_map || !themeFile?.colors) throw new Error(`Theme file ${file.name} does not contain a name, theme_color_map or colors key.`);
+            if (themes[themeFile.name]) throw new Error(`A theme called ${themeFile.name} already exists.`);
+            
             themes[themeFile.name] = themeFile;
         }
 
-        if (settings !== undefined && themes[settings.theme] !== undefined) {
+        if (themes[settings?.theme]) {
             currentTheme = themes[settings.theme];
 
             applyTheme();
@@ -74,7 +79,7 @@ export function applyTheme() {
         }
 
         // Enmity compat
-        if (currentTheme.colors && currentTheme.colours === undefined) {
+        if (currentTheme.colors && !currentTheme.colours) {
             for (const key in currentTheme.colors) {
                 if (!discordConstants.Colors[key]) continue;
 

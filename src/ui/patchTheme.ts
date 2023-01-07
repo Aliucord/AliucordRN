@@ -7,7 +7,7 @@ export default function patchTheme() {
         logger.error("Failed to apply theme: ", themeErrorReason);
         Dialog.show({
             title: "Failed to apply theme",
-            body: `${currentTheme?.name} failed to apply. Please report this issue. Theme will be disabled on restart.`,
+            body: `${currentTheme?.name} failed to apply. Theme will be disabled on restart.`,
             isDismissable: false,
             cancelText: "Do not restart",
             confirmText: "Restart",

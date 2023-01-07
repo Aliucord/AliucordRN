@@ -69,6 +69,10 @@ if (!nullProxyFound) {
     console.warn("Null proxy not found, expect problems");
 }
 
+if (!themeModuleFound) {
+    logger.error("Discord theme module wasn't found. Themes will be disabled.");
+}
+
 /**
  * Find a Discord Module
  * @param filter Module filter
