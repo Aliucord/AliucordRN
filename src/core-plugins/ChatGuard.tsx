@@ -1,6 +1,6 @@
 import { Plugin } from "../entities";
 // @ts-ignore
-import { getModule, React, ReactNative, Dialog, Forms} from "../metro";
+import { getModule, React, ReactNative, Dialog, Forms, Styles} from "../metro";
 const { FormRow } = Forms;
 import { getAssetId } from "../utils";
 type FilterOptions = {
@@ -33,6 +33,18 @@ export default class ChatGuard extends Plugin {
         // @ts-ignore
         const settings = window.Aliucord.settings;
 
+        const styles = Styles.createThemedStyleSheet({
+            chatbox: {
+                //"backgroundColor": "#36393f",
+                "borderColor": "#202225",
+                "borderTopWidth": 0.36363636363636365,
+                "padding": 6,
+                "paddingVertical": 8,
+                "paddingLeft": 4,
+                "paddingRight": 4
+            }
+        });
+
         const ChatInputGuard = this.getByName("ChatInputGuard");
         this.patcher.after(ChatInputGuard.default.prototype, "render", (_, component: any) => {
             const chatInput = component.props.children.find(c => c?.props?.accessibilityLabel != undefined);
@@ -45,15 +57,7 @@ export default class ChatGuard extends Plugin {
                             settings.get("AcknowlegedNoSupportChannels", false) ? component.props.children :
                         
                                 <ReactNative.View
-                                    style={{
-                                        //"backgroundColor": "#36393f",
-                                        "borderColor": "#202225",
-                                        "borderTopWidth": 0.36363636363636365,
-                                        "padding": 6,
-                                        "paddingVertical": 8,
-                                        "paddingLeft": 4,
-                                        "paddingRight": 4
-                                    }}>
+                                    style={styles.chatbox}>
                                     <FormRow
                                         label={this.MESSAGE_SHORT}
                                         leading={<FormRow.Icon source={getAssetId("ic_warning_24px")} />}
