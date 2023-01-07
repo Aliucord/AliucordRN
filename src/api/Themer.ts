@@ -92,7 +92,6 @@ export function applyTheme() {
         }
 
         themeApplied = true;
-        throw Error("TROLL");
     } catch (e) {
         themeApplied = false;
         themeErrorReason = e;
