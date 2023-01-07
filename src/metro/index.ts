@@ -1,4 +1,4 @@
-import type { ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
+import type { EmitterSubscription, ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
 import { themerInit } from "../api/Themer";
 import { Logger } from "../utils/Logger";
 
@@ -281,9 +281,13 @@ export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
 export const Locale = getByProps("Messages");
 export const AMOLEDThemeManager = getByProps("setAMOLEDThemeEnabled");
 
-export const Clipboard = getByProps("getString", "setString") as {
+export const Clipboard = getByProps("getString", "setString", "hasString") as {
     getString(): Promise<string>,
-    setString(str: string): Promise<void>;
+    setString(str: string): Promise<void>,
+    hasString(): Promise<boolean>,
+    getImage(): Promise<string>,
+    addListener(callback: () => void): EmitterSubscription,
+    removeAllListeners(): void;
 };
 
 export enum AMOLEDThemeState {
