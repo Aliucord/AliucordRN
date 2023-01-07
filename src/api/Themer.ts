@@ -3,13 +3,13 @@ import { Constants, Dialog, getByName, ReactNative, setAMOLEDThemeEnabledBypass 
 import { readdir } from "../native/fs";
 import { Logger } from "../utils";
 import { THEME_DIRECTORY } from "../utils/constants";
-import { after } from "../utils/patcher";
+import { after, Unpatch } from "../utils/patcher";
 
 const logger = new Logger("Themer");
 export const themes = {} as Record<string, Theme>;
 export let currentTheme: Theme;
 
-let unpatchInput, unpatchNav;
+let unpatchInput: Unpatch, unpatchNav: Unpatch;
 
 enum ThemeType {
     DARK,
@@ -49,11 +49,30 @@ export function applyTheme() {
         setAMOLEDThemeEnabledBypass(true);
         logger.info("Theme applied: ", currentTheme.name);
 
+        Dialog.show({
+            title: "Restart for theme to apply",
+            body: "Restart the app for the theme to apply correctly.",
+            confirmText: "Restart",
+            isDismissable: false,
+            onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
+        });
+
     } catch (e) {
+        Dialog.show({
+            title: "Failed to apply theme",
+            body: `${currentTheme.name} failed to apply. Please report this issue. Theme will be disabled on restart.`,
+            isDismissable: false,
+            cancelText: "Do not restart",
+            confirmText: "Restart",
+            onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
+        });
+
         logger.error("Failed to apply theme: ", e);
+        window.Aliucord.settings.set("theme", "");
         
-        unpatchInput();
-        unpatchNav();
+        // Unpatch components
+        unpatchInput;
+        unpatchNav;
     }
 }
 
@@ -92,7 +111,7 @@ export function themerInit() {
             window.Aliucord.settings.set("theme", "");
         }
     } catch (e) {
-        logger.error(e);
+        logger.error("Themer failed to initialize: ", e);
     }
 } 
 
