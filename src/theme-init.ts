@@ -20,18 +20,19 @@ const { externalStorageDirectory } = window.nativeModuleProxy.AliucordNative;
 const SETTINGS_DIRECTORY = externalStorageDirectory + "/AliucordRN/settings/";
 const THEME_DIRECTORY = externalStorageDirectory + "/AliucordRN/themes/";
 
+export const InvalidThemes = {
+    invalidThemes: [] as string[],
+    duplicatedThemes: [] as string[]
+};
+
 // These are handled after Aliucord loads
-export let ThemeState: {
+export let ThemeState = {} as {
     currentTheme?: string;
     isApplied?: boolean;
 
     applyFailed?: boolean;
     reason?: ThemeErrors;
     errorArgs?: any[];
-    shouldShowDialog?: boolean;
-
-    invalidThemes?: string[];
-    duplicatedThemes?: string[];
 };
 
 export const loadedThemes: Theme[] = [];
@@ -57,8 +58,7 @@ export function handleThemeApply() {
             ThemeState = {
                 currentTheme: themeName,
                 applyFailed: true,
-                reason: ThemeErrors.UNKNOWN_THEME,
-                shouldShowDialog: true,
+                reason: ThemeErrors.UNKNOWN_THEME
             };
             return;
         }
@@ -68,7 +68,6 @@ export function handleThemeApply() {
         overwriteColors(UNSAFE_Colors, theme.unsafe_colors);
 
         ThemeState = {
-            ...(ThemeState ?? {}),
             currentTheme: themeName,
             isApplied: true,
         };
@@ -76,8 +75,7 @@ export function handleThemeApply() {
         ThemeState = {
             applyFailed: true,
             reason: ThemeErrors.UNEXPECTED_ERROR,
-            errorArgs: [error],
-            shouldShowDialog: true,
+            errorArgs: [error]
         };
     }
 }
@@ -100,8 +98,7 @@ function getTheme(): string | undefined {
     if (!json.theme) {
         ThemeState = {
             isApplied: false,
-            reason: ThemeErrors.THEME_UNSET,
-            shouldShowDialog: false,
+            reason: ThemeErrors.THEME_UNSET
         };
         return undefined;
     }
@@ -116,8 +113,7 @@ function loadThemes(): boolean {
         ThemeState = {
             isApplied: false,
             applyFailed: true,
-            reason: ThemeErrors.NO_THEME_DIRECTORY,
-            shouldShowDialog: false,
+            reason: ThemeErrors.NO_THEME_DIRECTORY
         };
         return false;
     }
@@ -132,15 +128,11 @@ function loadThemes(): boolean {
 
         // Check if file is a valid theme
         if (!json.name || (!json.theme_color_map && !json.colors && !json.colours)) {
-            ThemeState = {
-                ...ThemeState,
-                invalidThemes: [...(ThemeState?.invalidThemes ?? []), json.name],
-            };
-        } else if (loadedThemes[json.name] !== undefined) {
-            ThemeState = {
-                ...ThemeState,
-                duplicatedThemes: [...(ThemeState?.duplicatedThemes ?? []), json.name],
-            };
+            InvalidThemes.invalidThemes.push(file.name);
+            continue;
+        } else if (loadedThemes[json.name]) {
+            InvalidThemes.duplicatedThemes.push(json.name);
+            continue;
         }
 
         // Add theme to loaded themes
@@ -165,15 +157,16 @@ function overwriteColors(target, source) {
 
         // target is ThemeColorMap
         if (typeof target[key] === "object") {
+            // Enmity compatibility for chat background
+            if (!source["CHAT_BACKGROUND"] && source["BACKGROUND_PRIMARY"]) {
+                source["CHAT_BACKGROUND"] = source["BACKGROUND_PRIMARY"];
+            }
+
             for (const i in source[key]) {
                 target[key][i] = source[key][i];
             }
-
-            // Enmity compatibility for chat background
-            if (!source["CHAT_BACKGROUND"]) {
-                target["CHAT_BACKGROUND"] = source["BACKGROUND_PRIMARY"];
-            }
         }
+
         // target is Colors or UNSAFE_Colors
         else if (typeof target[key] === "string") {
             target[key] = source[key];

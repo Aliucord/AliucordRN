@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { Theme } from "../entities";
 import { Dialog, ReactNative, Toasts } from "../metro";
-import { ThemeErrors, ThemeState } from "../theme-init";
+import { InvalidThemes, ThemeErrors, ThemeState } from "../theme-init";
 import { Logger } from "../utils";
 
 const logger = new Logger("Themer");
@@ -37,17 +37,17 @@ export function onStartup() {
         return;
     }
 
-    if (ThemeState.duplicatedThemes?.length) {
-        for (const theme of ThemeState.duplicatedThemes) {
-            logger.warn("Duplicated themes found, check the log");
-            Toasts.open({ content: `Duplicated theme: ${theme}` });
+    if (InvalidThemes.duplicatedThemes.length) {
+        for (const theme of InvalidThemes.duplicatedThemes) {
+            logger.warn(`Theme duplicate: ${theme} already existed.`);
+            Toasts.open({ content: "Duplicated themes found, check log." });
         }
     }
 
-    if (ThemeState.invalidThemes?.length) {
-        for (const theme of ThemeState.invalidThemes) {
-            logger.warn("Invalid theme(s) found, check the log");
-            Toasts.open({ content: `Invalid theme: ${theme}` });
+    if (InvalidThemes.invalidThemes.length) {
+        for (const theme of InvalidThemes.invalidThemes) {
+            logger.error(`The theme "${theme}" is invalid.`);
+            Toasts.open({ content: `Invalid theme(s): ${theme}` });
         }
     }
 
