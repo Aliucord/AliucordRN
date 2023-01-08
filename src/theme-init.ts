@@ -151,17 +151,17 @@ function unfreezeThemeConstants() {
 function overwriteColors(target, source) {
     if (!target || !source) return;
 
+    // Enmity compatibility for chat background
+    if (typeof source === "object" && !source["CHAT_BACKGROUND"] && source["BACKGROUND_PRIMARY"]) {
+        source["CHAT_BACKGROUND"] = source["BACKGROUND_PRIMARY"];
+    }
+
     for (const key in source) {
         // Skip if property doesn't exist in target
         if (!target[key]) continue;
 
         // target is ThemeColorMap
         if (typeof target[key] === "object") {
-            // Enmity compatibility for chat background
-            if (!source["CHAT_BACKGROUND"] && source["BACKGROUND_PRIMARY"]) {
-                source["CHAT_BACKGROUND"] = source["BACKGROUND_PRIMARY"];
-            }
-
             for (const i in source[key]) {
                 target[key][i] = source[key][i];
             }
