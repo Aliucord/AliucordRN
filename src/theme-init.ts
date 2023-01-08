@@ -47,7 +47,7 @@ export function handleThemeApply() {
         const { ThemeColorMap, Colors, UNSAFE_Colors } = Constants;
 
         if (!loadThemes()) return;
-        const themeName = loadSettings();
+        const themeName = getTheme();
 
         // File doesn't exist or theme isn't set
         if (!themeName) return;
@@ -82,7 +82,7 @@ export function handleThemeApply() {
     }
 }
 
-function loadSettings(): string | undefined {
+function getTheme(): string | undefined {
     // Check if Aliucord.json file exists in settings directory
     if (!AliuFS.exists(SETTINGS_DIRECTORY + "Aliucord.json")) {
         ThemeState = {
@@ -152,7 +152,7 @@ function loadThemes(): boolean {
 
 function unfreezeThemeConstants() {
     for (const key of ["ThemeColorMap", "Colors", "UNSAFE_Colors"]) {
-        AliuHermes.unfreeze(Constants[key]);
+        Constants[key] && AliuHermes.unfreeze(Constants[key]);
     }
 }
 

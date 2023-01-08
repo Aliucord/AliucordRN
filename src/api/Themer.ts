@@ -14,9 +14,9 @@ export function setTheme(theme: Theme | null) {
     }
 
     Dialog.show({
-        title: "Theme changed",
-        body: "Restart Aliucord to apply the new theme.",
-        confirmText: "OK",
+        title: "Restart to apply",
+        body: `Restart is required to apply the ${theme ? "new" : "default"} theme.`,
+        confirmText: "Restart",
         isDismissable: false,
         onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
     });
