@@ -1,5 +1,5 @@
 import type { EmitterSubscription, ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { loadTheme } from "../theme-init";
+import { themerInit } from "../themer/themerInit";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -48,7 +48,7 @@ for (const key in modules) {
 
     if (!themeModuleFound && module?.publicModule?.exports?.ThemeColorMap) {
         // Theme colors are overwritten here
-        loadTheme(module.publicModule.exports);
+        themerInit(module.publicModule.exports);
 
         themeModuleFound = true;
         continue;

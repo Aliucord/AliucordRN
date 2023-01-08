@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { Theme } from "../entities";
 import { Dialog, ReactNative, Toasts } from "../metro";
-import { InvalidThemes, ThemeErrors, ThemeState } from "../theme-init";
+import { invalidThemes, ThemeErrors, themeState } from "../themer/themerInit";
 import { Logger } from "../utils";
 
 const logger = new Logger("Themer");
@@ -23,46 +23,46 @@ export function setTheme(theme: Theme | null) {
 }
 
 export function onStartup() {
-    if (ThemeState.isApplied) {
+    if (themeState.isApplied) {
         logger.info("Theme is sucessfully applied");
     }
 
-    if (ThemeState.applyFailed) {
-        logger.error("Theme failed to apply: " + ThemeState.reason ?? "Unknown reason");
+    if (themeState.applyFailed) {
+        logger.error("Theme failed to apply: " + themeState.reason ?? "Unknown reason");
         handleErrors();
 
-        ThemeState.errorArgs?.forEach((arg) => {
+        themeState.errorArgs?.forEach((arg) => {
             logger.error(arg);
         });
         return;
     }
 
-    if (InvalidThemes.duplicatedThemes.length) {
-        for (const theme of InvalidThemes.duplicatedThemes) {
+    if (invalidThemes.duplicatedThemes.length) {
+        for (const theme of invalidThemes.duplicatedThemes) {
             logger.warn(`Theme duplicate: ${theme} already existed.`);
             Toasts.open({ content: "Duplicated themes found, check log." });
         }
     }
 
-    if (InvalidThemes.invalidThemes.length) {
-        for (const theme of InvalidThemes.invalidThemes) {
+    if (invalidThemes.invalidThemes.length) {
+        for (const theme of invalidThemes.invalidThemes) {
             logger.error(`The theme "${theme}" is invalid.`);
             Toasts.open({ content: `Invalid theme(s): ${theme}` });
         }
     }
 
-    logger.info(ThemeState);
+    logger.info(themeState);
 }
 
 function handleErrors() {
-    switch (ThemeState.reason) {
+    switch (themeState.reason) {
         case ThemeErrors.UNKNOWN_THEME:
-            showFailDialog(`An unknown theme was applied: ${ThemeState.currentTheme}.\nFalling back to default...`);
+            showFailDialog(`An unknown theme was applied: ${themeState.currentTheme}.\nFalling back to default...`);
             window.Aliucord.settings.delete("theme");
             break;
         case ThemeErrors.UNEXPECTED_ERROR:
             showFailDialog(
-                `An unexpected error occurred: ${ThemeState.errorArgs?.[0]?.message ?? "¯\\_(ツ)_/¯"}.\n`
+                `An unexpected error occurred: ${themeState.errorArgs?.[0]?.message ?? "¯\\_(ツ)_/¯"}.\n`
                 + "Falling back to default theme..."
             );
             window.Aliucord.settings.delete("theme");

@@ -1,7 +1,7 @@
 import { setTheme } from "../api/Themer";
 import { Theme } from "../entities";
 import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
-import { loadedThemes, ThemeState } from "../theme-init";
+import { loadedThemes, themeState } from "../themer/themerInit";
 import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList, Image, ScrollView } = ReactNative;
@@ -70,7 +70,7 @@ const styles = Styles.createThemedStyleSheet({
 });
 
 function ThemeCard({ theme }: { theme: Theme; }) {
-    const [isEnabled, setIsEnabled] = React.useState(ThemeState?.currentTheme === theme.name);
+    const [isEnabled, setIsEnabled] = React.useState(themeState?.currentTheme === theme.name);
     return (
         <View style={styles.card}>
             <Forms.FormRow
@@ -91,7 +91,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                     </View>)}
                 trailing={<Forms.FormRadio selected={isEnabled} />}
                 onPress={() => {
-                    setTheme(ThemeState?.currentTheme === theme.name ? null : theme);
+                    setTheme(themeState?.currentTheme === theme.name ? null : theme);
                     setIsEnabled(!isEnabled);
                 }}
             />

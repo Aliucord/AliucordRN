@@ -1,8 +1,8 @@
-import { Theme } from "./entities";
+import { Theme } from "../entities";
 
 export enum ThemeErrors {
-    HAS_THEME_NO_SETTINGS = "Themes exists but no settings",
-    UNKNOWN_THEME = "Unkown theme applied, reverting to default",
+    NO_SETTINGS = "Themes are loaded, but settings wasn't found",
+    UNKNOWN_THEME = "Unknown theme applied, reverting to default",
     UNEXPECTED_ERROR = "Unexpected error",
     THEME_UNSET = "Theme is unset",
     NO_THEME_DIRECTORY = "Theme directory not found",
@@ -20,13 +20,13 @@ const { externalStorageDirectory } = window.nativeModuleProxy.AliucordNative;
 const SETTINGS_DIRECTORY = externalStorageDirectory + "/AliucordRN/settings/";
 const THEME_DIRECTORY = externalStorageDirectory + "/AliucordRN/themes/";
 
-export const InvalidThemes = {
+export const invalidThemes = {
     invalidThemes: [] as string[],
     duplicatedThemes: [] as string[]
 };
 
 // These are handled after Aliucord loads
-export let ThemeState = {} as {
+export let themeState = {} as {
     currentTheme?: string;
     isApplied?: boolean;
 
@@ -37,7 +37,7 @@ export let ThemeState = {} as {
 
 export const loadedThemes: Theme[] = [];
 
-export function loadTheme(constants: ThemeConstants) {
+export function themerInit(constants: ThemeConstants) {
     Constants = constants;
     unfreezeThemeConstants();
     handleThemeApply();
@@ -55,7 +55,7 @@ export function handleThemeApply() {
 
         const theme = loadedThemes[themeName];
         if (!theme) {
-            ThemeState = {
+            themeState = {
                 currentTheme: themeName,
                 applyFailed: true,
                 reason: ThemeErrors.UNKNOWN_THEME
@@ -67,12 +67,12 @@ export function handleThemeApply() {
         overwriteColors(Colors, theme.colors ?? theme.colours);
         overwriteColors(UNSAFE_Colors, theme.unsafe_colors);
 
-        ThemeState = {
+        themeState = {
             currentTheme: themeName,
             isApplied: true,
         };
     } catch (error) {
-        ThemeState = {
+        themeState = {
             applyFailed: true,
             reason: ThemeErrors.UNEXPECTED_ERROR,
             errorArgs: [error]
@@ -83,9 +83,9 @@ export function handleThemeApply() {
 function getTheme(): string | undefined {
     // Check if Aliucord.json file exists in settings directory
     if (!AliuFS.exists(SETTINGS_DIRECTORY + "Aliucord.json")) {
-        ThemeState = {
+        themeState = {
             applyFailed: true,
-            reason: ThemeErrors.HAS_THEME_NO_SETTINGS,
+            reason: ThemeErrors.NO_SETTINGS,
         };
         return undefined;
     }
@@ -96,7 +96,7 @@ function getTheme(): string | undefined {
 
     // Check if theme is enabled
     if (!json.theme) {
-        ThemeState = {
+        themeState = {
             isApplied: false,
             reason: ThemeErrors.THEME_UNSET
         };
@@ -110,7 +110,7 @@ function loadThemes(): boolean {
     // Check if themes directory exists
     if (!AliuFS.exists(THEME_DIRECTORY)) {
         // applyFailed is set here because theme directory is *supposed* to always exist, however this won't bother the user
-        ThemeState = {
+        themeState = {
             isApplied: false,
             applyFailed: true,
             reason: ThemeErrors.NO_THEME_DIRECTORY
@@ -128,10 +128,10 @@ function loadThemes(): boolean {
 
         // Check if file is a valid theme
         if (!json.name || (!json.theme_color_map && !json.colors && !json.colours)) {
-            InvalidThemes.invalidThemes.push(file.name);
+            invalidThemes.invalidThemes.push(file.name);
             continue;
         } else if (loadedThemes[json.name]) {
-            InvalidThemes.duplicatedThemes.push(json.name);
+            invalidThemes.duplicatedThemes.push(json.name);
             continue;
         }
 
