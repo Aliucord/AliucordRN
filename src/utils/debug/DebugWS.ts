@@ -1,12 +1,15 @@
+import { settings } from "../../Aliucord";
 import { Logger } from "../Logger";
 import { makeAsyncEval } from "../misc";
 import { before } from "../patcher";
 
 const logger = new Logger("DebugWS");
-let socket: WebSocket;
+let socket: WebSocket | null = null;
+let patched = false;
 
 export function startDebugWs() {
-    if (socket) throw "no";
+    if (socket) return;
+    if (!settings.get("debugWS", false)) return;
 
     logger.info("Connecting to debug ws");
     socket = new WebSocket("ws://localhost:3000");
@@ -25,11 +28,26 @@ export function startDebugWs() {
             logger.error(e as Error | string);
         }
     });
-
-    before(globalThis, "nativeLoggingHook", (_, message: string, level: number) => {
-        if (socket?.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ level, message }));
+    socket.addEventListener("close", () => {
+        socket = null;
+        if (settings.get("debugWS", false)) {
+            logger.info("Disconnected from debug websocket, reconnecting in 3 seconds");
+            setTimeout(startDebugWs, 3000);
         }
     });
+
+    if (!patched) {
+        before(globalThis, "nativeLoggingHook", (_, message: string, level: number) => {
+            if (socket?.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ level, message }));
+            }
+        });
+        patched = true;
+    }
 }
 
+export function stopDebugWs() {
+    if (!socket) return;
+    socket?.close();
+    socket = null;
+}

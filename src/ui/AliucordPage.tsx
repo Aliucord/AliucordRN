@@ -2,6 +2,7 @@ import { useSettings } from "../api/Settings";
 import { Forms, React, ReactNative } from "../metro";
 import { URLOpener } from "../metro/index";
 import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../utils/constants";
+import { startDebugWs, stopDebugWs } from "../utils/debug/DebugWS";
 import { getAssetId } from "../utils/getAssetId";
 
 const { FormSection, FormSwitch, FormRow } = Forms;
@@ -24,6 +25,15 @@ export default function AliucordPage() {
                 <FormRow
                     label="Automatically update Plugins"
                     trailing={<FormSwitch value={settings.get("autoUpdatePlugins", false)} onValueChange={v => settings.set("autoUpdatePlugins", v)} />}
+                />
+                <FormRow
+                    label="Enable debug websocket"
+                    trailing={<FormSwitch value={settings.get("debugWS", false)} onValueChange={v => {
+                        settings.set("debugWS", v);
+                        v
+                            ? startDebugWs()
+                            : stopDebugWs();
+                    }} />}
                 />
             </FormSection>
             <FormSection title="Socials">
