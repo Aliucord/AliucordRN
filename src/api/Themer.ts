@@ -1,14 +1,30 @@
 /* eslint-disable indent */
-import { Dialog } from "../metro";
+import { Theme } from "../entities";
+import { Dialog, ReactNative, Toasts } from "../metro";
 import { ThemeErrors, ThemeState } from "../theme-init";
 import { Logger } from "../utils";
 
 const logger = new Logger("Themer");
 
+export function setTheme(theme: Theme | null) {
+    if (!theme) {
+        window.Aliucord.settings.delete("theme");
+    } else {
+        window.Aliucord.settings.set("theme", theme.name);
+    }
+
+    Dialog.show({
+        title: "Theme changed",
+        body: "Restart Aliucord to apply the new theme.",
+        confirmText: "OK",
+        isDismissable: false,
+        onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
+    });
+}
+
 export function onStartup() {
     if (ThemeState.isApplied) {
         logger.info("Theme is sucessfully applied");
-        return;
     }
 
     if (ThemeState.applyFailed) {
@@ -21,17 +37,31 @@ export function onStartup() {
         return;
     }
 
+    if (ThemeState.duplicatedThemes?.length) {
+        for (const theme of ThemeState.duplicatedThemes) {
+            logger.warn("Duplicated themes found, check the log");
+            Toasts.open({ content: `Duplicated theme: ${theme}` });
+        }
+    }
+
+    if (ThemeState.invalidThemes?.length) {
+        for (const theme of ThemeState.invalidThemes) {
+            logger.warn("Invalid theme(s) found, check the log");
+            Toasts.open({ content: `Invalid theme: ${theme}` });
+        }
+    }
+
     logger.info(ThemeState);
 }
 
 function handleErrors() {
     switch (ThemeState.reason) {
         case ThemeErrors.UNKNOWN_THEME:
-            showDialog(`An unknown theme was applied: ${ThemeState.currentTheme}.\nFalling back to default...`);
+            showFailDialog(`An unknown theme was applied: ${ThemeState.currentTheme}.\nFalling back to default...`);
             window.Aliucord.settings.delete("theme");
             break;
         case ThemeErrors.UNEXPECTED_ERROR:
-            showDialog(
+            showFailDialog(
                 `An unexpected error occurred: ${ThemeState.errorArgs?.[0]?.message ?? "¯\\_(ツ)_/¯"}.\n`
                 + "Falling back to default theme..."
             );
@@ -40,7 +70,7 @@ function handleErrors() {
     }
 }
 
-function showDialog(message: string, restart = false) {
+function showFailDialog(message: string) {
     Dialog.show({
         title: "Failed to apply theme",
         body: message,

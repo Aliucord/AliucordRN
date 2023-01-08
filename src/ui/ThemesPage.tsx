@@ -1,5 +1,7 @@
+import { setTheme } from "../api/Themer";
 import { Theme } from "../entities";
 import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
+import { loadedThemes, ThemeState } from "../theme-init";
 import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList, Image, ScrollView } = ReactNative;
@@ -68,7 +70,7 @@ const styles = Styles.createThemedStyleSheet({
 });
 
 function ThemeCard({ theme }: { theme: Theme; }) {
-    const [isEnabled, setIsEnabled] = React.useState(false);
+    const [isEnabled, setIsEnabled] = React.useState(ThemeState?.currentTheme === theme.name);
     return (
         <View style={styles.card}>
             <Forms.FormRow
@@ -89,13 +91,8 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                     </View>)}
                 trailing={<Forms.FormRadio selected={isEnabled} />}
                 onPress={() => {
-                    if ({ name: "" }?.name !== theme.name) {
-                        //setTheme(theme);
-                        setIsEnabled(!isEnabled);
-                    } else {
-                        //useDiscordThemes();
-                        setIsEnabled(!isEnabled);
-                    }
+                    setTheme(ThemeState?.currentTheme === theme.name ? null : theme);
+                    setIsEnabled(!isEnabled);
                 }}
             />
             <View style={styles.bodyCard}>
@@ -108,8 +105,8 @@ function ThemeCard({ theme }: { theme: Theme; }) {
 export default function ThemesPage() {
     const [search, setSearch] = React.useState(String);
 
-    const entities = search ? Object.values({}).filter(theme => {
-        const { name, description, authors } = { name: "guh", description: "gih", authors: [{ name: "guh" }] };
+    const entities = search ? Object.values(loadedThemes).filter(theme => {
+        const { name, description, authors } = theme;
 
         if (name.toLowerCase().includes(search.toLowerCase())) {
             return true;
@@ -124,7 +121,7 @@ export default function ThemesPage() {
         }
 
         return false;
-    }) : Object.values({});
+    }) : Object.values(loadedThemes);
 
     return (<>
         <Search
@@ -148,9 +145,17 @@ export default function ThemesPage() {
                             You dont have any themes installed.
                         </Text>
                     </View>
-                : <></>
+                :
+                <FlatList
+                    data={entities}
+                    renderItem={({ item }) => <ThemeCard
+                        key={item.name}
+                        theme={item}
+                    />}
+                    keyExtractor={theme => theme.name}
+                    style={styles.list}
+                />
             }
         </ScrollView>
     </>);
 }
-
