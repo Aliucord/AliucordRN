@@ -20,17 +20,20 @@ const { externalStorageDirectory } = window.nativeModuleProxy.AliucordNative;
 const SETTINGS_DIRECTORY = externalStorageDirectory + "/AliucordRN/settings/";
 const THEME_DIRECTORY = externalStorageDirectory + "/AliucordRN/themes/";
 
-export const invalidThemes = {
+export const excludedThemes = {
     invalidThemes: [] as string[],
     duplicatedThemes: [] as string[]
 };
 
 // These are handled after Aliucord loads
 export let themeState = {} as {
-    currentTheme?: string;
-    isApplied?: boolean;
+    isApplied: true;
+    currentTheme: string;
+} | {
+    isApplied: false;
 
-    applyFailed?: boolean;
+    currentTheme?: string;
+    anError: boolean;
     reason?: ThemeErrors;
     errorArgs?: any[];
 };
@@ -56,8 +59,9 @@ export function handleThemeApply() {
         const theme = loadedThemes[themeName];
         if (!theme) {
             themeState = {
+                isApplied: false,
                 currentTheme: themeName,
-                applyFailed: true,
+                anError: true,
                 reason: ThemeErrors.UNKNOWN_THEME
             };
             return;
@@ -73,7 +77,8 @@ export function handleThemeApply() {
         };
     } catch (error) {
         themeState = {
-            applyFailed: true,
+            isApplied: false,
+            anError: true,
             reason: ThemeErrors.UNEXPECTED_ERROR,
             errorArgs: [error]
         };
@@ -84,7 +89,8 @@ function getTheme(): string | undefined {
     // Check if Aliucord.json file exists in settings directory
     if (!AliuFS.exists(SETTINGS_DIRECTORY + "Aliucord.json")) {
         themeState = {
-            applyFailed: true,
+            isApplied: false,
+            anError: false,
             reason: ThemeErrors.NO_SETTINGS,
         };
         return undefined;
@@ -98,6 +104,7 @@ function getTheme(): string | undefined {
     if (!json.theme) {
         themeState = {
             isApplied: false,
+            anError: false,
             reason: ThemeErrors.THEME_UNSET
         };
         return undefined;
@@ -112,7 +119,7 @@ function loadThemes(): boolean {
         // applyFailed is set here because theme directory is *supposed* to always exist, however this won't bother the user
         themeState = {
             isApplied: false,
-            applyFailed: true,
+            anError: true,
             reason: ThemeErrors.NO_THEME_DIRECTORY
         };
         return false;
@@ -128,10 +135,10 @@ function loadThemes(): boolean {
 
         // Check if file is a valid theme
         if (!json.name || (!json.theme_color_map && !json.colors && !json.colours)) {
-            invalidThemes.invalidThemes.push(file.name);
+            excludedThemes.invalidThemes.push(file.name);
             continue;
         } else if (loadedThemes[json.name]) {
-            invalidThemes.duplicatedThemes.push(json.name);
+            excludedThemes.duplicatedThemes.push(json.name);
             continue;
         }
 
