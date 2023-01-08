@@ -1,4 +1,3 @@
-import { currentTheme, setTheme, themes, useDiscordThemes } from "../api/Themer";
 import { Theme } from "../entities";
 import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
@@ -69,7 +68,7 @@ const styles = Styles.createThemedStyleSheet({
 });
 
 function ThemeCard({ theme }: { theme: Theme; }) {
-    const [isEnabled, setIsEnabled] = React.useState(currentTheme?.name === theme.name);
+    const [isEnabled, setIsEnabled] = React.useState(false);
     return (
         <View style={styles.card}>
             <Forms.FormRow
@@ -90,11 +89,11 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                     </View>)}
                 trailing={<Forms.FormRadio selected={isEnabled} />}
                 onPress={() => {
-                    if (currentTheme?.name !== theme.name) {
-                        setTheme(theme);
+                    if ({ name: "" }?.name !== theme.name) {
+                        //setTheme(theme);
                         setIsEnabled(!isEnabled);
                     } else {
-                        useDiscordThemes();
+                        //useDiscordThemes();
                         setIsEnabled(!isEnabled);
                     }
                 }}
@@ -109,8 +108,8 @@ function ThemeCard({ theme }: { theme: Theme; }) {
 export default function ThemesPage() {
     const [search, setSearch] = React.useState(String);
 
-    const entities = search ? Object.values(themes).filter(theme => {
-        const { name, description, authors } = theme;
+    const entities = search ? Object.values({}).filter(theme => {
+        const { name, description, authors } = { name: "guh", description: "gih", authors: [{ name: "guh" }] };
 
         if (name.toLowerCase().includes(search.toLowerCase())) {
             return true;
@@ -125,7 +124,7 @@ export default function ThemesPage() {
         }
 
         return false;
-    }) : Object.values(themes);
+    }) : Object.values({});
 
     return (<>
         <Search
@@ -149,16 +148,7 @@ export default function ThemesPage() {
                             You dont have any themes installed.
                         </Text>
                     </View>
-                :
-                <FlatList
-                    data={entities}
-                    renderItem={({ item }) => <ThemeCard
-                        key={item.name}
-                        theme={item}
-                    />}
-                    keyExtractor={theme => theme.name}
-                    style={styles.list}
-                />
+                : <></>
             }
         </ScrollView>
     </>);
