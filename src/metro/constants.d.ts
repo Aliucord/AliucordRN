@@ -4171,7 +4171,7 @@ interface Constants {
         PRIMARY: string;
         PRIMARY_BOLD: string;
         PRIMARY_LIGHT: string;
-        PRIMARY_REGULAR: string;
+        PRIMARY_NORMAL: string;
         PRIMARY_SEMIBOLD: string;
     };
     FormStates: {

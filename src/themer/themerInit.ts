@@ -21,8 +21,13 @@ const SETTINGS_DIRECTORY = externalStorageDirectory + "/AliucordRN/settings/";
 const THEME_DIRECTORY = externalStorageDirectory + "/AliucordRN/themes/";
 
 export const excludedThemes = {
-    invalidThemes: [] as string[],
+    invalidThemes: [] as InvalidTheme[],
     duplicatedThemes: [] as string[]
+};
+
+export type InvalidTheme = {
+    name: string;
+    reason: string;
 };
 
 // These are handled after Aliucord loads
@@ -85,7 +90,7 @@ export function handleThemeApply() {
     }
 }
 
-function getTheme(): string | undefined {
+function getTheme(): string | null {
     // Check if Aliucord.json file exists in settings directory
     if (!AliuFS.exists(SETTINGS_DIRECTORY + "Aliucord.json")) {
         themeState = {
@@ -93,7 +98,7 @@ function getTheme(): string | undefined {
             anError: false,
             reason: ThemeErrors.NO_SETTINGS,
         };
-        return undefined;
+        return null;
     }
 
     // Read the settings file
@@ -107,7 +112,7 @@ function getTheme(): string | undefined {
             anError: false,
             reason: ThemeErrors.THEME_UNSET
         };
-        return undefined;
+        return null;
     }
 
     return json.theme;
@@ -116,10 +121,9 @@ function getTheme(): string | undefined {
 function loadThemes(): boolean {
     // Check if themes directory exists
     if (!AliuFS.exists(THEME_DIRECTORY)) {
-        // applyFailed is set here because theme directory is *supposed* to always exist, however this won't bother the user
         themeState = {
             isApplied: false,
-            anError: true,
+            anError: false,
             reason: ThemeErrors.NO_THEME_DIRECTORY
         };
         return false;
@@ -131,11 +135,33 @@ function loadThemes(): boolean {
 
         // Read the file
         const content = AliuFS.readFile(THEME_DIRECTORY + file.name, "text");
-        const json = JSON.parse(content as string) as Theme;
+
+        let json: Theme;
+        try {
+            json = JSON.parse(content as string);
+        } catch (error) {
+            excludedThemes.invalidThemes.push({
+                name: file.name,
+                reason: "File is not in a valid JSON format, please re-check."
+            });
+
+            continue;
+        }
 
         // Check if file is a valid theme
         if (!json.name || (!json.theme_color_map && !json.colors && !json.colours)) {
-            excludedThemes.invalidThemes.push(file.name);
+            if (json["manifest"] && json["simple_colors"]) {
+                excludedThemes.invalidThemes.push({
+                    name: json["manifest"]?.["name"] ?? file.name,
+                    reason: "Possibly a legacy theme. Please note that legacy themes are not supported in the new version."
+                });
+                continue;
+            }
+
+            excludedThemes.invalidThemes.push({
+                name: file.name,
+                reason: "Theme is not in a valid theme format; theme must have a name and at least themes one of theme_color_map or colors constants."
+            });
             continue;
         } else if (loadedThemes[json.name]) {
             excludedThemes.duplicatedThemes.push(json.name);
@@ -159,8 +185,8 @@ function overwriteColors(target, source) {
     if (!target || !source) return;
 
     // Enmity compatibility for chat background
-    if (typeof source === "object" && !source["CHAT_BACKGROUND"] && source["BACKGROUND_PRIMARY"]) {
-        source["CHAT_BACKGROUND"] = source["BACKGROUND_PRIMARY"];
+    if (typeof source === "object") {
+        source["CHAT_BACKGROUND"] ??= source["BACKGROUND_PRIMARY"];
     }
 
     for (const key in source) {

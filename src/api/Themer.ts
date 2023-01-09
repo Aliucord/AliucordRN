@@ -2,7 +2,7 @@
 import { Theme } from "../entities";
 import { Dialog, ReactNative, Toasts } from "../metro";
 import { excludedThemes, ThemeErrors, themeState } from "../themer/themerInit";
-import { Logger } from "../utils";
+import { getAssetId, Logger } from "../utils";
 
 const logger = new Logger("Themer");
 
@@ -24,7 +24,7 @@ export function setTheme(theme: Theme | null) {
 
 export function onStartup() {
     if (themeState.isApplied) {
-        logger.info("Theme has been sucessfully applied");
+        logger.info("Theme has been successfully applied");
     } else if (themeState.anError) {
         logger.error("Failed to apply theme: " + themeState.reason ?? "Unknown reason");
         handleErrors();
@@ -33,16 +33,18 @@ export function onStartup() {
             logger.error(arg);
         });
         return;
-    }
-
-    for (const theme of excludedThemes.duplicatedThemes) {
-        logger.warn(`Theme duplicate: ${theme} already existed.`);
-        Toasts.open({ content: "Duplicated themes found, check log." });
+    } else if (themeState.reason) {
+        logger.warn("Theme not applied: " + themeState.reason);
     }
 
     for (const theme of excludedThemes.invalidThemes) {
-        logger.error(`The theme "${theme}" is invalid.`);
-        Toasts.open({ content: `Invalid theme(s): ${theme}` });
+        logger.error(`The theme "${theme.name}" is invalid: ${theme.reason}`);
+        Toasts.open({ content: `Invalid theme(s): ${theme.name}, check theme settings.`, source: getAssetId("Small") });
+    }
+
+    for (const theme of excludedThemes.duplicatedThemes) {
+        logger.warn(`A theme named "${theme}" already existed.`);
+        Toasts.open({ content: "Duplicated themes found, check theme settings.", source: getAssetId("Small") });
     }
 
     logger.info(themeState);
