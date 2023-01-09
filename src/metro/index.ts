@@ -297,7 +297,10 @@ export enum AMOLEDThemeState {
 }
 
 export const setAMOLEDThemeEnabledBypass = (state) => {
-    FluxDispatcher.dispatch({ type: "UNSYNCED_USER_SETTINGS_UPDATE", settings: { useAMOLEDTheme: state ? AMOLEDThemeState.ON : AMOLEDThemeState.OFF } });
+    FluxDispatcher.dispatch({
+        type: "UNSYNCED_USER_SETTINGS_UPDATE",
+        settings: { useAMOLEDTheme: state ? AMOLEDThemeState.ON : AMOLEDThemeState.OFF }
+    });
 };
 
 export const Dialog = getByProps("show", "openLazy", "confirm", "close") as {

@@ -34,7 +34,7 @@ export function onStartup() {
         });
         return;
     } else if (themeState.reason) {
-        logger.warn("Theme not applied: " + themeState.reason);
+        logger.info("Theme was not applied: " + themeState.reason);
     }
 
     for (const theme of excludedThemes.invalidThemes) {

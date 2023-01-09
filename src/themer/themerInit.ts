@@ -34,11 +34,11 @@ export type InvalidTheme = {
 export let themeState = {} as {
     isApplied: true;
     currentTheme: string;
+    noAMOLED: boolean;
 } | {
     isApplied: false;
-
-    currentTheme?: string;
     anError: boolean;
+    currentTheme?: string;
     reason?: ThemeErrors;
     errorArgs?: any[];
 };
@@ -61,7 +61,7 @@ export function handleThemeApply() {
         // File doesn't exist or theme isn't set
         if (!themeName) return;
 
-        const theme = loadedThemes[themeName];
+        const theme: Theme = loadedThemes[themeName];
         if (!theme) {
             themeState = {
                 isApplied: false,
@@ -79,6 +79,8 @@ export function handleThemeApply() {
         themeState = {
             currentTheme: themeName,
             isApplied: true,
+            // Check if AMOLED is supported. If so, automatically turn off AMOLED.
+            noAMOLED: theme.theme_color_map && !Object.values(theme.theme_color_map)[0][2]
         };
     } catch (error) {
         themeState = {

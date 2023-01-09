@@ -13,7 +13,6 @@ interface SettingsSchema {
     autoUpdatePlugins: boolean;
     disablePluginsOnCrash: boolean;
     plugins: Record<string, boolean>;
-    enableAMOLEDTheme: boolean;
     theme: string;
 }
 
