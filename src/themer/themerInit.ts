@@ -79,7 +79,7 @@ export function handleThemeApply() {
         themeState = {
             currentTheme: themeName,
             isApplied: true,
-            // Check if AMOLED is supported. If so, automatically turn off AMOLED.
+            // Check if AMOLED is not supported. If so, automatically turn off AMOLED.
             noAMOLED: theme.theme_color_map && !Object.values(theme.theme_color_map)[0][2]
         };
     } catch (error) {
@@ -162,7 +162,7 @@ function loadThemes(): boolean {
 
             excludedThemes.invalidThemes.push({
                 name: file.name,
-                reason: "Theme is not in a valid theme format; theme must have a name and at least themes one of theme_color_map or colors constants."
+                reason: "Theme is not in a valid theme format; theme must have a name and at least has a 'theme_color_map' or 'colors' key."
             });
             continue;
         } else if (loadedThemes[json.name]) {

@@ -202,7 +202,7 @@ export default function ThemesPage() {
                     <View style={styles.noThemes}>
                         <Image source={getAssetId("img_connection_empty_dark")} />
                         <Text style={styles.noThemesText}>
-                            You dont have any themes installed.
+                            {"You don't have any themes installed."}
                         </Text>
                     </View>
                 :
