@@ -2,16 +2,15 @@ import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType } from "../api/Commands";
 import { plugins } from "../api/PluginManager";
 import { Plugin } from "../entities/Plugin";
-import { getByProps, Locale, MessageActions } from "../metro";
-import { DebugInfo } from "../utils/debug/DebugInfo";
-import { makeAsyncEval } from "../utils/misc";
+import { Locale, MessageActions } from "../metro";
 import { ALIUCORD_DIRECTORY } from "../utils/constants";
+import { DebugInfo } from "../utils/debug/DebugInfo";
+import { makeAsyncEval, sendBotMessage } from "../utils/misc";
 
 const customBundle = AliuFS.exists(ALIUCORD_DIRECTORY + "Aliucord.js.bundle");
 
 export default class CoreCommands extends Plugin {
     start() {
-        const ClydeUtils = getByProps("sendBotMessage");
         this.commands.registerCommand({
             name: "echo",
             description: "Creates a Clyde message",
@@ -24,7 +23,7 @@ export default class CoreCommands extends Plugin {
                 }
             ],
             execute: (args, ctx) => {
-                ClydeUtils.sendBotMessage(ctx.channel.id, args[0].value);
+                sendBotMessage(ctx.channel.id, args[0].value);
             }
         });
 
@@ -45,7 +44,8 @@ export default class CoreCommands extends Plugin {
                 **Disabled plugins**: **${disabledplugins.length}**
                 > ${disabledplugins.join(", ") || "None."}`;
 
-                ClydeUtils.sendBotMessage(ctx.channel.id, message.replaceAll("    ", ""));
+
+                sendBotMessage(ctx.channel.id, message.replaceAll("    ", "").trimStart());
             }
         });
 
@@ -71,9 +71,9 @@ export default class CoreCommands extends Plugin {
                         result = (0, eval)(code);
                     }
 
-                    ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(String(result)));
+                    sendBotMessage(ctx.channel.id, this.codeblock(String(result)));
                 } catch (err: any) {
-                    ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(err?.stack ?? err?.message ?? String(err)));
+                    sendBotMessage(ctx.channel.id, this.codeblock(err?.stack ?? err?.message ?? String(err)));
                 }
             }
         });

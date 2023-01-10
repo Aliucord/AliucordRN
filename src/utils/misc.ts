@@ -1,3 +1,5 @@
+import { ChannelStore, getByProps, MessageActions } from "../metro";
+
 /**
  * Makes await work in eval.
  * @param code Code to awaitify
@@ -33,4 +35,27 @@ export function makeAsyncEval(code: string) {
         ${code.replace(/\bawait\b/g, "yield")}
     });
     `;
+}
+
+const Clyde = getByProps("createBotMessage");
+const Avatars = getByProps("BOT_AVATARS");
+export function sendBotMessage(channelID: string, content: (string | object), username?: string, avatarURL?: string): void {
+    const channel = channelID ?? ChannelStore?.getChannelId?.();
+    const msg = Clyde.createBotMessage({ channelId: channel, content: '' });
+  
+    msg.author.username = username ?? "Aliucord";
+    msg.author.avatar = avatarURL ? username : "ALIUCORD";
+
+    Avatars.BOT_AVATARS[msg.author.avatar] = avatarURL ?? "https://github.com/aliucord.png";
+
+    if (typeof content === "string")
+        msg.content = content;
+    else
+        Object.assign(msg, content);
+  
+    msg.embeds?.forEach(embed => {
+        if (embed.type === undefined) embed.type = "rich";
+    });
+
+    MessageActions.receiveMessage(channel, msg);
 }
