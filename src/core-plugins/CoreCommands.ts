@@ -5,6 +5,9 @@ import { Plugin } from "../entities/Plugin";
 import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
+import { ALIUCORD_DIRECTORY } from "../utils/constants";
+
+const customBundle = AliuFS.exists(ALIUCORD_DIRECTORY + "Aliucord.js.bundle");
 
 export default class CoreCommands extends Plugin {
     start() {
@@ -84,6 +87,7 @@ export default class CoreCommands extends Plugin {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
                         > Aliucord: ${sha} (${Object.keys(plugins).length} plugins)
+                        > Custom Bundle: ${customBundle}
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}
