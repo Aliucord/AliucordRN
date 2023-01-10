@@ -5,9 +5,9 @@ import { Plugin } from "../entities/Plugin";
 import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
-import { externalStorageDirectory } from "../native/fs";
+import { ALIUCORD_DIRECTORY } from "../utils/constants";
 
-const customBundle = AliuFS.exists(externalStorageDirectory + "/AliucordRN/Aliucord.js.bundle");
+const customBundle = AliuFS.exists(ALIUCORD_DIRECTORY + "Aliucord.js.bundle");
 
 export default class CoreCommands extends Plugin {
     start() {
