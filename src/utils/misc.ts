@@ -41,7 +41,7 @@ const Clyde = getByProps("createBotMessage");
 const Avatars = getByProps("BOT_AVATARS");
 export function sendBotMessage(channelID: string, content: (string | object), username?: string, avatarURL?: string): void {
     const channel = channelID ?? ChannelStore?.getChannelId?.();
-    const msg = Clyde.createBotMessage({ channelId: channel, content: '' });
+    const msg = Clyde.createBotMessage({ channelId: channel, content: "" });
   
     msg.author.username = username ?? "Aliucord";
     msg.author.avatar = avatarURL ? username : "ALIUCORD";
