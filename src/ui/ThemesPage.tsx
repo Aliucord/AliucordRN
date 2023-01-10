@@ -1,6 +1,7 @@
-import { currentTheme, setTheme, themes, useDiscordThemes } from "../api/Themer";
+import { setTheme } from "../api/Themer";
 import { Theme } from "../entities";
 import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
+import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../themer/themerInit";
 import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList, Image, ScrollView } = ReactNative;
@@ -23,6 +24,10 @@ const styles = Styles.createThemedStyleSheet({
         flexDirection: "row",
         flexWrap: "wrap"
     },
+    invalidHeader: {
+        flexDirection: "column",
+        flexWrap: "wrap"
+    },
     bodyCard: {
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
     },
@@ -35,6 +40,17 @@ const styles = Styles.createThemedStyleSheet({
         color: Styles.ThemeColorMap.TEXT_NORMAL,
         fontSize: 16,
         lineHeight: 22
+    },
+    invalidInfoText: {
+        color: Styles.ThemeColorMap.TEXT_MUTED,
+        fontSize: 12,
+        fontWeight: "400"
+    },
+    warningText: {
+        color: Styles.ThemeColorMap.TEXT_WARNING,
+        fontFamily: Constants.Fonts.PRIMARY_NORMAL,
+        fontSize: 12,
+        paddingTop: 5
     },
     link: {
         marginLeft: 5,
@@ -68,8 +84,31 @@ const styles = Styles.createThemedStyleSheet({
     }
 });
 
+function InvalidCard({ invalidTheme }: { invalidTheme: InvalidTheme; }) {
+    return (
+        <View style={styles.card}>
+            <Forms.FormRow
+                label={(
+                    <View style={styles.invalidHeader}>
+                        <Text style={styles.invalidInfoText}>
+                            INVALID
+                        </Text>
+                        <Text style={styles.text}>
+                            {invalidTheme.name}
+                        </Text>
+                    </View>)}
+                leading={<Forms.FormIcon source={getAssetId("Small")} color='#FF0000' />}
+            />
+            {!!invalidTheme.reason && <View style={styles.bodyCard}>
+                <Forms.FormText style={styles.bodyText}>{invalidTheme.reason}</Forms.FormText>
+            </View>}
+        </View>
+    );
+}
+
 function ThemeCard({ theme }: { theme: Theme; }) {
-    const [isEnabled, setIsEnabled] = React.useState(currentTheme?.name === theme.name);
+    const [isEnabled, setIsEnabled] = React.useState(themeState?.currentTheme === theme.name);
+    const hasDuplicate = excludedThemes.duplicatedThemes.includes(theme.name);
     return (
         <View style={styles.card}>
             <Forms.FormRow
@@ -88,19 +127,24 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                             </Text>
                         ))}
                     </View>)}
+                subLabel={hasDuplicate ? (
+                    <Text style={styles.warningText}>
+                        WARNING: One or more theme with the same name was found and was not loaded.
+                    </Text>
+                ) : null}
+                leading={hasDuplicate ? (
+                    <Forms.FormIcon source={getAssetId("yellow-alert")} />
+                ) : null}
                 trailing={<Forms.FormRadio selected={isEnabled} />}
                 onPress={() => {
-                    if (currentTheme?.name !== theme.name) {
-                        setTheme(theme);
-                        setIsEnabled(!isEnabled);
-                    } else {
-                        useDiscordThemes();
-                        setIsEnabled(!isEnabled);
-                    }
+                    setTheme(themeState?.currentTheme === theme.name ? null : theme);
+                    setIsEnabled(!isEnabled);
                 }}
             />
             <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText}>{theme.description}</Forms.FormText>
+                <Forms.FormText style={styles.bodyText}>
+                    {theme.description}
+                </Forms.FormText>
             </View>
         </View>
     );
@@ -109,7 +153,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
 export default function ThemesPage() {
     const [search, setSearch] = React.useState(String);
 
-    const entities = search ? Object.values(themes).filter(theme => {
+    const entities = search ? Object.values(loadedThemes).filter(theme => {
         const { name, description, authors } = theme;
 
         if (name.toLowerCase().includes(search.toLowerCase())) {
@@ -125,7 +169,7 @@ export default function ThemesPage() {
         }
 
         return false;
-    }) : Object.values(themes);
+    }) : Object.values(loadedThemes);
 
     return (<>
         <Search
@@ -134,6 +178,18 @@ export default function ThemesPage() {
             onChangeText={(v: string) => setSearch(v)}
         />
         <ScrollView style={styles.container}>
+            {!!excludedThemes.invalidThemes.length && <FlatList
+                data={excludedThemes.invalidThemes}
+                renderItem={({ item }) => <InvalidCard
+                    key={item.name}
+                    invalidTheme={{
+                        name: item.name,
+                        reason: item.reason
+                    }}
+                />}
+                keyExtractor={theme => theme.name}
+                style={styles.list}
+            />}
             {!entities.length ?
                 search ?
                     <View style={styles.noThemes}>
@@ -146,7 +202,7 @@ export default function ThemesPage() {
                     <View style={styles.noThemes}>
                         <Image source={getAssetId("img_connection_empty_dark")} />
                         <Text style={styles.noThemesText}>
-                            You dont have any themes installed.
+                            {"You don't have any themes installed."}
                         </Text>
                     </View>
                 :
@@ -163,4 +219,3 @@ export default function ThemesPage() {
         </ScrollView>
     </>);
 }
-

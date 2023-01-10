@@ -1,25 +1,13 @@
 import { logger } from "../Aliucord";
-import { currentTheme, themeApplied, themeErrorReason } from "../api/Themer";
-import { AMOLEDThemeManager, Dialog, FluxDispatcher, ReactNative, ThemeManager, ThemeStore, UnsyncedUserSettingsStore } from "../metro";
+import { onStartup } from "../api/Themer";
+import { AMOLEDThemeManager, AMOLEDThemeState, FluxDispatcher, setAMOLEDThemeEnabledBypass, ThemeManager, ThemeStore, UnsyncedUserSettingsStore } from "../metro";
+import { themeState } from "./themerInit";
 
 export default function patchTheme() {
-    if (!themeApplied && themeErrorReason) {
-        logger.error("Failed to apply theme: ", themeErrorReason);
-        Dialog.show({
-            title: "Failed to apply theme",
-            body: `${currentTheme?.name} failed to apply. Theme will be disabled on restart.`,
-            isDismissable: false,
-            cancelText: "Do not restart",
-            confirmText: "Restart",
-            onConfirm: ReactNative.NativeModules.BundleUpdaterManager.reload
-        });
-
-        window.Aliucord.settings.set("theme", "");
-    } else if (themeApplied) {
-        logger.log("Applied theme: ", currentTheme.name);
-    }
-
     try {
+        // Handle custom theme info which was not possible during themer initialization
+        onStartup();
+
         // 'I18N_LOAD_START' dispatch is the best time I can find to override the theme without breaking it.
         // Therefore, there's no guarantee that this will fix it for everyone
         logger.info("Patching theme...");
@@ -29,7 +17,10 @@ export default function patchTheme() {
                 logger.info(`Overrode theme to ${ThemeStore.theme ?? "dark"}`);
 
                 if (AMOLEDThemeManager) {
-                    if (UnsyncedUserSettingsStore.useAMOLEDTheme === 2) {
+                    if (themeState.isApplied && themeState.noAMOLED) {
+                        setAMOLEDThemeEnabledBypass(false);
+                        logger.info("Disabled AMOLED theme as it's unsupported by current custom theme.");
+                    } else if (UnsyncedUserSettingsStore.useAMOLEDTheme === AMOLEDThemeState.ON) {
                         AMOLEDThemeManager.setAMOLEDThemeEnabled(true);
                         logger.info("Enabled AMOLED theme");
                     }
