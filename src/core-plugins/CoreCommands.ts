@@ -5,7 +5,7 @@ import { Plugin } from "../entities/Plugin";
 import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
-import { exists, externalStorageDirectory } from "../native/fs";
+import { externalStorageDirectory } from "../native/fs";
 
 const customBundle = AliuFS.exists(externalStorageDirectory + "/AliucordRN/Aliucord.js.bundle");
 
