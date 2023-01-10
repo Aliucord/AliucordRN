@@ -86,7 +86,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha} (${Object.keys(plugins).length} plugins 
+                        > Aliucord: ${sha} (${Object.keys(plugins).length} plugins)
                         > Custom Bundle: ${customBundle}
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
