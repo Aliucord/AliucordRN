@@ -5,6 +5,9 @@ import { Plugin } from "../entities/Plugin";
 import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
+import { exists, externalStorageDirectory } from "../native/fs";
+
+let customBundle: boolean = AliuFS.exists(externalStorageDirectory + "/AliucordRN/Aliucord.js.bundle")
 
 export default class CoreCommands extends Plugin {
     start() {
@@ -83,7 +86,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha} (${Object.keys(plugins).length} plugins)
+                        > Aliucord: ${sha} (${Object.keys(plugins).length} plugins) custom: ${customBundle}
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}
                         > Hermes: ${DebugInfo.hermesVersion}
