@@ -7,7 +7,7 @@ import { DebugInfo } from "../utils/debug/DebugInfo";
 import { makeAsyncEval } from "../utils/misc";
 import { exists, externalStorageDirectory } from "../native/fs";
 
-let customBundle: boolean = AliuFS.exists(externalStorageDirectory + "/AliucordRN/Aliucord.js.bundle");
+const customBundle: boolean = AliuFS.exists(externalStorageDirectory + "/AliucordRN/Aliucord.js.bundle");
 
 export default class CoreCommands extends Plugin {
     start() {
