@@ -21,7 +21,7 @@ const styles = Styles.createThemedStyleSheet({
         padding: 10,
     },
     card: {
-        borderRadius: 5,
+        borderRadius: 10,
         margin: 10,
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
     },
@@ -29,12 +29,20 @@ const styles = Styles.createThemedStyleSheet({
         flexDirection: "row",
         flexWrap: "wrap"
     },
+    divider: {
+        width: "100%",
+        height: 2,
+        borderBottomWidth: 1,
+        borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
+    },
     bodyCard: {
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10
     },
     bodyText: {
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        padding: 16,
+        padding: 16
     },
     text: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
@@ -75,6 +83,7 @@ function ErrorCard({ log }: { log: PluginLogs; }) {
                         </Text>
                     </View>)
                 } />
+            <View style={styles.divider} />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText}>{log.errors}</Forms.FormText>
             </View>

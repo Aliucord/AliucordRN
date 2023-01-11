@@ -16,7 +16,7 @@ const styles = Styles.createThemedStyleSheet({
         padding: 10,
     },
     card: {
-        borderRadius: 5,
+        borderRadius: 10,
         margin: 10,
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
     },
@@ -28,12 +28,19 @@ const styles = Styles.createThemedStyleSheet({
         flexDirection: "column",
         flexWrap: "wrap"
     },
+    divider: {
+        width: "100%",
+        borderBottomWidth: 1,
+        borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
+    },
     bodyCard: {
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10
     },
     bodyText: {
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        padding: 16,
+        padding: 16
     },
     text: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
@@ -99,6 +106,7 @@ function InvalidCard({ invalidTheme }: { invalidTheme: InvalidTheme; }) {
                     </View>)}
                 leading={<Forms.FormIcon source={getAssetId("Small")} color='#FF0000' />}
             />
+            <View style={styles.divider} />
             {!!invalidTheme.reason && <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText}>{invalidTheme.reason}</Forms.FormText>
             </View>}
@@ -141,6 +149,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                     setIsEnabled(!isEnabled);
                 }}
             />
+            <View style={styles.divider} />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText}>
                     {theme.description}
