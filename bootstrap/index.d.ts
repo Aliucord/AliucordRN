@@ -6,6 +6,7 @@ declare global {
             cacheDirectory: string,
             packageCodePath: string,
             download: (url: string, path: string) => Promise<void>;
+            restartApp: () => {},
             requestPermissions: () => Promise<boolean>;
             checkPermissions: () => Promise<boolean>;
         };
