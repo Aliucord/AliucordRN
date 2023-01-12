@@ -15,7 +15,7 @@ interface PluginLogs {
 const styles = Styles.createThemedStyleSheet({
     container: {
         flex: 1,
-        padding: 5
+        padding: 1
     },
     list: {
         padding: 10,
