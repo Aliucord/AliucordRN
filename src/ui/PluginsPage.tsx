@@ -8,11 +8,10 @@ const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
     container: {
-        flex: 1,
-        padding: 1
+        flex: 1
     },
     list: {
-        padding: 10,
+        padding: 5,
     },
     card: {
         borderRadius: 10,
@@ -36,13 +35,17 @@ const styles = Styles.createThemedStyleSheet({
     },
     bodyText: {
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        padding: 16
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 10,
+        paddingBottom: 14
     },
     actions: {
         justifyContent: "flex-start",
         flexDirection: "row",
         alignItems: "center",
-        padding: 16
+        paddingLeft: 10,
+        paddingBottom: 10
     },
     icons: {
         width: 22,
@@ -51,15 +54,11 @@ const styles = Styles.createThemedStyleSheet({
     },
     text: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontSize: 16,
-        lineHeight: 22
+        color: Styles.ThemeColorMap.TEXT_NORMAL
     },
     link: {
-        marginLeft: 5,
+        marginLeft: 3,
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        fontSize: 16,
-        lineHeight: 22,
         color: Styles.ThemeColorMap.TEXT_LINK
     },
     noPlugins: {
@@ -95,13 +94,14 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             <Forms.FormRow
                 label={(
                     <View style={styles.header}>
-                        <Text style={styles.text}>
+                        <Text style={styles.text} adjustsFontSizeToFit={true}>
                             {plugin.name} v{plugin.version} by
                         </Text>
                         {plugin.authors.map((a, i) => (
                             <Text
                                 key={a.id}
                                 style={styles.link}
+                                adjustsFontSizeToFit={true}
                                 onPress={() => {
                                     if (!Users.getUser(a.id)) {
                                         FetchUserActions.fetchProfile(a.id).then(() => {
@@ -116,18 +116,19 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                             </Text>
                         ))}
                     </View>)}
-                trailing={<Forms.FormSwitch value={isEnabled} onValueChange={v => {
-                    if (v)
-                        enablePlugin(plugin.name);
-                    else
+                trailing={<Forms.FormRadio selected={isEnabled} />}
+                onPress={() => {
+                    if (isEnabled)
                         disablePlugin(plugin.name);
+                    else
+                        enablePlugin(plugin.name);
 
-                    setIsEnabled(v);
-                }} />}
+                    setIsEnabled(!isEnabled);
+                }}
             />
             <View style={styles.divider} />
             <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText}>{plugin.description}</Forms.FormText>
+                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{plugin.description}</Forms.FormText>
                 {plugin.repo ?
                     <View style={styles.actions}>
                         <TouchableOpacity style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>

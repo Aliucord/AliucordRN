@@ -9,11 +9,10 @@ const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
     container: {
-        flex: 1,
-        padding: 1
+        flex: 1
     },
     list: {
-        padding: 10,
+        padding: 5,
     },
     card: {
         borderRadius: 10,
@@ -40,13 +39,14 @@ const styles = Styles.createThemedStyleSheet({
     },
     bodyText: {
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        padding: 16
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 10,
+        paddingBottom: 14
     },
     text: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontSize: 16,
-        lineHeight: 22
     },
     invalidInfoText: {
         color: Styles.ThemeColorMap.TEXT_MUTED,
@@ -60,10 +60,8 @@ const styles = Styles.createThemedStyleSheet({
         paddingTop: 5
     },
     link: {
-        marginLeft: 5,
+        marginLeft: 3,
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        fontSize: 16,
-        lineHeight: 22,
         color: Styles.ThemeColorMap.TEXT_LINK
     },
     noThemes: {
@@ -97,10 +95,10 @@ function InvalidCard({ invalidTheme }: { invalidTheme: InvalidTheme; }) {
             <Forms.FormRow
                 label={(
                     <View style={styles.invalidHeader}>
-                        <Text style={styles.invalidInfoText}>
+                        <Text style={styles.invalidInfoText} adjustsFontSizeToFit={true}>
                             INVALID
                         </Text>
-                        <Text style={styles.text}>
+                        <Text style={styles.text} adjustsFontSizeToFit={true}>
                             {invalidTheme.name}
                         </Text>
                     </View>)}
@@ -108,7 +106,7 @@ function InvalidCard({ invalidTheme }: { invalidTheme: InvalidTheme; }) {
             />
             <View style={styles.divider} />
             {!!invalidTheme.reason && <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText}>{invalidTheme.reason}</Forms.FormText>
+                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{invalidTheme.reason}</Forms.FormText>
             </View>}
         </View>
     );
@@ -122,13 +120,14 @@ function ThemeCard({ theme }: { theme: Theme; }) {
             <Forms.FormRow
                 label={(
                     <View style={styles.header}>
-                        <Text style={styles.text}>
+                        <Text style={styles.text} adjustsFontSizeToFit={true}>
                             {theme.name} v{theme.version} by
                         </Text>
                         {theme.authors.map((a, i) => (
                             <Text
                                 key={a.id}
                                 style={styles.link}
+                                adjustsFontSizeToFit={true}
                                 onPress={() => {
                                     if (!Users.getUser(a.id)) {
                                         FetchUserActions.fetchProfile(a.id).then(() => {
@@ -144,7 +143,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                         ))}
                     </View>)}
                 subLabel={hasDuplicate ? (
-                    <Text style={styles.warningText}>
+                    <Text style={styles.warningText} adjustsFontSizeToFit={true}>
                         WARNING: One or more theme with the same name was found and was not loaded.
                     </Text>
                 ) : null}
@@ -159,7 +158,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
             />
             <View style={styles.divider} />
             <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText}>
+                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
                     {theme.description}
                 </Forms.FormText>
             </View>
