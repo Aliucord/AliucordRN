@@ -1,6 +1,6 @@
 import { setTheme } from "../api/Themer";
 import { Theme } from "../entities";
-import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
+import { Constants, FetchUserActions, Forms, getModule, Profiles, React, ReactNative, Styles, Users } from "../metro";
 import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../themer/themerInit";
 import { getAssetId } from "../utils/getAssetId";
 
@@ -129,7 +129,15 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                             <Text
                                 key={a.id}
                                 style={styles.link}
-                                onPress={() => getByProps("showUserProfile").showUserProfile({ userId: a.id })}
+                                onPress={() => {
+                                    if (!Users.getUser(a.id)) {
+                                        FetchUserActions.fetchProfile(a.id).then(() => {
+                                            Profiles.showUserProfile({ userId: a.id });
+                                        });
+                                    } else {
+                                        Profiles.showUserProfile({ userId: a.id });
+                                    }
+                                }}
                             >
                                 {a.name}{i !== theme.authors.length - 1 && ","}
                             </Text>

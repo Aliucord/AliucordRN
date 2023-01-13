@@ -275,11 +275,13 @@ export const SearchStore = getByProps("useDiscoveryState", "useQueryState");
 export const ModalActions = getByProps("closeModal");
 export const MessageActions = getByProps("sendMessage", "receiveMessage");
 export const FluxDispatcher = getByProps("subscribe", "isDispatching");
-export const FetchUserActions = getByProps("fetchProfile");
+export const FetchUserActions = getByProps("getUser", "fetchProfile");
 export const ContextMenuActions = getByProps("openContextMenu");
 export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
 export const Locale = getByProps("Messages");
 export const AMOLEDThemeManager = getByProps("setAMOLEDThemeEnabled");
+export const Users = getByProps("getCurrentUser");
+export const Profiles = getByProps("showUserProfile");
 
 export const Clipboard = getByProps("getString", "setString", "hasString") as {
     getString(): Promise<string>,

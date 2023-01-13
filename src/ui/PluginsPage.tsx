@@ -1,6 +1,6 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
-import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles, URLOpener } from "../metro";
+import { Constants, FetchUserActions, Forms, getModule, Profiles, React, ReactNative, Styles, URLOpener, Users } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
 const { View, Text, FlatList, Image, ScrollView, TouchableOpacity } = ReactNative;
@@ -102,7 +102,15 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                             <Text
                                 key={a.id}
                                 style={styles.link}
-                                onPress={() => getByProps("showUserProfile").showUserProfile({ userId: a.id })}
+                                onPress={() => {
+                                    if (!Users.getUser(a.id)) {
+                                        FetchUserActions.fetchProfile(a.id).then(() => {
+                                            Profiles.showUserProfile({ userId: a.id });
+                                        });
+                                    } else {
+                                        Profiles.showUserProfile({ userId: a.id });
+                                    }
+                                }}
                             >
                                 {a.name}{i !== plugin.authors.length - 1 && ","}
                             </Text>
