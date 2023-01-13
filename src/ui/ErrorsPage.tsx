@@ -22,7 +22,7 @@ const styles = Styles.createThemedStyleSheet({
     },
     card: {
         borderRadius: 10,
-        margin: 10,
+        margin: 5,
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
     },
     header: {
