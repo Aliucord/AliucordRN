@@ -1,13 +1,13 @@
 import { sha } from "aliucord-version";
 import { Forms, getByName, Locale, React, Scenes } from "../metro";
 import { findInReactTree } from "../utils/findInReactTree";
-import { after } from "../utils/patcher";
 import { getAssetId } from "../utils/getAssetId";
+import { after } from "../utils/patcher";
 import AliucordPage from "./AliucordPage";
-import PluginsPage from "./PluginsPage";
-import UpdaterPage from "./UpdaterPage";
-import ThemesPage from "./ThemesPage";
 import ErrorsPage from "./ErrorsPage";
+import PluginsPage from "./PluginsPage";
+import ThemesPage from "./ThemesPage";
+import UpdaterPage from "./UpdaterPage";
 
 export default function patchSettings() {
     const { FormSection, FormDivider, FormRow } = Forms;

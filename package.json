@@ -9,8 +9,8 @@
   "scripts": {
     "build": "rollup -c --configPlugin @rollup/plugin-typescript",
     "dev": "pnpm run build -w",
-    "deploy": "pnpm build && adb push dist/Aliucord.js.bundle dist/bootstrap.js sdcard/AliucordRN && pnpm start",
-    "deployBootstrapOnly": "pnpm build && adb push dist/bootstrap.js sdcard/AliucordRN && pnpm start",
+    "deployBundle": "pnpm build && adb push dist/Aliucord.js.bundle sdcard/AliucordRN && pnpm start",
+    "deployBootstrap": "pnpm build && adb push dist/bootstrap.js sdcard/AliucordRN && pnpm start",
     "start": "adb shell am start -S -n com.aliucord/com.discord.main.MainActivity",
     "prepublishOnly": "rm lib -r && tsc && cp package.json lib && cp LICENSE lib && cp README.md lib",
     "lint": "eslint ./src"
