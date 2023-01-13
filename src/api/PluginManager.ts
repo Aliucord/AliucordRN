@@ -74,6 +74,7 @@ export async function startCorePlugins() {
                 name,
                 description: "",
                 version: "1.0.0",
+                repo: "",
                 authors: [{ name: "Aliucord", id: "000000000000000000" }]
             });
 

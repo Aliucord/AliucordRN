@@ -2,6 +2,7 @@ export interface PluginManifest {
     name: string;
     description: string;
     version: string;
+    repo: string;
     authors: Author[];
 }
 

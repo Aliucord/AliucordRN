@@ -1,9 +1,9 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
-import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles } from "../metro";
+import { Constants, Forms, getByProps, getModule, React, ReactNative, Styles, URLOpener } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
-const { View, Text, FlatList, Image, ScrollView } = ReactNative;
+const { View, Text, FlatList, Image, ScrollView, TouchableOpacity } = ReactNative;
 const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
@@ -16,7 +16,7 @@ const styles = Styles.createThemedStyleSheet({
     },
     card: {
         borderRadius: 10,
-        margin: 10,
+        margin: 5,
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
     },
     header: {
@@ -37,6 +37,17 @@ const styles = Styles.createThemedStyleSheet({
     bodyText: {
         color: Styles.ThemeColorMap.TEXT_NORMAL,
         padding: 16
+    },
+    actions: {
+        justifyContent: "flex-start",
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 16
+    },
+    icons: {
+        width: 22,
+        height: 22,
+        tintColor: Styles.ThemeColorMap.INTERACTIVE_NORMAL
     },
     text: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
@@ -109,6 +120,15 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             <View style={styles.divider} />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText}>{plugin.description}</Forms.FormText>
+                {plugin.repo ?
+                    <View style={styles.actions}>
+                        <TouchableOpacity style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>
+                            <Image source={getAssetId("img_account_sync_github_white")} />
+                        </TouchableOpacity>
+                    </View>
+                    :
+                    null
+                }
             </View>
         </View>
     );
