@@ -35,8 +35,7 @@ const styles = Styles.createThemedStyleSheet({
     },
     bodyText: {
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        paddingLeft: 10,
-        paddingRight: 10,
+        paddingHorizontal: 16,
         paddingTop: 10,
         paddingBottom: 14
     },
@@ -44,8 +43,8 @@ const styles = Styles.createThemedStyleSheet({
         justifyContent: "flex-start",
         flexDirection: "row",
         alignItems: "center",
-        paddingLeft: 10,
-        paddingBottom: 10
+        paddingLeft: 16,
+        paddingBottom: 16
     },
     icons: {
         width: 22,
@@ -54,11 +53,10 @@ const styles = Styles.createThemedStyleSheet({
     },
     text: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        color: Styles.ThemeColorMap.TEXT_NORMAL
+        color: Styles.ThemeColorMap.TEXT_NORMAL,
+        fontSize: 16
     },
     link: {
-        marginLeft: 3,
-        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         color: Styles.ThemeColorMap.TEXT_LINK
     },
     noPlugins: {
@@ -93,15 +91,11 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
         <View style={styles.card}>
             <Forms.FormRow
                 label={(
-                    <View style={styles.header}>
-                        <Text style={styles.text} adjustsFontSizeToFit={true}>
-                            {plugin.name} v{plugin.version} by
-                        </Text>
-                        {plugin.authors.map((a, i) => (
+                    <Text style={styles.text} adjustsFontSizeToFit={true}>
+                        {plugin.name} v{plugin.version} by {plugin.authors.map((a, i) => (
                             <Text
                                 key={a.id}
                                 style={styles.link}
-                                adjustsFontSizeToFit={true}
                                 onPress={() => {
                                     if (!Users.getUser(a.id)) {
                                         FetchUserActions.fetchProfile(a.id).then(() => {
@@ -112,10 +106,11 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                                     }
                                 }}
                             >
-                                {a.name}{i !== plugin.authors.length - 1 && ","}
+                                {a.name}{i !== plugin.authors.length - 1 && <Text style={styles.text}>, </Text>}
                             </Text>
                         ))}
-                    </View>)}
+                    </Text>
+                )}
                 trailing={<Forms.FormSwitch value={isEnabled} style={{ marginVertical: -12 }} onValueChange={v => {
                     if (v)
                         enablePlugin(plugin.name);
@@ -125,18 +120,15 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     setIsEnabled(v);
                 }} />}
             />
-            <View style={styles.divider} />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{plugin.description}</Forms.FormText>
-                {plugin.repo ?
+                {!!plugin.repo && (
                     <View style={styles.actions}>
                         <TouchableOpacity style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>
                             <Image source={getAssetId("img_account_sync_github_white")} />
                         </TouchableOpacity>
                     </View>
-                    :
-                    null
-                }
+                )}
             </View>
         </View>
     );

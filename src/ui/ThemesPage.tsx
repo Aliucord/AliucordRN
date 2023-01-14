@@ -39,14 +39,14 @@ const styles = Styles.createThemedStyleSheet({
     },
     bodyText: {
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        paddingLeft: 10,
-        paddingRight: 10,
+        paddingHorizontal: 16,
         paddingTop: 10,
         paddingBottom: 14
     },
     text: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         color: Styles.ThemeColorMap.TEXT_NORMAL,
+        fontSize: 16
     },
     invalidInfoText: {
         color: Styles.ThemeColorMap.TEXT_MUTED,
@@ -119,15 +119,11 @@ function ThemeCard({ theme }: { theme: Theme; }) {
         <View style={styles.card}>
             <Forms.FormRow
                 label={(
-                    <View style={styles.header}>
-                        <Text style={styles.text} adjustsFontSizeToFit={true}>
-                            {theme.name} v{theme.version} by
-                        </Text>
-                        {theme.authors.map((a, i) => (
+                    <Text style={styles.text} adjustsFontSizeToFit={true}>
+                        {theme.name} v{theme.version} by {theme.authors.map((a, i) => (
                             <Text
                                 key={a.id}
                                 style={styles.link}
-                                adjustsFontSizeToFit={true}
                                 onPress={() => {
                                     if (!Users.getUser(a.id)) {
                                         FetchUserActions.fetchProfile(a.id).then(() => {
@@ -138,10 +134,11 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                                     }
                                 }}
                             >
-                                {a.name}{i !== theme.authors.length - 1 && ","}
+                                {a.name}{i !== theme.authors.length - 1 && <Text style={styles.text}>, </Text>}
                             </Text>
                         ))}
-                    </View>)}
+                    </Text>
+                )}
                 subLabel={hasDuplicate ? (
                     <Text style={styles.warningText} adjustsFontSizeToFit={true}>
                         WARNING: One or more theme with the same name was found and was not loaded.
@@ -156,7 +153,6 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                     setIsEnabled(!isEnabled);
                 }}
             />
-            <View style={styles.divider} />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
                     {theme.description}
