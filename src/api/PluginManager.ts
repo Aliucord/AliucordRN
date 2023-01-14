@@ -4,6 +4,7 @@ import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
 import { Plugin } from "../entities/Plugin";
 import { Toasts } from "../metro";
+import { fs } from "../native";
 import { readdir } from "../native/fs";
 import { getAssetId } from "../utils";
 import { PLUGINS_DIRECTORY } from "../utils/constants";
@@ -41,6 +42,38 @@ export async function disablePlugin(plugin: string) {
 
     settingsPlugins[plugin] = false;
     window.Aliucord.settings.set("plugins", settingsPlugins);
+}
+
+export async function uninstallPlugin(plugin: string): Promise<boolean> {
+    const settingsPlugins = window.Aliucord.settings.get("plugins", {});
+
+    try {
+        logger.info(`Uninstalling plugin ${plugin}`);
+
+        const pluginInstance = plugins[plugin];
+        if (!pluginInstance.localPath) {
+            logger.error(`Failed to uninstall plugin ${plugin}: localPath is null`);
+            Toasts.open({ content: `Failed to uninstall plugin: ${plugin}` });
+            return false;
+        }
+
+        if (fs.exists(pluginInstance.localPath)) {
+            fs.deleteFile(pluginInstance.localPath);
+        }
+
+        await pluginInstance.stop();
+        delete plugins[plugin];
+        delete settingsPlugins[plugin];
+
+        Toasts.open({ content: `Uninstalled plugin: ${plugin}` });
+    } catch (err) {
+        logger.error(`Failed to uninstall plugin ${plugin}\n`, err);
+        Toasts.open({ content: `Failed to uninstall plugin: ${plugin}` });
+        return false;
+    }
+
+    window.Aliucord.settings.set("plugins", settingsPlugins);
+    return true;
 }
 
 export async function startPlugins() {
@@ -90,7 +123,7 @@ export async function startCorePlugins() {
 async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
     if (plugins[pluginZip]) return plugins[pluginZip];
 
-    logger.info(`Loading plugin from ${pluginZip}.zip`);
+    logger.info(`Loading plugin from ${pluginZip}`);
 
     let pluginName: string | null = null;
 
@@ -124,6 +157,7 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
         // @ts-ignore
         loadedPlugin.pluginBuffer = pluginBuffer;
         loadedPlugin.enabled = false;
+        loadedPlugin.localPath = PLUGINS_DIRECTORY + pluginZip;
         plugins[manifest.name] = loadedPlugin;
 
         return loadedPlugin;

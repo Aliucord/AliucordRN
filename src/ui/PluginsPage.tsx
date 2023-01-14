@@ -1,10 +1,11 @@
-import { disablePlugin, enablePlugin, isPluginEnabled, plugins } from "../api/PluginManager";
+import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../api/PluginManager";
 import { PluginManifest } from "../entities/types";
-import { Constants, FetchUserActions, Forms, getModule, Profiles, React, ReactNative, Styles, URLOpener, Users } from "../metro";
+import { Constants, FetchUserActions, Forms, getByName, getModule, Profiles, React, ReactNative, Styles, URLOpener, Users } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
-const { View, Text, FlatList, Image, ScrollView, TouchableOpacity } = ReactNative;
+const { View, Text, FlatList, Image, ScrollView, TouchableOpacity, LayoutAnimation } = ReactNative;
 const Search = getModule(m => m.name === "StaticSearchBarContainer");
+const Button = getByName("Button", { default: false }).default;
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -44,6 +45,7 @@ const styles = Styles.createThemedStyleSheet({
         flexDirection: "row",
         alignItems: "center",
         paddingLeft: 16,
+        paddingRight: 12,
         paddingBottom: 16
     },
     icons: {
@@ -81,10 +83,13 @@ const styles = Styles.createThemedStyleSheet({
         backgroundColor: "none",
         borderBottomWidth: 0,
         background: "none"
+    },
+    button: {
+        paddingHorizontal: 20,
     }
 });
 
-function PluginCard({ plugin }: { plugin: PluginManifest; }) {
+function PluginCard({ plugin, handleRemove }: { plugin: PluginManifest, handleRemove: (name: string) => void; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     return (
@@ -122,13 +127,38 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{plugin.description}</Forms.FormText>
-                {!!plugin.repo && (
-                    <View style={styles.actions}>
+
+                <View style={styles.actions}>
+                    {!!plugin.repo && (
                         <TouchableOpacity style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>
                             <Image source={getAssetId("img_account_sync_github_white")} />
                         </TouchableOpacity>
+                    )}
+                    <View style={{ marginLeft: "auto" }}>
+                        <View style={{ flexDirection: "row" }} >
+                            <Button
+                                text="Uninstall"
+                                style={styles.button}
+                                color='red'
+                                size='small'
+                                onPress={() => {
+                                    uninstallPlugin(plugin.name).then(result => {
+                                        result && handleRemove(plugin.name);
+                                    });
+                                }}
+                            />
+                            <Button
+                                text="Settings"
+                                style={{ ...styles.button, marginHorizontal: 6 }}
+                                color='brand'
+                                size='small'
+                                onPress={() => {
+                                    console.log("Settings is not yet implemented");
+                                }}
+                            />
+                        </View>
                     </View>
-                )}
+                </View>
             </View>
         </View>
     );
@@ -137,7 +167,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 export default function PluginsPage() {
     const [search, setSearch] = React.useState(String);
 
-    const entities = search ? Object.values(plugins).filter(p => {
+    const [entities, setEntities] = React.useState(search ? Object.values(plugins).filter(p => {
         const { name, description, authors } = p.manifest;
 
         if (name.toLowerCase().includes(search.toLowerCase())) {
@@ -153,7 +183,21 @@ export default function PluginsPage() {
         }
 
         return false;
-    }) : Object.values(plugins);
+    }) : Object.values(plugins));
+
+    const removePlugin = (name) => {
+        const arr = entities.filter(function (item) {
+            return item.name !== name;
+        });
+        setEntities(arr);
+
+        LayoutAnimation.configureNext({
+            duration: 300,
+            update: {
+                type: LayoutAnimation.Types.easeInEaseOut,
+            }
+        });
+    };
 
     return (<>
         <Search
@@ -182,6 +226,7 @@ export default function PluginsPage() {
                     data={entities}
                     renderItem={({ item }) => <PluginCard
                         key={item.name}
+                        handleRemove={removePlugin}
                         plugin={item.manifest}
                     />}
                     keyExtractor={plugin => plugin.name}

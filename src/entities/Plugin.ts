@@ -15,6 +15,8 @@ export class Plugin<SettingsSchema = any> {
     public readonly settings = new Settings<SettingsSchema>(this.name);
     public errors = {} as Record<string, string>;
     public enabled = {} as boolean;
+    public localPath?: string;
+
     public constructor(public readonly manifest: PluginManifest) { }
 
     public get name() {
