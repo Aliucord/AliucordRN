@@ -116,15 +116,14 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                             </Text>
                         ))}
                     </View>)}
-                trailing={<Forms.FormRadio selected={isEnabled} />}
-                onPress={() => {
-                    if (isEnabled)
-                        disablePlugin(plugin.name);
-                    else
+                trailing={<Forms.FormSwitch value={isEnabled} style={{ marginVertical: -12 }} onValueChange={v => {
+                    if (v)
                         enablePlugin(plugin.name);
+                    else
+                        disablePlugin(plugin.name);
 
-                    setIsEnabled(!isEnabled);
-                }}
+                    setIsEnabled(v);
+                }} />}
             />
             <View style={styles.divider} />
             <View style={styles.bodyCard}>
