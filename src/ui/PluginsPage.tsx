@@ -1,5 +1,5 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins } from "../api/PluginManager";
-import { PluginManifest } from "../entities/types";
+import { Author, PluginManifest } from "../entities/types";
 import { Constants, FetchUserActions, Forms, getModule, Profiles, React, ReactNative, Styles, URLOpener, Users } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
 
@@ -92,23 +92,33 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             <Forms.FormRow
                 label={(
                     <Text style={styles.text} adjustsFontSizeToFit={true}>
-                        {plugin.name} v{plugin.version} by {plugin.authors.map((a, i) => (
-                            <Text
-                                key={a.id}
-                                style={styles.link}
-                                onPress={() => {
-                                    if (!Users.getUser(a.id)) {
-                                        FetchUserActions.fetchProfile(a.id).then(() => {
-                                            Profiles.showUserProfile({ userId: a.id });
-                                        });
-                                    } else {
-                                        Profiles.showUserProfile({ userId: a.id });
-                                    }
-                                }}
-                            >
-                                {a.name}{i !== plugin.authors.length - 1 && <Text style={styles.text}>, </Text>}
-                            </Text>
-                        ))}
+                        {plugin.name} v{plugin.version} by {plugin.authors ?
+                            plugin.authors.map((a, i) => (
+                                a.id ?
+                                    <Text
+                                        key={a.id}
+                                        style={styles.link}
+                                        onPress={() => {
+                                            if (!Users.getUser(a.id)) {
+                                                FetchUserActions.fetchProfile(a.id).then(() => {
+                                                    Profiles.showUserProfile({ userId: a.id });
+                                                });
+                                            } else {
+                                                Profiles.showUserProfile({ userId: a.id });
+                                            }
+                                        }}
+                                    >
+                                        {a.name}{i !== (plugin.authors as Author[]).length - 1 && <Text style={styles.text}>, </Text>}
+                                    </Text>
+                                    :
+                                    <Text>
+                                        {a.name}{i !== (plugin.authors as Author[]).length - 1 && <Text>, </Text>}
+                                    </Text>
+                            ))
+                            :
+                            <Text>
+                                Unknown
+                            </Text>}
                     </Text>
                 )}
                 trailing={<Forms.FormSwitch value={isEnabled} style={{ marginVertical: -12 }} onValueChange={v => {
