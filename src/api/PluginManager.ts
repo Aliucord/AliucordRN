@@ -54,22 +54,22 @@ export async function uninstallPlugin(plugin: string): Promise<boolean> {
         const pluginInstance = plugins[plugin];
         if (!pluginInstance.localPath) {
             logger.error(`Failed to uninstall plugin ${plugin}: localPath is null`);
-            Toasts.open({ content: `Failed to uninstall plugin: ${plugin}` });
+            Toasts.open({ content: `Failed to uninstall plugin: ${plugin}`, source: getAssetId("Small") });
             return false;
         }
 
         if (fs.exists(pluginInstance.localPath)) {
             fs.deleteFile(pluginInstance.localPath);
+            
+            pluginInstance.stop();
+            delete plugins[plugin];
+            delete settingsPlugins[plugin];
+
+            Toasts.open({ content: `Uninstalled plugin: ${plugin}`, source: getAssetId("Check") });
         }
-
-        await pluginInstance.stop();
-        delete plugins[plugin];
-        delete settingsPlugins[plugin];
-
-        Toasts.open({ content: `Uninstalled plugin: ${plugin}` });
     } catch (err) {
         logger.error(`Failed to uninstall plugin ${plugin}\n`, err);
-        Toasts.open({ content: `Failed to uninstall plugin: ${plugin}` });
+        Toasts.open({ content: `Failed to uninstall plugin: ${plugin}`, source: getAssetId("Small") });
         return false;
     }
 

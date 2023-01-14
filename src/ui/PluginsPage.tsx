@@ -89,7 +89,7 @@ const styles = Styles.createThemedStyleSheet({
     }
 });
 
-function PluginCard({ plugin, handleRemove }: { plugin: PluginManifest, handleRemove: (name: string) => void; }) {
+function PluginCard({ plugin, handleUninstall }: { plugin: PluginManifest, handleUninstall: (name: string) => void; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     return (
@@ -151,8 +151,8 @@ function PluginCard({ plugin, handleRemove }: { plugin: PluginManifest, handleRe
                                 color='red'
                                 size='small'
                                 onPress={() => {
-                                    uninstallPlugin(plugin.name).then(result => {
-                                        result && handleRemove(plugin.name);
+                                    uninstallPlugin(plugin.name).then(() => {
+                                        handleUninstall(plugin.name);
                                     });
                                 }}
                             />
@@ -194,11 +194,8 @@ export default function PluginsPage() {
         return false;
     }) : Object.values(plugins));
 
-    const removePlugin = (name) => {
-        const arr = entities.filter(function (item) {
-            return item.name !== name;
-        });
-        setEntities(arr);
+    const handleUninstall = (name: string) => {
+        setEntities(entities.filter(item => item.name !== name));
 
         LayoutAnimation.configureNext({
             duration: 300,
@@ -235,7 +232,7 @@ export default function PluginsPage() {
                     data={entities}
                     renderItem={({ item }) => <PluginCard
                         key={item.name}
-                        handleRemove={removePlugin}
+                        handleUninstall={handleUninstall}
                         plugin={item.manifest}
                     />}
                     keyExtractor={plugin => plugin.name}
