@@ -151,8 +151,8 @@ function PluginCard({ plugin, handleUninstall }: { plugin: PluginManifest, handl
                                 color='red'
                                 size='small'
                                 onPress={() => {
-                                    uninstallPlugin(plugin.name).then(() => {
-                                        handleUninstall(plugin.name);
+                                    uninstallPlugin(plugin.name).then(res => {
+                                        res && handleUninstall(plugin.name);
                                     });
                                 }}
                             />

@@ -61,7 +61,7 @@ export async function uninstallPlugin(plugin: string): Promise<boolean> {
         if (fs.exists(pluginInstance.localPath)) {
             fs.deleteFile(pluginInstance.localPath);
             
-            pluginInstance.stop();
+            await pluginInstance.stop();
             delete plugins[plugin];
             delete settingsPlugins[plugin];
 
