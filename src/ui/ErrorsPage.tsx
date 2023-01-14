@@ -79,7 +79,7 @@ function ErrorCard({ log }: { log: PluginLogs; }) {
                 label={(
                     <View style={styles.header}>
                         <Text style={styles.text}>
-                            {log.plugin.name} (v{log.plugin.version}) had an error.
+                            {log.plugin.name} (v{log.plugin.version ?? "0.0.0"}) had an error.
                         </Text>
                     </View>)
                 } />

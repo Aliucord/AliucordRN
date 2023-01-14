@@ -1,5 +1,5 @@
 import { setTheme } from "../api/Themer";
-import { Theme } from "../entities";
+import { Author, Theme } from "../entities";
 import { Constants, FetchUserActions, Forms, getModule, Profiles, React, ReactNative, Styles, Users } from "../metro";
 import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../themer/themerInit";
 import { getAssetId } from "../utils/getAssetId";
@@ -120,23 +120,33 @@ function ThemeCard({ theme }: { theme: Theme; }) {
             <Forms.FormRow
                 label={(
                     <Text style={styles.text} adjustsFontSizeToFit={true}>
-                        {theme.name} v{theme.version} by {theme.authors.map((a, i) => (
-                            <Text
-                                key={a.id}
-                                style={styles.link}
-                                onPress={() => {
-                                    if (!Users.getUser(a.id)) {
-                                        FetchUserActions.fetchProfile(a.id).then(() => {
-                                            Profiles.showUserProfile({ userId: a.id });
-                                        });
-                                    } else {
-                                        Profiles.showUserProfile({ userId: a.id });
-                                    }
-                                }}
-                            >
-                                {a.name}{i !== theme.authors.length - 1 && <Text style={styles.text}>, </Text>}
-                            </Text>
-                        ))}
+                        {theme.name} v{theme.version ?? "0.0.0"} by {theme.authors ?
+                            theme.authors.map((a, i) => (
+                                a.id ?
+                                    <Text
+                                        key={a.id}
+                                        style={styles.link}
+                                        onPress={() => {
+                                            if (!Users.getUser(a.id)) {
+                                                FetchUserActions.fetchProfile(a.id).then(() => {
+                                                    Profiles.showUserProfile({ userId: a.id });
+                                                });
+                                            } else {
+                                                Profiles.showUserProfile({ userId: a.id });
+                                            }
+                                        }}
+                                    >
+                                        {a.name}{i !== (theme.authors as Author[]).length - 1 && <Text style={styles.text}>, </Text>}
+                                    </Text>
+                                    :
+                                    <Text>
+                                        {a.name}{i !== (theme.authors as Author[]).length - 1 && <Text>, </Text>}
+                                    </Text>
+                            ))
+                            :
+                            <Text>
+                                Unknown
+                            </Text>}
                     </Text>
                 )}
                 subLabel={hasDuplicate ? (
@@ -158,7 +168,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
             />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
-                    {theme.description}
+                    {theme.description ?? "No description provided."}
                 </Forms.FormText>
             </View>
         </View>

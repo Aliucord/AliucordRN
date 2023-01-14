@@ -3,19 +3,20 @@ export interface PluginManifest {
     description: string;
     version: string;
     repo: string;
-    authors: Author[];
+    authors?: Author[];
 }
 
 export interface Author {
-    id: string;
+    id?: string;
     name: string;
 }
 
 export type Theme = {
     name: string;
-    authors: Author[];
+    authors?: Author[];
     description: string;
     version: string;
+    updater_url?: string;
     theme_color_map: string[];
     colors: string[];
     unsafe_colors: string[];

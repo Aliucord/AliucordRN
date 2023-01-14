@@ -2,6 +2,7 @@ import Badges from "../core-plugins/Badges";
 import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
+import { PluginManifest } from "../entities";
 import { Plugin } from "../entities/Plugin";
 import { Toasts } from "../metro";
 import { fs } from "../native";
@@ -131,7 +132,7 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
         const zip = new ZipFile(PLUGINS_DIRECTORY + pluginZip, 0, "r");
 
         zip.openEntry("manifest.json");
-        const manifest = JSON.parse(zip.readEntry("text"));
+        const manifest = JSON.parse(zip.readEntry("text")) as PluginManifest;
         pluginName = manifest.name;
         zip.closeEntry();
 
@@ -161,7 +162,8 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
         plugins[manifest.name] = loadedPlugin;
 
         return loadedPlugin;
-    } catch (err) {
+    } catch (err: any) {
+        if (pluginName && plugins[pluginName]) plugins[pluginName].errors += err.stack;
         logger.error(`Error loading plugin ${pluginName} from ${pluginZip}`, err);
         Toasts.open({
             content: `Error trying to load plugin ${pluginName}`,
@@ -183,7 +185,7 @@ async function startPlugin(plugin: string) {
         await loadedPlugin.start();
         loadedPlugin.enabled = true;
     } catch (err: any) {
-        loadedPlugin.errors = err.stack;
+        loadedPlugin.errors += err.stack;
         logger.error(`Failed while starting plugin: ${loadedPlugin.manifest.name}`, err);
         Toasts.open({
             content: `${loadedPlugin.manifest.name} had an error while starting.`,
