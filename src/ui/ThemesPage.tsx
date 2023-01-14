@@ -4,7 +4,7 @@ import { Constants, FetchUserActions, Forms, getModule, Profiles, React, ReactNa
 import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../themer/themerInit";
 import { getAssetId } from "../utils/getAssetId";
 
-const { View, Text, FlatList, Image, ScrollView } = ReactNative;
+const { View, Text, FlatList, Image, ScrollView, TouchableOpacity } = ReactNative;
 const Search = getModule(m => m.name === "StaticSearchBarContainer");
 
 const styles = Styles.createThemedStyleSheet({
@@ -147,11 +147,14 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                 leading={hasDuplicate ? (
                     <Forms.FormIcon source={getAssetId("yellow-alert")} />
                 ) : null}
-                trailing={<Forms.FormRadio selected={isEnabled} />}
-                onPress={() => {
-                    setTheme(themeState?.currentTheme === theme.name ? null : theme);
-                    setIsEnabled(!isEnabled);
-                }}
+                trailing={(
+                    <TouchableOpacity onPress={() => {
+                        setTheme(themeState?.currentTheme === theme.name ? null : theme);
+                        setIsEnabled(!isEnabled);
+                    }}>
+                        <Forms.FormRadio selected={isEnabled} />
+                    </TouchableOpacity>
+                )}
             />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
