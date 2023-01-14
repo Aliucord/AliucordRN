@@ -120,7 +120,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
             <Forms.FormRow
                 label={(
                     <Text style={styles.text} adjustsFontSizeToFit={true}>
-                        {theme.name} v{theme.version} by {theme.authors ?
+                        {theme.name} v{theme.version ?? "0.0.0"} by {theme.authors ?
                             theme.authors.map((a, i) => (
                                 a.id ?
                                     <Text
@@ -168,7 +168,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
             />
             <View style={styles.bodyCard}>
                 <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
-                    {theme.description}
+                    {theme.description ?? "No description provided."}
                 </Forms.FormText>
             </View>
         </View>

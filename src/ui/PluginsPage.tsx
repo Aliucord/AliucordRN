@@ -92,7 +92,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             <Forms.FormRow
                 label={(
                     <Text style={styles.text} adjustsFontSizeToFit={true}>
-                        {plugin.name} v{plugin.version} by {plugin.authors ?
+                        {plugin.name} v{plugin.version ?? "0.0.0"} by {plugin.authors ?
                             plugin.authors.map((a, i) => (
                                 a.id ?
                                     <Text
@@ -131,7 +131,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                 }} />}
             />
             <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{plugin.description}</Forms.FormText>
+                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{plugin.description ?? "No description provided."}</Forms.FormText>
                 {!!plugin.repo && (
                     <View style={styles.actions}>
                         <TouchableOpacity style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>
