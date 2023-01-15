@@ -126,7 +126,7 @@ function PluginCard({ plugin, handleUninstall }: { plugin: PluginManifest, handl
                             </Text>}
                     </Text>
                 )}
-                trailing={<Forms.FormSwitch value={isEnabled} style={{ marginVertical: -12 }} onValueChange={v => {
+                trailing={<Forms.FormSwitch value={isEnabled} style={{ marginVertical: -15 }} onValueChange={v => {
                     if (v)
                         enablePlugin(plugin.name);
                     else
