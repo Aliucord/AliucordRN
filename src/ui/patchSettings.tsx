@@ -1,4 +1,5 @@
 import { sha } from "aliucord-version";
+import { plugins } from "../api";
 import { Forms, getByName, Locale, React, Scenes } from "../metro";
 import { findInReactTree } from "../utils/findInReactTree";
 import { getAssetId } from "../utils/getAssetId";
@@ -14,7 +15,7 @@ export default function patchSettings() {
     const UserSettingsOverviewWrapper = getByName("UserSettingsOverviewWrapper", { default: false });
 
     after(Scenes, "default", (_, res) => {
-        return {
+        res = {
             ...res,
             Aliucord: {
                 key: "Aliucord",
@@ -42,6 +43,19 @@ export default function patchSettings() {
                 render: ErrorsPage
             }
         };
+
+        for (const key in plugins) {
+            const plugin = plugins[key];
+            if (plugin.getSettingsPage) {
+                res[`AliucordPluginSettings_${key}`] = {
+                    key: `AliucordPluginSettings_${key}`,
+                    title: `${plugin.manifest.name} Settings`,
+                    render: plugin.getSettingsPage
+                };
+            }
+        }
+
+        return res;
 
         // TODO: add APluginWrapper and make it work?
         // Or should we add all plugins that register settings to this?

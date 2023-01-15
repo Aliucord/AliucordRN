@@ -89,7 +89,7 @@ const styles = Styles.createThemedStyleSheet({
     }
 });
 
-function PluginCard({ plugin, handleUninstall }: { plugin: PluginManifest, handleUninstall: (name: string) => void; }) {
+function PluginCard({ plugin, handleUninstall, navigation }: { plugin: PluginManifest, handleUninstall: (name: string) => void, navigation: any; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     return (
@@ -145,24 +145,27 @@ function PluginCard({ plugin, handleUninstall }: { plugin: PluginManifest, handl
                     )}
                     <View style={{ marginLeft: "auto" }}>
                         <View style={{ flexDirection: "row" }} >
+                            {!!plugins[plugin.name].getSettingsPage && <Button
+                                text="Settings"
+                                style={{ ...styles.button, marginHorizontal: 6 }}
+                                color='brand'
+                                size='small'
+                                onPress={() => {
+                                    navigation.navigate(`AliucordPluginSettings_${plugin.name}`, { navigation });
+                                }}
+                            />}
                             <Button
                                 text="Uninstall"
                                 style={styles.button}
                                 color='red'
                                 size='small'
                                 onPress={() => {
+                                    // Dialog.show({
+                                    //     title: "Uninstall Plugin"
+                                    // });
                                     uninstallPlugin(plugin.name).then(res => {
                                         res && handleUninstall(plugin.name);
                                     });
-                                }}
-                            />
-                            <Button
-                                text="Settings"
-                                style={{ ...styles.button, marginHorizontal: 6 }}
-                                color='brand'
-                                size='small'
-                                onPress={() => {
-                                    console.log("Settings is not yet implemented");
                                 }}
                             />
                         </View>
@@ -173,7 +176,7 @@ function PluginCard({ plugin, handleUninstall }: { plugin: PluginManifest, handl
     );
 }
 
-export default function PluginsPage() {
+export default function PluginsPage({ navigation }: { navigation: any; }) {
     const [search, setSearch] = React.useState(String);
 
     const [entities, setEntities] = React.useState(search ? Object.values(plugins).filter(p => {
@@ -233,6 +236,7 @@ export default function PluginsPage() {
                     renderItem={({ item }) => <PluginCard
                         key={item.name}
                         handleUninstall={handleUninstall}
+                        navigation={navigation}
                         plugin={item.manifest}
                     />}
                     keyExtractor={plugin => plugin.name}

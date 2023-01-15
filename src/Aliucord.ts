@@ -34,13 +34,14 @@ export async function load() {
         mkdir(SETTINGS_DIRECTORY);
 
         settings = new Settings("Aliucord");
-        patchSettings();
         patchTheme();
 
         await startCorePlugins();
         await startPlugins();
         startReactDevTools();
         startDebugWs();
+
+        patchSettings();
     } catch (err) {
         logger.error("Failed to load", err);
     }

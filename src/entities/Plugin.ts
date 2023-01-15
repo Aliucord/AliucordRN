@@ -39,4 +39,6 @@ export class Plugin<SettingsSchema = any> {
         this.commands.unregisterAll();
         this.patcher.unpatchAll();
     }
+
+    public getSettingsPage?(props: any[]): React.ReactElement;
 }
