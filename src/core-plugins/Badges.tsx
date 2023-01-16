@@ -1,8 +1,9 @@
 import { Plugin } from "../entities";
-import { getByName, React, ReactNative, Styles, Toasts } from "../metro";
+import { getByName, React, Styles, Toasts } from "../metro";
+import { General } from "../ui/components";
 import { after } from "../utils/patcher";
 
-const { View, Image, Pressable } = ReactNative;
+const { View, Image, TouchableOpacity } = General;
 
 interface BadgeOwner {
     roles: string[];
@@ -59,14 +60,14 @@ export default class Badges extends Plugin {
             const badges = cache[user.id];
             if (badges !== undefined) {
                 const renderedBadges = badges.map(badge => {
-                    return <Pressable key={badge.url} onPress={() => {
+                    return <TouchableOpacity key={badge.url} onPress={() => {
                         Toasts.open({
                             content: badge.text,
                             source: { uri: badge.url }
                         });
                     }}>
                         <Image source={{ uri: badge.url }} style={styles.img} />
-                    </Pressable>;
+                    </TouchableOpacity>;
                 });
 
                 if (!ctx.result) return <View key="aliu-badges" style={styles.container}>{renderedBadges}</View>;

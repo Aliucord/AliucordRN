@@ -1,7 +1,8 @@
-import { Constants, React, Styles, ReactNative } from "../metro";
+import { Constants, React, Styles } from "../metro";
 import { getAssetId } from "../utils";
+import { General } from "./components";
 
-const { Image, View, Text, ScrollView } = ReactNative;
+const { Image, View, Text, ScrollView } = General;
 
 const styles = Styles.createThemedStyleSheet({
     container: {

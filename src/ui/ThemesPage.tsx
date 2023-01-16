@@ -1,11 +1,12 @@
 import { setTheme } from "../api/Themer";
 import { Author, Theme } from "../entities";
-import { Constants, FetchUserActions, Forms, getModule, Profiles, React, ReactNative, Styles, Users } from "../metro";
+import { Constants, FetchUserActions, Profiles, React, Styles, Users } from "../metro";
 import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../themer/themerInit";
 import { getAssetId } from "../utils/getAssetId";
+import { Forms, General, Search } from "./components";
 
-const { View, Text, FlatList, Image, ScrollView, TouchableOpacity } = ReactNative;
-const Search = getModule(m => m.name === "StaticSearchBarContainer");
+const { View, Text, FlatList, Image, ScrollView, Pressable } = General;
+const { FormIcon, FormRow, FormText, FormRadio } = Forms;
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -92,7 +93,7 @@ const styles = Styles.createThemedStyleSheet({
 function InvalidCard({ invalidTheme }: { invalidTheme: InvalidTheme; }) {
     return (
         <View style={styles.card}>
-            <Forms.FormRow
+            <FormRow
                 label={(
                     <View style={styles.invalidHeader}>
                         <Text style={styles.invalidInfoText} adjustsFontSizeToFit={true}>
@@ -102,11 +103,11 @@ function InvalidCard({ invalidTheme }: { invalidTheme: InvalidTheme; }) {
                             {invalidTheme.name}
                         </Text>
                     </View>)}
-                leading={<Forms.FormIcon source={getAssetId("Small")} color='#FF0000' />}
+                leading={<FormIcon source={getAssetId("Small")} color='#FF0000' />}
             />
             <View style={styles.divider} />
             {!!invalidTheme.reason && <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{invalidTheme.reason}</Forms.FormText>
+                <FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{invalidTheme.reason}</FormText>
             </View>}
         </View>
     );
@@ -117,7 +118,7 @@ function ThemeCard({ theme }: { theme: Theme; }) {
     const hasDuplicate = excludedThemes.duplicatedThemes.includes(theme.name);
     return (
         <View style={styles.card}>
-            <Forms.FormRow
+            <FormRow
                 label={(
                     <Text style={styles.text} adjustsFontSizeToFit={true}>
                         {theme.name} v{theme.version ?? "0.0.0"} by {theme.authors ?
@@ -155,21 +156,21 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                     </Text>
                 ) : null}
                 leading={hasDuplicate ? (
-                    <Forms.FormIcon source={getAssetId("yellow-alert")} />
+                    <FormIcon source={getAssetId("yellow-alert")} />
                 ) : null}
                 trailing={(
-                    <TouchableOpacity onPress={() => {
+                    <Pressable onPress={() => {
                         setTheme(themeState?.currentTheme === theme.name ? null : theme);
                         setIsEnabled(!isEnabled);
                     }}>
-                        <Forms.FormRadio selected={isEnabled} />
-                    </TouchableOpacity>
+                        <FormRadio selected={isEnabled} />
+                    </Pressable>
                 )}
             />
             <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
+                <FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
                     {theme.description ?? "No description provided."}
-                </Forms.FormText>
+                </FormText>
             </View>
         </View>
     );
@@ -200,7 +201,7 @@ export default function ThemesPage() {
         <Search
             style={styles.search}
             placeholder='Search themes...'
-            onChangeText={(v: string) => setSearch(v)}
+            onChangeText={v => setSearch(v)}
         />
         <ScrollView style={styles.container}>
             {!!excludedThemes.invalidThemes.length && <FlatList

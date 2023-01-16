@@ -342,6 +342,9 @@ export const URLOpener = getByProps("openURL", "handleSupportedURL");
 export const Forms = getByProps("FormSection");
 export const Scenes = getByName("getScreens", { default: false });
 export const ThemeManager = getByProps("updateTheme", "overrideTheme");
+export const Navigation = getByProps("pushLazy");
+export const NavigationStack = getByProps("createStackNavigator");
+export const NavigationNative = getByProps("NavigationContainer");
 
 // Abandon all hope, ye who enter here
 type Style = ViewStyle & ImageStyle & TextStyle;

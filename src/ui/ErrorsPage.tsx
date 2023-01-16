@@ -1,8 +1,10 @@
 import { plugins } from "../api";
-import { Constants, Forms, React, ReactNative, Styles } from "../metro";
+import { Constants, React, Styles } from "../metro";
 import { getAssetId } from "../utils";
+import { Forms, General } from "./components";
 
-const { Image, ScrollView, View, Text, FlatList } = ReactNative;
+const { Image, ScrollView, View, Text, FlatList } = General;
+const { FormRow, FormText } = Forms;
 
 interface PluginLogs {
     plugin: {
@@ -75,7 +77,7 @@ const styles = Styles.createThemedStyleSheet({
 function ErrorCard({ log }: { log: PluginLogs; }) {
     return (
         <View style={styles.card}>
-            <Forms.FormRow
+            <FormRow
                 label={(
                     <View style={styles.header}>
                         <Text style={styles.text}>
@@ -85,7 +87,7 @@ function ErrorCard({ log }: { log: PluginLogs; }) {
                 } />
             <View style={styles.divider} />
             <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText}>{log.errors}</Forms.FormText>
+                <FormText style={styles.bodyText}>{log.errors}</FormText>
             </View>
         </View>
     );

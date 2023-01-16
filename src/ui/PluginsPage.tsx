@@ -1,11 +1,12 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../api/PluginManager";
-import { Author, PluginManifest } from "../entities/types";
-import { Constants, FetchUserActions, Forms, getByName, getModule, Profiles, React, ReactNative, Styles, URLOpener, Users } from "../metro";
+import { Author, PluginManifest } from "../entities";
+import { Constants, FetchUserActions, Navigation, Profiles, React, Styles, URLOpener, Users } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
+import { Page } from "./Page";
+import { General, Button, Search, Forms } from "./components";
 
-const { View, Text, FlatList, Image, ScrollView, TouchableOpacity, LayoutAnimation } = ReactNative;
-const Search = getModule(m => m.name === "StaticSearchBarContainer");
-const Button = getByName("Button", { default: false }).default;
+let handleUninstall: (name: string) => void;
+const { View, Text, FlatList,  Image, ScrollView, Pressable, LayoutAnimation } = General;
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -46,7 +47,7 @@ const styles = Styles.createThemedStyleSheet({
         alignItems: "center",
         paddingLeft: 16,
         paddingRight: 12,
-        paddingBottom: 16
+        paddingBottom: 10
     },
     icons: {
         width: 22,
@@ -89,8 +90,9 @@ const styles = Styles.createThemedStyleSheet({
     }
 });
 
-function PluginCard({ plugin, handleUninstall, navigation }: { plugin: PluginManifest, handleUninstall: (name: string) => void, navigation: any; }) {
+function PluginCard({ plugin }: { plugin: PluginManifest }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
+    const { FormSwitch, FormText } = Forms;
 
     return (
         <View style={styles.card}>
@@ -126,7 +128,7 @@ function PluginCard({ plugin, handleUninstall, navigation }: { plugin: PluginMan
                             </Text>}
                     </Text>
                 )}
-                trailing={<Forms.FormSwitch value={isEnabled} style={{ marginVertical: -15 }} onValueChange={v => {
+                trailing={<FormSwitch value={isEnabled} style={{ marginVertical: -15 }} onValueChange={v => {
                     if (v)
                         enablePlugin(plugin.name);
                     else
@@ -136,12 +138,12 @@ function PluginCard({ plugin, handleUninstall, navigation }: { plugin: PluginMan
                 }} />}
             />
             <View style={styles.bodyCard}>
-                <Forms.FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{plugin.description ?? "No description provided."}</Forms.FormText>
+                <FormText style={styles.bodyText} adjustsFontSizeToFit={true}>{plugin.description ?? "No description provided."}</FormText>
                 <View style={styles.actions}>
                     {!!plugin.repo && (
-                        <TouchableOpacity style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>
+                        <Pressable style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>
                             <Image source={getAssetId("img_account_sync_github_white")} />
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                     <View style={{ marginLeft: "auto" }}>
                         <View style={{ flexDirection: "row" }} >
@@ -151,7 +153,10 @@ function PluginCard({ plugin, handleUninstall, navigation }: { plugin: PluginMan
                                 color='brand'
                                 size='small'
                                 onPress={() => {
-                                    navigation.navigate(`AliucordPluginSettings_${plugin.name}`, { navigation });
+                                    Navigation.push(Page, {
+                                        name: plugin.name,
+                                        children: plugins[plugin.name].getSettingsPage,
+                                    });
                                 }}
                             />}
                             <Button
@@ -160,9 +165,6 @@ function PluginCard({ plugin, handleUninstall, navigation }: { plugin: PluginMan
                                 color='red'
                                 size='small'
                                 onPress={() => {
-                                    // Dialog.show({
-                                    //     title: "Uninstall Plugin"
-                                    // });
                                     uninstallPlugin(plugin.name).then(res => {
                                         res && handleUninstall(plugin.name);
                                     });
@@ -176,7 +178,7 @@ function PluginCard({ plugin, handleUninstall, navigation }: { plugin: PluginMan
     );
 }
 
-export default function PluginsPage({ navigation }: { navigation: any; }) {
+export default function PluginsPage() {
     const [search, setSearch] = React.useState(String);
 
     const [entities, setEntities] = React.useState(search ? Object.values(plugins).filter(p => {
@@ -197,7 +199,7 @@ export default function PluginsPage({ navigation }: { navigation: any; }) {
         return false;
     }) : Object.values(plugins));
 
-    const handleUninstall = (name: string) => {
+    handleUninstall = (name: string) => {
         setEntities(entities.filter(item => item.name !== name));
 
         LayoutAnimation.configureNext({
@@ -212,7 +214,7 @@ export default function PluginsPage({ navigation }: { navigation: any; }) {
         <Search
             style={styles.search}
             placeholder='Search plugins...'
-            onChangeText={(v: string) => setSearch(v)}
+            onChangeText={v => setSearch(v)}
         />
         <ScrollView style={styles.container}>
             {!entities.length ?
@@ -235,8 +237,6 @@ export default function PluginsPage({ navigation }: { navigation: any; }) {
                     data={entities}
                     renderItem={({ item }) => <PluginCard
                         key={item.name}
-                        handleUninstall={handleUninstall}
-                        navigation={navigation}
                         plugin={item.manifest}
                     />}
                     keyExtractor={plugin => plugin.name}

@@ -1,17 +1,16 @@
 import { useSettings } from "../api/Settings";
-import { Forms, React, ReactNative } from "../metro";
-import { URLOpener } from "../metro/index";
+import { React, URLOpener } from "../metro";
 import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../utils/constants";
 import { getAssetId } from "../utils/getAssetId";
+import { Forms, General } from "./components";
 
-const { FormSection, FormSwitch, FormRow } = Forms;
-const { ScrollView } = ReactNative;
+const { FormSection, FormSwitch, FormRow, FormIcon } = Forms;
 
 export default function AliucordPage() {
     const settings = useSettings(window.Aliucord.settings);
 
     return (<>
-        <ScrollView>
+        <General.ScrollView>
             <FormSection title="Settings" /* Nice prop name discord */ android_noDivider={true}>
                 <FormRow
                     label="Automatically disable plugins on crash"
@@ -29,23 +28,23 @@ export default function AliucordPage() {
             <FormSection title="Socials">
                 <FormRow
                     label="Source Code"
-                    leading={<FormRow.Icon source={getAssetId("img_account_sync_github_white")} />}
+                    leading={<FormIcon source={getAssetId("img_account_sync_github_white")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_GITHUB)}
                 />
                 <FormRow
                     label="Support Server"
-                    leading={<FormRow.Icon source={getAssetId("img_help_icon")} />}
+                    leading={<FormIcon source={getAssetId("img_help_icon")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_INVITE)}
                 />
                 <FormRow
                     label="Support Us"
-                    leading={<FormRow.Icon source={getAssetId("ic_premium_perk_heart_24px")} />}
+                    leading={<FormIcon source={getAssetId("ic_premium_perk_heart_24px")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_PATREON)}
                 />
             </FormSection>
-        </ScrollView>
+        </General.ScrollView>
     </>);
 }

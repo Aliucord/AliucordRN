@@ -1,5 +1,5 @@
 import { ApplicationCommand, ApplicationCommandType, Commands } from "../api/Commands";
-import { Plugin } from "../entities/Plugin";
+import { Plugin } from "../entities";
 import { getByProps, SearchStore } from "../metro";
 import { after } from "../utils/patcher";
 

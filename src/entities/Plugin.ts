@@ -40,5 +40,9 @@ export class Plugin<SettingsSchema = any> {
         this.patcher.unpatchAll();
     }
 
+    /**
+     * This fetches the settings page that the plugin has defined.
+     * 
+     */
     public getSettingsPage?(props: any[]): React.ReactElement;
 }

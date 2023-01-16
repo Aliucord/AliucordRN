@@ -2,14 +2,11 @@ import Badges from "../core-plugins/Badges";
 import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
-import { PluginManifest } from "../entities";
-import { Plugin } from "../entities/Plugin";
+import { PluginManifest, Plugin } from "../entities";
 import { Dialog, Toasts } from "../metro";
-import { fs } from "../native";
-import { readdir } from "../native/fs";
-import { getAssetId } from "../utils";
+import { readdir, exists, deleteFile } from "../native/fs";
+import { getAssetId, Logger } from "../utils";
 import { PLUGINS_DIRECTORY } from "../utils/constants";
-import { Logger } from "../utils/Logger";
 
 const logger = new Logger("PluginManager");
 export const plugins = {} as Record<string, Plugin>;
@@ -73,14 +70,14 @@ export async function uninstallPlugin(plugin: string): Promise<boolean> {
             return false;
         }
 
-        if (fs.exists(pluginInstance.localPath)) {
-            fs.deleteFile(pluginInstance.localPath);
+        if (exists(pluginInstance.localPath)) {
+            deleteFile(pluginInstance.localPath);
 
             await pluginInstance.stop();
             delete plugins[plugin];
             delete settingsPlugins[plugin];
 
-            Toasts.open({ content: `Uninstalled plugin: ${plugin}`, source: getAssetId("Check") });
+            Toasts.open({ content: `Uninstalled plugin: ${plugin}`, source: getAssetId("trash") });
         }
     } catch (err) {
         logger.error(`Failed to uninstall plugin ${plugin}\n`, err);

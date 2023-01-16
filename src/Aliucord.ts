@@ -1,11 +1,9 @@
-import { startCorePlugins, startPlugins } from "./api/PluginManager";
-import { Settings } from "./api/Settings";
+import { startCorePlugins, startPlugins, Settings } from "./api";
 import { mkdir } from "./native/fs";
 import patchTheme from "./themer/patchTheme";
 import patchSettings from "./ui/patchSettings";
 import { PLUGINS_DIRECTORY, SETTINGS_DIRECTORY, THEME_DIRECTORY } from "./utils/constants";
-import { startDebugWs } from "./utils/debug/DebugWS";
-import { startReactDevTools } from "./utils/debug/ReactDevTools";
+import { startDebugWs, startReactDevTools } from "./utils/debug";
 import { Logger } from "./utils/Logger";
 
 interface SettingsSchema {
