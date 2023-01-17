@@ -2,8 +2,8 @@ import { sha } from "aliucord-version";
 import { getByName, Locale, React, Scenes } from "../metro";
 import { findInReactTree, getAssetId } from "../utils";
 import { after } from "../utils/patcher";
-import { Forms } from "./components";
 import AliucordPage from "./AliucordPage";
+import { Forms } from "./components";
 import ErrorsPage from "./ErrorsPage";
 import PluginsPage from "./PluginsPage";
 import ThemesPage from "./ThemesPage";
@@ -40,6 +40,11 @@ export default function patchSettings() {
                 key: "AliucordErrors",
                 title: "Errors",
                 render: ErrorsPage
+            },
+            AliuPluginSettingsWrapper: {
+                key: "AliuPluginSettingsWrapper",
+                title: "Plugin Settings",
+                render: SettingsView => <SettingsView />
             }
         };
     });

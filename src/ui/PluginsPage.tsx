@@ -1,12 +1,11 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../api/PluginManager";
 import { Author, PluginManifest } from "../entities";
-import { Constants, FetchUserActions, Navigation, Profiles, React, Styles, URLOpener, Users } from "../metro";
+import { Constants, FetchUserActions, NavigationNative, Profiles, React, Styles, URLOpener, Users } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
-import { Page } from "./Page";
-import { General, Button, Search, Forms } from "./components";
+import { Button, Forms, General, Search } from "./components";
 
-let handleUninstall: (name: string) => void;
-const { View, Text, FlatList,  Image, ScrollView, Pressable, LayoutAnimation } = General;
+let removeFromList: (name: string) => void;
+const { View, Text, FlatList, Image, ScrollView, Pressable, LayoutAnimation } = General;
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -90,8 +89,10 @@ const styles = Styles.createThemedStyleSheet({
     }
 });
 
-function PluginCard({ plugin }: { plugin: PluginManifest }) {
+function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
+    const navigation = NavigationNative.useNavigation();
+
     const { FormSwitch, FormText } = Forms;
 
     return (
@@ -153,10 +154,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest }) {
                                 color='brand'
                                 size='small'
                                 onPress={() => {
-                                    Navigation.push(Page, {
-                                        name: plugin.name,
-                                        children: plugins[plugin.name].getSettingsPage,
-                                    });
+                                    navigation.navigate("AliuPluginSettingsWrapper", plugins[plugin.name].getSettingsPage);
                                 }}
                             />}
                             <Button
@@ -166,7 +164,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest }) {
                                 size='small'
                                 onPress={() => {
                                     uninstallPlugin(plugin.name).then(res => {
-                                        res && handleUninstall(plugin.name);
+                                        res && removeFromList(plugin.name);
                                     });
                                 }}
                             />
@@ -199,7 +197,7 @@ export default function PluginsPage() {
         return false;
     }) : Object.values(plugins));
 
-    handleUninstall = (name: string) => {
+    removeFromList = (name: string) => {
         setEntities(entities.filter(item => item.name !== name));
 
         LayoutAnimation.configureNext({
