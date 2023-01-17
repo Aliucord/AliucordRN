@@ -1,11 +1,12 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../api/PluginManager";
 import { Author, PluginManifest } from "../entities";
-import { Constants, FetchUserActions, NavigationNative, Profiles, React, Styles, URLOpener, Users } from "../metro";
+import { Constants, FetchUserActions, Navigation, Profiles, React, Styles, URLOpener, Users } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
-import { Button, Forms, General, Search } from "./components";
+import { Page } from "./Page";
+import { General, Button, Search, Forms } from "./components";
 
-let removeFromList: (name: string) => void;
-const { View, Text, FlatList, Image, ScrollView, Pressable, LayoutAnimation } = General;
+let handleUninstall: (name: string) => void;
+const { View, Text, FlatList,  Image, ScrollView, Pressable, LayoutAnimation } = General;
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -89,10 +90,8 @@ const styles = Styles.createThemedStyleSheet({
     }
 });
 
-function PluginCard({ plugin }: { plugin: PluginManifest; }) {
+function PluginCard({ plugin }: { plugin: PluginManifest }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
-    const navigation = NavigationNative.useNavigation();
-
     const { FormSwitch, FormText } = Forms;
 
     return (
@@ -154,9 +153,9 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                                 color='brand'
                                 size='small'
                                 onPress={() => {
-                                    navigation.navigate("AliuPluginSettingsWrapper", {
-                                        render: plugins[plugin.name].getSettingsPage,
-                                        headerText: `${plugin.name}'s Settings`
+                                    Navigation.push(Page, {
+                                        name: plugin.name,
+                                        children: plugins[plugin.name].getSettingsPage,
                                     });
                                 }}
                             />}
@@ -167,7 +166,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                                 size='small'
                                 onPress={() => {
                                     uninstallPlugin(plugin.name).then(res => {
-                                        res && removeFromList(plugin.name);
+                                        res && handleUninstall(plugin.name);
                                     });
                                 }}
                             />
@@ -200,7 +199,7 @@ export default function PluginsPage() {
         return false;
     }) : Object.values(plugins));
 
-    removeFromList = (name: string) => {
+    handleUninstall = (name: string) => {
         setEntities(entities.filter(item => item.name !== name));
 
         LayoutAnimation.configureNext({
