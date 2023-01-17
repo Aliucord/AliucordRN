@@ -1,5 +1,5 @@
 import { sha } from "aliucord-version";
-import { getByName, Locale, React, Scenes } from "../metro";
+import { getByName, Locale, NavigationNative, React, Scenes } from "../metro";
 import { findInReactTree, getAssetId } from "../utils";
 import { after } from "../utils/patcher";
 import AliucordPage from "./AliucordPage";
@@ -44,7 +44,15 @@ export default function patchSettings() {
             AliuPluginSettingsWrapper: {
                 key: "AliuPluginSettingsWrapper",
                 title: "Plugin Settings",
-                render: SettingsView => <SettingsView />
+                render: (Arg) => {
+                    if (typeof Arg === "object" && Arg.render) {
+                        const { render: SettingsView, headerText: title } = Arg;
+                        NavigationNative.useNavigation().setOptions({ title });
+                        return <SettingsView />;
+                    }
+
+                    return <Arg />;
+                }
             }
         };
     });

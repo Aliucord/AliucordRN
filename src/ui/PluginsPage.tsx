@@ -154,7 +154,10 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                                 color='brand'
                                 size='small'
                                 onPress={() => {
-                                    navigation.navigate("AliuPluginSettingsWrapper", plugins[plugin.name].getSettingsPage);
+                                    navigation.navigate("AliuPluginSettingsWrapper", {
+                                        render: plugins[plugin.name].getSettingsPage,
+                                        headerText: `${plugin.name}'s Settings`
+                                    });
                                 }}
                             />}
                             <Button
