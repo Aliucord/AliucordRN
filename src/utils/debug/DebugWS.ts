@@ -1,11 +1,11 @@
 import { settings } from "../../Aliucord";
 import { Logger } from "../Logger";
 import { makeAsyncEval } from "../misc";
-import { before } from "../patcher";
+import { before, Unpatch } from "../patcher";
 
 const logger = new Logger("DebugWS");
 let socket: WebSocket | null = null;
-let patched = false;
+let unpatch: Unpatch | null = null;
 
 export function startDebugWs() {
     if (socket) return;
@@ -36,17 +36,19 @@ export function startDebugWs() {
         }
     });
 
-    if (!patched) {
-        before(globalThis, "nativeLoggingHook", (_, message: string, level: number) => {
+    if (!unpatch) {
+        unpatch = before(globalThis, "nativeLoggingHook", (_, message: string, level: number) => {
             if (socket?.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ level, message }));
             }
         });
-        patched = true;
     }
 }
 
 export function stopDebugWs() {
+    // Unpatch the logger hook if patched
+    unpatch?.();
+    // Close the socket if open
     if (!socket) return;
     socket?.close();
     socket = null;
