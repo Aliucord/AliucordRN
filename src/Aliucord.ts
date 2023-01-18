@@ -11,6 +11,7 @@ import { Logger } from "./utils/Logger";
 interface SettingsSchema {
     autoUpdateAliucord: boolean;
     autoUpdatePlugins: boolean;
+    debugWS: boolean;
     disablePluginsOnCrash: boolean;
     plugins: Record<string, boolean>;
     theme: string;
