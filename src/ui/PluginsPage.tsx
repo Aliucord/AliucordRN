@@ -6,6 +6,12 @@ import { Page } from "./Page";
 import { General, Button, Search, Forms } from "./components";
 
 let handleUninstall: (name: string) => void;
+const multipleAuthors = (i: number, authors: Author[]): any => {
+    if (i !== authors.length - 1)
+        return true;
+    else 
+        return false;
+};
 const { View, Text, FlatList,  Image, ScrollView, Pressable, LayoutAnimation } = General;
 
 const styles = Styles.createThemedStyleSheet({
@@ -100,7 +106,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest }) {
                 label={(
                     <Text style={styles.text} adjustsFontSizeToFit={true}>
                         {plugin.name} v{plugin.version ?? "0.0.0"} by {plugin.authors ?
-                            plugin.authors.map((a, i) => (
+                            plugin.authors.map((a, i: number) => (
                                 a.id ?
                                     <Text
                                         key={a.id}
@@ -115,11 +121,11 @@ function PluginCard({ plugin }: { plugin: PluginManifest }) {
                                             }
                                         }}
                                     >
-                                        {a.name}{i !== (plugin.authors as Author[]).length - 1 && <Text style={styles.text}>, </Text>}
+                                        {a.name}{multipleAuthors(i, plugin.authors as Author[]) && <Text style={styles.text}>, </Text>}
                                     </Text>
                                     :
                                     <Text>
-                                        {a.name}{i !== (plugin.authors as Author[]).length - 1 && <Text>, </Text>}
+                                        {a.name}{multipleAuthors(i, plugin.authors as Author[]) && <Text>, </Text>}
                                     </Text>
                             ))
                             :

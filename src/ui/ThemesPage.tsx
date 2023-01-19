@@ -1,12 +1,18 @@
 import { setTheme } from "../api/Themer";
 import { Author, Theme } from "../entities";
 import { Constants, FetchUserActions, Profiles, React, Styles, Users } from "../metro";
-import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../themer/themerInit";
+import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../themerInit";
 import { getAssetId } from "../utils/getAssetId";
 import { Forms, General, Search } from "./components";
 
 const { View, Text, FlatList, Image, ScrollView, Pressable } = General;
 const { FormIcon, FormRow, FormText, FormRadio } = Forms;
+const multipleAuthors = (i: number, authors: Author[]): any => {
+    if (i !== authors.length - 1)
+        return true;
+    else
+        return false;
+};
 
 const styles = Styles.createThemedStyleSheet({
     container: {
@@ -137,11 +143,11 @@ function ThemeCard({ theme }: { theme: Theme; }) {
                                             }
                                         }}
                                     >
-                                        {a.name}{i !== (theme.authors as Author[]).length - 1 && <Text style={styles.text}>, </Text>}
+                                        {a.name}{multipleAuthors(i, theme.authors as Author[]) && <Text style={styles.text}>, </Text>}
                                     </Text>
                                     :
                                     <Text>
-                                        {a.name}{i !== (theme.authors as Author[]).length - 1 && <Text>, </Text>}
+                                        {a.name}{multipleAuthors(i, theme.authors as Author[]) && <Text>, </Text>}
                                     </Text>
                             ))
                             :

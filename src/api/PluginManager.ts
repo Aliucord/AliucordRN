@@ -53,7 +53,7 @@ export async function uninstallPlugin(plugin: string): Promise<boolean> {
                 confirmText: "Uninstall",
                 cancelText: "Cancel",
                 confirmColor: "red",
-                isDismissable: false,
+                isDismissable: true,
                 onConfirm: () => resolve(true),
                 onCancel: () => resolve(false),
             });
@@ -64,13 +64,7 @@ export async function uninstallPlugin(plugin: string): Promise<boolean> {
         logger.info(`Uninstalling plugin ${plugin}`);
 
         const pluginInstance = plugins[plugin];
-        if (!pluginInstance.localPath) {
-            logger.error(`Failed to uninstall plugin ${plugin}: localPath is null`);
-            Toasts.open({ content: `Failed to uninstall plugin: ${plugin}`, source: getAssetId("Small") });
-            return false;
-        }
-
-        if (exists(pluginInstance.localPath)) {
+        if (pluginInstance.localPath && exists(pluginInstance.localPath)) {
             deleteFile(pluginInstance.localPath);
 
             await pluginInstance.stop();
@@ -120,7 +114,7 @@ export async function startCorePlugins() {
                 name,
                 description: "",
                 version: "1.0.0",
-                repo: "",
+                repo: "https://github.com/Aliucord/AliucordRN",
                 authors: [{ name: "Aliucord", id: "000000000000000000" }]
             });
 
@@ -175,7 +169,7 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
 
         return loadedPlugin;
     } catch (err: any) {
-        if (pluginName && plugins[pluginName]) plugins[pluginName].errors += err.stack;
+        plugins[pluginName as string].errors += err?.stack ?? err;
         logger.error(`Error loading plugin ${pluginName} from ${pluginZip}`, err);
         Toasts.open({
             content: `Error trying to load plugin ${pluginName}`,
@@ -197,7 +191,7 @@ async function startPlugin(plugin: string) {
         await loadedPlugin.start();
         loadedPlugin.enabled = true;
     } catch (err: any) {
-        loadedPlugin.errors += err.stack;
+        loadedPlugin.errors += err?.stack ?? err;
         logger.error(`Failed while starting plugin: ${loadedPlugin.manifest.name}`, err);
         Toasts.open({
             content: `${loadedPlugin.manifest.name} had an error while starting.`,
