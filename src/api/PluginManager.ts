@@ -169,7 +169,6 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
 
         return loadedPlugin;
     } catch (err: any) {
-        plugins[pluginName as string].errors += err?.stack ?? err;
         logger.error(`Error loading plugin ${pluginName} from ${pluginZip}`, err);
         Toasts.open({
             content: `Error trying to load plugin ${pluginName}`,
