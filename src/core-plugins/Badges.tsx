@@ -47,40 +47,48 @@ export default class Badges extends Plugin {
                 width: 24,
                 height: 24,
                 resizeMode: "contain",
-                marginHorizontal: 2
+                marginHorizontal: 4
             }
         });
 
         const cache: Record<string, Badge[]> = {};
 
         after(ProfileBadges, "default", (ctx) => {
+            const [, forceUpdate] = React.useReducer(x => x = !x, false);
+
             const user = ctx.args[0]?.user;
             if (user === undefined) return;
 
             const badges = cache[user.id];
-            if (badges !== undefined) {
-                const renderedBadges = badges.map(badge => {
-                    return <TouchableOpacity key={badge.url} onPress={() => {
-                        Toasts.open({
-                            content: badge.text,
-                            source: { uri: badge.url }
-                        });
-                    }}>
-                        <Image source={{ uri: badge.url }} style={styles.img} />
-                    </TouchableOpacity>;
-                });
-
-                if (!ctx.result) return <View key="aliu-badges" style={styles.container}>{renderedBadges}</View>;
-
-                ctx.result.props.children.push(<View key="aliu-badges" style={styles.container}>{renderedBadges}</View>);
+            if (badges === undefined) {
+                fetch(`${url}/users/${user.id}.json`)
+                    .then(r => r.json())
+                    .then((badges: BadgeOwner) => {
+                        cache[user.id] = [...badges.roles.map(it => roles[it]), ...(badges.custom ?? [])];
+                        cache[user.id].length && forceUpdate();
+                    });
                 return;
             }
 
-            fetch(`${url}/users/${user.id}.json`)
-                .then(r => r.json())
-                .then((badges: BadgeOwner) => {
-                    cache[user.id] = [...badges.roles.map(it => roles[it]), ...(badges.custom ?? [])];
-                });
+            const renderedBadgesView = (
+                <View key="aliu-badges" style={styles.container}>
+                    {badges.map(badge => (
+                        <TouchableOpacity key={badge.url} onPress={() => {
+                            Toasts.open({
+                                content: badge.text,
+                                source: { uri: badge.url }
+                            });
+                        }}>
+                            <Image source={{ uri: badge.url }} style={styles.img} />
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            );
+
+            if (!ctx.result) return renderedBadgesView;
+
+            ctx.result.props.children.push(renderedBadgesView);
+            return;
         });
     }
 }
