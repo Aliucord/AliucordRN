@@ -1,5 +1,5 @@
 import type { EmitterSubscription, ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { themerInit } from "../themer/themerInit";
+import { themerInit } from "../themerInit";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -275,11 +275,13 @@ export const SearchStore = getByProps("useDiscoveryState", "useQueryState");
 export const ModalActions = getByProps("closeModal");
 export const MessageActions = getByProps("sendMessage", "receiveMessage");
 export const FluxDispatcher = getByProps("subscribe", "isDispatching");
-export const FetchUserActions = getByProps("fetchProfile");
+export const FetchUserActions = getByProps("getUser", "fetchProfile");
 export const ContextMenuActions = getByProps("openContextMenu");
 export const SnowflakeUtils = getByProps("fromTimestamp", "extractTimestamp");
 export const Locale = getByProps("Messages");
 export const AMOLEDThemeManager = getByProps("setAMOLEDThemeEnabled");
+export const Users = getByProps("getCurrentUser");
+export const Profiles = getByProps("showUserProfile");
 
 export const Clipboard = getByProps("getString", "setString", "hasString") as {
     getString(): Promise<string>,
@@ -340,6 +342,9 @@ export const URLOpener = getByProps("openURL", "handleSupportedURL");
 export const Forms = getByProps("FormSection");
 export const Scenes = getByName("getScreens", { default: false });
 export const ThemeManager = getByProps("updateTheme", "overrideTheme");
+export const Navigation = getByProps("pushLazy");
+export const NavigationStack = getByProps("createStackNavigator");
+export const NavigationNative = getByProps("NavigationContainer");
 
 // Abandon all hope, ye who enter here
 type Style = ViewStyle & ImageStyle & TextStyle;

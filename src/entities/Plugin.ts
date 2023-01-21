@@ -13,8 +13,10 @@ export class Plugin<SettingsSchema = any> {
     public readonly logger = new Logger(this.name);
     public readonly patcher = new Patcher(this.name);
     public readonly settings = new Settings<SettingsSchema>(this.name);
-    public errors = {} as Record<string, string>;
+    public errors = [] as string[];
     public enabled = {} as boolean;
+    public localPath?: string;
+
     public constructor(public readonly manifest: PluginManifest) { }
 
     public get name() {
@@ -37,4 +39,10 @@ export class Plugin<SettingsSchema = any> {
         this.commands.unregisterAll();
         this.patcher.unpatchAll();
     }
+
+    /**
+     * This fetches the settings page that the plugin has defined.
+     * 
+     */
+    public getSettingsPage?(): React.ReactElement;
 }

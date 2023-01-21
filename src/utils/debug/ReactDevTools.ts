@@ -23,29 +23,34 @@ function fixHook() {
 }
 
 export function startReactDevTools() {
-    if (socket) throw "no";
-    socket = new WebSocket("ws://localhost:8097");
+    try {
+        if (socket) throw "no";
+        socket = new WebSocket("ws://localhost:8097");
 
-    fixHook();
+        fixHook();
 
-    const { AppState } = getModule(m => m.AppState);
+        const { AppState } = getModule(m => m.AppState);
 
-    const isAppActive = () => AppState.currentState !== "background";
+        const isAppActive = () => AppState.currentState !== "background";
 
-    socket.addEventListener("error", e =>
-        logger.warn("Connection error: " + (e as ErrorEvent).message)
-    );
+        socket.addEventListener("error", e =>
+            logger.warn("Connection error: " + (e as ErrorEvent).message)
+        );
 
-    const viewConfig = getModule(m => m.uiViewClassName == "RCTView");
-    const { flattenStyle } = getModule(m => m.flattenStyle);
+        const viewConfig = getModule(m => m.uiViewClassName == "RCTView");
+        const { flattenStyle } = getModule(m => m.flattenStyle);
 
-    logger.info("Connecting to devtools");
-    connectToDevTools({
-        isAppActive,
-        resolveRNStyle: flattenStyle,
-        nativeStyleEditorValidAttributes: Object.keys(
-            viewConfig.validAttributes.style,
-        ),
-        websocket: socket
-    });
+        logger.info("Connecting to devtools");
+        connectToDevTools({
+            isAppActive,
+            resolveRNStyle: flattenStyle,
+            nativeStyleEditorValidAttributes: Object.keys(
+                viewConfig.validAttributes.style,
+            ),
+            websocket: socket
+        });
+    } catch (err: any) {
+        window.Aliucord.errors["ReactDevTools"] = err?.stack ?? err;
+        logger.error(err);
+    }
 }

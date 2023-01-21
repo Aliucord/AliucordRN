@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { Theme } from "../entities";
 import { Dialog, ReactNative, Toasts } from "../metro";
-import { excludedThemes, ThemeErrors, themeState } from "../themer/themerInit";
+import { excludedThemes, ThemeErrors, themeState } from "../themerInit";
 import { getAssetId, Logger } from "../utils";
 
 const logger = new Logger("Themer");
@@ -38,12 +38,18 @@ export function onStartup() {
     }
 
     for (const theme of excludedThemes.invalidThemes) {
-        logger.error(`The theme "${theme.name}" is invalid: ${theme.reason}`);
+        const msg = `The theme "${theme.name}" is invalid: ${theme.reason}`;
+
+        logger.warn(msg);
+        window.Aliucord.errors[`Themer (${theme.name})`] = msg;
         Toasts.open({ content: `Invalid theme(s): ${theme.name}, check theme settings.`, source: getAssetId("Small") });
     }
 
     for (const theme of excludedThemes.duplicatedThemes) {
-        logger.warn(`A theme named "${theme}" already existed.`);
+        const msg = `A theme named "${theme}" already existed.`;
+
+        logger.warn(msg);
+        window.Aliucord.errors[`Themer (${theme})`] = msg;
         Toasts.open({ content: "Duplicated themes found, check theme settings.", source: getAssetId("Small") });
     }
 
@@ -54,17 +60,28 @@ function handleErrors() {
     if (themeState.isApplied) return;
 
     switch (themeState.reason) {
-        case ThemeErrors.UNKNOWN_THEME:
-            showFailDialog(`An unknown theme was applied: ${themeState.currentTheme}.\nFalling back to default theme...`);
+        case ThemeErrors.UNKNOWN_THEME: {
+            const errorMsg = (
+                `An unknown theme was applied: ${themeState.currentTheme}.\n`
+                + "Falling back to default theme..."
+            );
+
+            showFailDialog(errorMsg);
+            window.Aliucord.errors["Themer"] = errorMsg;
             window.Aliucord.settings.delete("theme");
             break;
-        case ThemeErrors.UNEXPECTED_ERROR:
-            showFailDialog(
+        }
+        case ThemeErrors.UNEXPECTED_ERROR: {
+            const errorMsg = (
                 `An unexpected error occurred: ${themeState.errorArgs?.[0]?.message ?? "¯\\_(ツ)_/¯"}.\n`
                 + "Falling back to default theme..."
             );
+
+            showFailDialog(errorMsg);
+            window.Aliucord.errors["Themer"] = errorMsg;
             window.Aliucord.settings.delete("theme");
             break;
+        }
     }
 }
 

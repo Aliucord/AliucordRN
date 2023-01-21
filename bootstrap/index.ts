@@ -6,7 +6,8 @@ import "./arrayBuffer.js";
         externalStorageDirectory,
         cacheDirectory,
         requestPermissions,
-        checkPermissions
+        restartApp,
+        checkPermissions,
     } = nativeModuleProxy.AliucordNative;
 
     try {
@@ -49,56 +50,56 @@ import "./arrayBuffer.js";
         const bundles = AliuFS.readdir(cacheDirectory)
             .filter(f => f.type == "file" && f.name.startsWith(bundlePrefix))
             .map(f => f.name);
-        const bundleETags = bundles.map(b => b.slice(bundlePrefix.length));
 
-        let bundleResponse: Response | null;
-        try {
-            bundleResponse = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
-                headers: {
-                    // !! returns a different ETag (weak-validator) !!
-                    "Accept-Encoding": "gzip",
-                    "If-None-Match": bundleETags
-                        .map(tag => `"${tag}"`)
-                        .join(", "),
-                },
-            });
+        // noinspection ES6MissingAwait
+        (async () => {
+            try {
+                const bundleResponse = await fetch("https://raw.githubusercontent.com/Aliucord/AliucordRN/builds/Aliucord.js.bundle", {
+                    headers: {
+                        // !! returns a different ETag (weak-validator) !!
+                        "Accept-Encoding": "gzip",
+                        "If-None-Match": bundles
+                            .map(b => b.slice(bundlePrefix.length))
+                            .map(tag => `"${tag}"`)
+                            .join(", "),
+                    },
+                });
 
-            if (!bundleResponse.ok && bundleResponse.status !== 304) {
-                throw new Error(`Failed to fetch Aliucord bundle: ${bundleResponse.status} ${await bundleResponse.text()}`);
+                if (!bundleResponse.ok && bundleResponse.status !== 304) {
+                    throw new Error(`Error response: ${bundleResponse.status} ${await bundleResponse.text()}`);
+                }
+
+                const eTag = bundleResponse.headers.get("etag")
+                    ?.replaceAll("\"", "")
+                    .replace("W/", "");
+                if (!eTag || eTag.includes(",")) {
+                    // GitHub doesn't return multiple ETags so if it ever starts doing then fix
+                    throw new Error(`Unknown ETag ${eTag}`);
+                }
+
+                // status 304 (unmodified) falls through
+                if (bundleResponse.status === 200) {
+                    const internalBundlePath = `${cacheDirectory}/Aliucord.js.bundle.${eTag}`;
+                    bundles.forEach(b => AliuFS.remove(`${cacheDirectory}/${b}`));
+                    AliuFS.writeFile(internalBundlePath, await bundleResponse.arrayBuffer());
+                    restartApp();
+                }
+            } catch (e) {
+                console.error("Failed to fetch Aliucord bundle");
+                console.error((e as Error)?.stack ?? e);
+
+                nativeModuleProxy.DialogManagerAndroid.showAlert({
+                    title: "Error",
+                    message: bundles.length > 0 ?
+                        "Failed to fetch update info! Loaded existing Aliucord, which may be outdated! You have been warned." :
+                        "Failed to fetch Aliucord! Please check your internet connection and try again.",
+                    cancelable: true,
+                    buttonPositive: "Ok"
+                }, () => null, () => null);
             }
-        } catch (e) {
-            bundleResponse = null;
-            console.error("Failed to fetch Aliucord bundle");
-            console.error((e as Error)?.stack ?? e);
+        })();
 
-            nativeModuleProxy.DialogManagerAndroid.showAlert({
-                title: "Error",
-                message: bundles.length > 0 ?
-                    "Failed to fetch update info! Loading existing Aliucord, which may be outdated! You have been warned." :
-                    "Failed to fetch Aliucord! Please check your internet connection and try again.",
-                cancelable: true,
-                buttonPositive: "Ok"
-            }, () => null, () => null);
-        }
-
-        if (bundleResponse) {
-            const eTag = bundleResponse.headers.get("etag")
-                ?.replaceAll("\"", "")
-                .replace("W/", "");
-            const internalBundlePath = `${cacheDirectory}/Aliucord.js.bundle.${eTag}`;
-            if (!eTag || eTag.includes(",")) {
-                // GitHub doesn't return multiple ETags so if it ever starts doing then fix
-                throw new Error(`Unknown ETag ${eTag}`);
-            }
-
-            // status 304 (unmodified) falls through
-            if (bundleResponse.status === 200) {
-                bundles.forEach(b => AliuFS.remove(`${cacheDirectory}/${b}`));
-                AliuFS.writeFile(internalBundlePath, await bundleResponse.arrayBuffer());
-            }
-
-            globalThis.aliucord = AliuHermes.run(internalBundlePath);
-        } else if (bundles.length > 0) {
+        if (bundles.length > 0) {
             globalThis.aliucord = AliuHermes.run(`${cacheDirectory}/${bundles[0]}`);
         }
     } catch (error) {
