@@ -2,18 +2,19 @@ import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin 
 import { Author, PluginManifest } from "../entities";
 import { Constants, FetchUserActions, Navigation, Profiles, React, Styles, URLOpener, Users } from "../metro";
 import { getAssetId } from "../utils/getAssetId";
+import { Button, Forms, General, Search } from "./components";
 import { Page } from "./Page";
-import { General, Button, Search, Forms } from "./components";
 
-let handleUninstall: (name: string) => void;
-const { View, Text, FlatList,  Image, ScrollView, Pressable, LayoutAnimation } = General;
+let removeFromList: (name: string) => void;
+const { View, Text, FlatList, Image, ScrollView, Pressable, LayoutAnimation } = General;
 
 const styles = Styles.createThemedStyleSheet({
     container: {
         flex: 1
     },
     list: {
-        padding: 5,
+        paddingVertical: 14,
+        paddingHorizontal: 8
     },
     card: {
         borderRadius: 10,
@@ -24,12 +25,6 @@ const styles = Styles.createThemedStyleSheet({
         flexDirection: "row",
         flexWrap: "wrap"
     },
-    divider: {
-        width: "100%",
-        height: 2,
-        borderBottomWidth: 1,
-        borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
-    },
     bodyCard: {
         backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
         borderBottomLeftRadius: 10,
@@ -39,7 +34,8 @@ const styles = Styles.createThemedStyleSheet({
         color: Styles.ThemeColorMap.TEXT_NORMAL,
         paddingHorizontal: 16,
         paddingTop: 10,
-        paddingBottom: 14
+        paddingBottom: 18,
+        textAlignVertical: "top"
     },
     actions: {
         justifyContent: "flex-start",
@@ -54,10 +50,10 @@ const styles = Styles.createThemedStyleSheet({
         height: 22,
         tintColor: Styles.ThemeColorMap.INTERACTIVE_NORMAL
     },
-    text: {
+    headerText: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontSize: 16
+        fontSize: 18
     },
     link: {
         color: Styles.ThemeColorMap.TEXT_LINK
@@ -86,19 +82,27 @@ const styles = Styles.createThemedStyleSheet({
         background: "none"
     },
     button: {
-        paddingHorizontal: 20,
+        height: 34,
+        paddingHorizontal: 16,
+    },
+    buttonIcon: {
+        width: 14,
+        height: 14,
+        marginRight: 6,
+        color: Styles.ThemeColorMap.TEXT_NORMAL
     }
 });
 
-function PluginCard({ plugin }: { plugin: PluginManifest }) {
+function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
+
     const { FormSwitch, FormText } = Forms;
 
     return (
         <View style={styles.card}>
             <Forms.FormRow
                 label={(
-                    <Text style={styles.text} adjustsFontSizeToFit={true}>
+                    <Text style={styles.headerText} adjustsFontSizeToFit={true}>
                         {plugin.name} v{plugin.version ?? "0.0.0"} by {plugin.authors ?
                             plugin.authors.map((a, i) => (
                                 a.id ?
@@ -115,7 +119,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest }) {
                                             }
                                         }}
                                     >
-                                        {a.name}{i !== (plugin.authors as Author[]).length - 1 && <Text style={styles.text}>, </Text>}
+                                        {a.name}{i !== (plugin.authors as Author[]).length - 1 && <Text style={styles.headerText}>, </Text>}
                                     </Text>
                                     :
                                     <Text>
@@ -158,6 +162,10 @@ function PluginCard({ plugin }: { plugin: PluginManifest }) {
                                         children: plugins[plugin.name].getSettingsPage,
                                     });
                                 }}
+                                renderIcon={() => <Image
+                                    style={styles.buttonIcon}
+                                    source={getAssetId("ic_settings_white_24px")}
+                                />}
                             />}
                             <Button
                                 text="Uninstall"
@@ -166,9 +174,13 @@ function PluginCard({ plugin }: { plugin: PluginManifest }) {
                                 size='small'
                                 onPress={() => {
                                     uninstallPlugin(plugin.name).then(res => {
-                                        res && handleUninstall(plugin.name);
+                                        res && removeFromList(plugin.name);
                                     });
                                 }}
+                                renderIcon={() => <Image
+                                    style={styles.buttonIcon}
+                                    source={getAssetId("ic_trash_filled_16px")}
+                                />}
                             />
                         </View>
                     </View>
@@ -199,7 +211,7 @@ export default function PluginsPage() {
         return false;
     }) : Object.values(plugins));
 
-    handleUninstall = (name: string) => {
+    removeFromList = (name: string) => {
         setEntities(entities.filter(item => item.name !== name));
 
         LayoutAnimation.configureNext({
@@ -229,7 +241,7 @@ export default function PluginsPage() {
                     <View style={styles.noPlugins}>
                         <Image source={getAssetId("img_connection_empty_dark")} />
                         <Text style={styles.noPluginsText}>
-                            You dont have any plugins installed.
+                            {"You don't have any plugins installed."}
                         </Text>
                     </View>
                 :
