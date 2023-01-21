@@ -1,6 +1,6 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
 import { Plugin, PluginManifest } from "../../entities";
-import { Navigation, React, URLOpener } from "../../metro";
+import { Dialog, Navigation, React, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
@@ -48,8 +48,18 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     buttons.push({
         text: "Uninstall",
         onPress: () => {
-            uninstallPlugin(plugin.name).then(res => {
-                res && updateList(x => x.name !== plugin.name);
+            Dialog.show({
+                title: `Uninstall ${plugin.name}?`,
+                body: "Are you sure? The plugin will stopped and deleted. This action cannot be undone.",
+                confirmText: "Uninstall",
+                cancelText: "Cancel",
+                confirmColor: "red",
+                isDismissable: true,
+                onConfirm: () => {
+                    uninstallPlugin(plugin.name).then(res => {
+                        res && updateList(x => x.name !== plugin.name);
+                    });
+                },
             });
         },
         size: "small",

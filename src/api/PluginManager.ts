@@ -3,7 +3,7 @@ import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
 import { Plugin, PluginManifest } from "../entities";
-import { Dialog, Toasts } from "../metro";
+import { Toasts } from "../metro";
 import { deleteFile, exists, readdir } from "../native/fs";
 import { getAssetId, Logger } from "../utils";
 import { PLUGINS_DIRECTORY } from "../utils/constants";
@@ -47,22 +47,7 @@ export async function uninstallPlugin(plugin: string): Promise<boolean> {
     const settingsPlugins = window.Aliucord.settings.get("plugins", {});
 
     try {
-        const confirm = await new Promise((resolve) => {
-            Dialog.show({
-                title: `Uninstall ${plugin}?`,
-                body: "Are you sure? This will stop and delete the plugin's files and cannot be undone.",
-                confirmText: "Uninstall",
-                cancelText: "Cancel",
-                confirmColor: "red",
-                isDismissable: true,
-                onConfirm: () => resolve(true),
-                onCancel: () => resolve(false),
-            });
-        });
-
-        if (!confirm) return false;
-
-        logger.info(`Uninstalling plugin ${plugin}`);
+        logger.info(`Uninstalling plugin ${plugin}...`);
 
         const pluginInstance = plugins[plugin];
         if (pluginInstance.localPath && exists(pluginInstance.localPath)) {
