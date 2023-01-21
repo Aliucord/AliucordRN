@@ -5,7 +5,6 @@ import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug";
 import { makeAsyncEval, sendBotMessage } from "../utils";
 import { ALIUCORD_DIRECTORY } from "../utils/constants";
-import { DebugInfo } from "../utils/debug/DebugInfo";
 
 const customBundle = AliuFS.exists(ALIUCORD_DIRECTORY + "Aliucord.js.bundle");
 
