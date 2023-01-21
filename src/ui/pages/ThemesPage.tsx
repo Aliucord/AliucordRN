@@ -113,7 +113,7 @@ export default function ThemesPage() {
             }}
         />
         <ScrollView style={styles.container}>
-            {!!excludedThemes.invalidThemes.length && <FlatList
+            {!searchQuery && !!excludedThemes.invalidThemes.length && <FlatList
                 data={excludedThemes.invalidThemes}
                 renderItem={({ item }) => <InvalidCard
                     key={item.name}
