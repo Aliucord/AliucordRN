@@ -1,7 +1,7 @@
 import { logger } from "../Aliucord";
 import { onStartup } from "../api/Themer";
 import { AMOLEDThemeManager, AMOLEDThemeState, FluxDispatcher, setAMOLEDThemeEnabledBypass, ThemeManager, ThemeStore, UnsyncedUserSettingsStore } from "../metro";
-import { themeState } from "./themerInit";
+import { themeState } from "../themerInit";
 
 export default function patchTheme() {
     try {

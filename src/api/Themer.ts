@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import { Theme } from "../entities";
 import { Dialog, ReactNative, Toasts } from "../metro";
-import { excludedThemes, ThemeErrors, themeState } from "../themer/themerInit";
+import { excludedThemes, ThemeErrors, themeState } from "../themerInit";
 import { getAssetId, Logger } from "../utils";
 
 const logger = new Logger("Themer");

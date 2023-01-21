@@ -1,7 +1,7 @@
 import { setTheme } from "../../api/Themer";
 import { Theme } from "../../entities";
 import { React, URLOpener } from "../../metro";
-import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../../themer/themerInit";
+import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../../themerInit";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";

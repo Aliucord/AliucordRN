@@ -44,5 +44,5 @@ export class Plugin<SettingsSchema = any> {
      * This fetches the settings page that the plugin has defined.
      * 
      */
-    public getSettingsPage?(props: any[]): React.ReactElement;
+    public getSettingsPage?(): React.ReactElement;
 }

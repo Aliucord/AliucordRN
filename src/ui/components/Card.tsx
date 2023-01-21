@@ -39,7 +39,7 @@ function HeaderText({ title, version, authors }: HeaderTextProps) {
         Profiles.showUserProfile({ userId: id });
     };
 
-    const isLast = (i: number) => i !== (authors?.length || -1) - 1;
+    const isNotLast = (i: number) => i !== (authors?.length || -1) - 1;
 
     const authorList = authors?.map((a, i: number) => (
         <Text
@@ -47,7 +47,7 @@ function HeaderText({ title, version, authors }: HeaderTextProps) {
             style={a.id && styles.link || null}
             onPress={() => a.id && showUserProfile(a.id)}
         >
-            {a.name}{isLast(i) && <Text style={styles.bodyText}>, </Text>}
+            {a.name}{isNotLast(i) && <Text style={styles.bodyText}>, </Text>}
         </Text>
     )) ?? "Unknown";
 
