@@ -126,9 +126,9 @@ export default function ThemesPage() {
                 style={styles.list}
             />}
             {!entities.length ?
-                <View style={styles.noThemes}>
+                <View style={styles.emptyPageImage}>
                     <Image source={getAssetId("img_connection_empty_dark")} />
-                    <Text style={styles.noThemesText}>
+                    <Text style={styles.emptyPageText}>
                         {searchQuery ? "No results were found." : "You don't have any themes installed."}
                     </Text>
                 </View>

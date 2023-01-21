@@ -1,35 +1,15 @@
-import { Constants, React, Styles } from "../../metro";
+import { React } from "../../metro";
 import { getAssetId } from "../../utils";
-import { General } from "../components";
+import { General, styles } from "../components";
 
 const { Image, View, Text, ScrollView } = General;
-
-const styles = Styles.createThemedStyleSheet({
-    container: {
-        flex: 1,
-        padding: 5
-    },
-    comingSoonUpdater: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        marginTop: "10%"
-    },
-    comingSoonUpdaterText: {
-        marginTop: 10,
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        textAlign: "center"
-    },
-});
 
 export default function UpdaterPage() {
     return (<>
         <ScrollView style={styles.container}>
-            <View style={styles.comingSoonUpdater}>
+            <View style={styles.emptyPageImage}>
                 <Image source={getAssetId("img_connection_empty_dark")} />
-                <Text style={styles.comingSoonUpdaterText}>
+                <Text style={styles.emptyPageText}>
                     The Updater is coming soon.
                 </Text>
             </View>

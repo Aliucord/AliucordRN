@@ -57,14 +57,14 @@ export const styles = Styles.createThemedStyleSheet({
     link: {
         color: Styles.ThemeColorMap.TEXT_LINK
     },
-    noPlugins: {
+    emptyPageImage: {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         alignSelf: "center",
         marginTop: "10%"
     },
-    noPluginsText: {
+    emptyPageText: {
         marginTop: 10,
         color: Styles.ThemeColorMap.TEXT_NORMAL,
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
@@ -105,18 +105,5 @@ export const styles = Styles.createThemedStyleSheet({
         fontFamily: Constants.Fonts.PRIMARY_NORMAL,
         fontSize: 12,
         paddingTop: 5
-    },
-    noThemes: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        marginTop: "10%"
-    },
-    noThemesText: {
-        marginTop: 10,
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        textAlign: "center"
     },
 });

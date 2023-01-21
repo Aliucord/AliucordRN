@@ -1,8 +1,8 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
-import { Author, Plugin, PluginManifest } from "../../entities";
-import { Constants, FetchUserActions, Navigation, Profiles, React, Styles, URLOpener, Users } from "../../metro";
+import { Plugin, PluginManifest } from "../../entities";
+import { Navigation, React, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
-import { Forms, General, Search } from "../components";
+import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
 import { Page } from "../Page";
 
@@ -10,92 +10,7 @@ let searchQuery: string;
 let updateList: (filter?: (plugin: Plugin) => boolean) => void;
 
 const { View, Text, FlatList, Image, ScrollView, Pressable, LayoutAnimation } = General;
-const { FormRow, FormSwitch, FormText } = Forms;
-
-const styles = Styles.createThemedStyleSheet({
-    container: {
-        flex: 1
-    },
-    list: {
-        paddingVertical: 14,
-        paddingHorizontal: 8
-    },
-    card: {
-        borderRadius: 10,
-        margin: 5,
-        backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
-    },
-    header: {
-        flexDirection: "row",
-        flexWrap: "wrap"
-    },
-    bodyCard: {
-        backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10
-    },
-    bodyText: {
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
-        paddingHorizontal: 16,
-        paddingTop: 10,
-        paddingBottom: 18,
-        textAlignVertical: "top"
-    },
-    actions: {
-        justifyContent: "flex-start",
-        flexDirection: "row",
-        alignItems: "center",
-        paddingLeft: 16,
-        paddingRight: 12,
-        paddingBottom: 10
-    },
-    icons: {
-        width: 22,
-        height: 22,
-        tintColor: Styles.ThemeColorMap.INTERACTIVE_NORMAL
-    },
-    headerText: {
-        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontSize: 18
-    },
-    link: {
-        color: Styles.ThemeColorMap.TEXT_LINK
-    },
-    noPlugins: {
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        alignSelf: "center",
-        marginTop: "10%"
-    },
-    noPluginsText: {
-        marginTop: 10,
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        textAlign: "center"
-    },
-    search: {
-        margin: 0,
-        marginBottom: 0,
-        paddingBottom: 5,
-        paddingRight: 15,
-        paddingLeft: 15,
-        backgroundColor: "none",
-        borderBottomWidth: 0,
-        background: "none"
-    },
-    button: {
-        height: 34,
-        paddingHorizontal: 16,
-    },
-    buttonIcon: {
-        width: 14,
-        height: 14,
-        marginRight: 6,
-        color: Styles.ThemeColorMap.TEXT_NORMAL
-    }
-});
+const { FormSwitch } = Forms;
 
 function getPlugins(): Plugin[] {
     return searchQuery ? Object.values(plugins).filter(({ manifest }) => {
@@ -108,44 +23,6 @@ function getPlugins(): Plugin[] {
             || authors?.find?.(a => (a.name ?? a).toLowerCase().includes(searchQuery.toLowerCase()))
         );
     }) : Object.values(plugins);
-}
-
-type HeaderTextProps = {
-    title: string,
-    version: string,
-    authors?: Author[];
-};
-
-// TODO: this is a common component, move it to a common place
-function HeaderText({ title, version, authors }: HeaderTextProps) {
-    const showUserProfile = async (id: string) => {
-        if (!Users.getUser(id)) {
-            await FetchUserActions.fetchProfile(id);
-        }
-
-        Profiles.showUserProfile({ userId: id });
-
-    };
-
-    const isLast = (i) => i !== (authors?.length || -1) - 1;
-
-    const authorList = authors?.map((a, i: number) => (
-        <Text
-            key={a.id ?? "unknown-author"}
-            style={a.id && styles.link || null}
-            onPress={() => a.id && showUserProfile(a.id)}
-        >
-            {a.name}{isLast(i) && <Text style={styles.bodyText}>, </Text>}
-        </Text>
-    )) ?? "Unknown";
-
-    return (
-        <Text style={styles.headerText} adjustsFontSizeToFit={true}>
-            {title} <Text style={{ fontSize: 16 }}>
-                v{version ?? "0.0.0"} by {authorList}
-            </Text>
-        </Text>
-    );
 }
 
 function PluginCard({ plugin }: { plugin: PluginManifest; }) {
@@ -234,9 +111,9 @@ export default function PluginsPage() {
         />
         <ScrollView style={styles.container}>
             {!entities.length ?
-                <View style={styles.noPlugins}>
+                <View style={styles.emptyPageImage}>
                     <Image source={getAssetId("img_connection_empty_dark")} />
-                    <Text style={styles.noPluginsText}>
+                    <Text style={styles.emptyPageText}>
                         {searchQuery ? "No results were found." : "You don't have any plugins installed."}
                     </Text>
                 </View>
