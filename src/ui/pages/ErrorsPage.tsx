@@ -24,7 +24,7 @@ function ErrorCard({ log }: { log: ErrorCardProps; }) {
 export default function ErrorsPage() {
     // Aliucord errors
     const errors = Object.entries(window.Aliucord.errors).map(([source, error]) => ({
-        header: source,
+        header: `Aliucord: ${source} had an error.`,
         error: error
     })) as ErrorCardProps[];
 
