@@ -12,14 +12,14 @@ type HeaderTextProps = {
 type Buttons = {
     text: string,
     onPress: () => void,
-    size: "small" | "medium",
+    size: "small" | "medium" | string,
     color: "red" | "brand" | string;
     icon?: string,
     style?: { [key: string]: any; },
 };
 
 type CardProps = {
-    header: HeaderTextProps,
+    header: HeaderTextProps | string,
     description: Text | string,
     subLabel?: JSX.Element | null,
     leading?: JSX.Element | null,
@@ -67,7 +67,7 @@ export default function Card({ header, subLabel, leading, trailing, description,
     return (
         <View style={styles.card}>
             <FormRow
-                label={<HeaderText {...header} />}
+                label={typeof header === "string" ? header : <HeaderText {...header} />}
                 subLabel={subLabel || null}
                 trailing={trailing || null}
                 leading={leading || null}

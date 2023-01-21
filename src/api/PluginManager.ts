@@ -2,9 +2,9 @@ import Badges from "../core-plugins/Badges";
 import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
-import { PluginManifest, Plugin } from "../entities";
+import { Plugin, PluginManifest } from "../entities";
 import { Dialog, Toasts } from "../metro";
-import { readdir, exists, deleteFile } from "../native/fs";
+import { deleteFile, exists, readdir } from "../native/fs";
 import { getAssetId, Logger } from "../utils";
 import { PLUGINS_DIRECTORY } from "../utils/constants";
 
@@ -121,7 +121,7 @@ export async function startCorePlugins() {
             corePlugins[name] = plugin;
             await plugin.start();
         } catch (err: any) {
-            if (plugins[name]) plugins[name].errors = err.stack;
+            if (plugins[name]) plugins[name].errors.push(err?.stack ?? err);
             logger.error("Failed to start " + name, err);
         }
     }
@@ -190,7 +190,7 @@ async function startPlugin(plugin: string) {
         await loadedPlugin.start();
         loadedPlugin.enabled = true;
     } catch (err: any) {
-        loadedPlugin.errors += err?.stack ?? err;
+        loadedPlugin.errors.push(err?.stack ?? err);
         logger.error(`Failed while starting plugin: ${loadedPlugin.manifest.name}`, err);
         Toasts.open({
             content: `${loadedPlugin.manifest.name} had an error while starting.`,

@@ -1,56 +1,42 @@
 import { plugins } from "../../api";
 import { React } from "../../metro";
 import { getAssetId } from "../../utils";
-import { Forms, General, styles } from "../components";
+import { General, styles } from "../components";
+import Card from "../components/Card";
 
 const { Image, ScrollView, View, Text, FlatList } = General;
-const { FormRow, FormText } = Forms;
 
-interface PluginLogs {
-    plugin: {
-        version: string;
-        name: string;
-    };
-    errors: Record<string, string>;
-}[];
+interface ErrorCardProps {
+    header: string;
+    error: string;
+}
 
-function ErrorCard({ log }: { log: PluginLogs; }) {
+function ErrorCard({ log }: { log: ErrorCardProps; }) {
     return (
-        <View style={styles.card}>
-            <FormRow
-                label={(
-                    <View style={styles.header}>
-                        <Text style={styles.headerText}>
-                            {log.plugin.name} (v{log.plugin.version ?? "0.0.0"}) had an error.
-                        </Text>
-                    </View>
-                )} />
-            <View style={styles.bodyCard}>
-                <FormText style={styles.bodyText}>{log.errors}</FormText>
-            </View>
-        </View>
+        <Card
+            header={log.header}
+            description={log.error}
+            leading={<Image source={getAssetId("Small")} />}
+        />
     );
 }
 
 export default function ErrorsPage() {
-    const errors = [
-        ...Object.values(plugins).map(p => {
-            let logs!: PluginLogs;
-            if (Object.keys(p.errors).length) logs = { plugin: { name: p.manifest.name, version: p.manifest.version }, errors: p.errors };
+    const errors = Object.values(plugins).filter(plugin => plugin.errors.length).map(plugin => ({
+        header: `${plugin.name} v${plugin.manifest.version} had an error.`,
+        error: plugin.errors.join("\n")
+    })) as ErrorCardProps[];
 
-            return logs;
-        })
-    ].filter(value => value !== undefined);
     return (<>
         <ScrollView style={styles.container}>
             {errors.length ?
                 <FlatList
                     data={errors}
                     renderItem={({ item }) => <ErrorCard
-                        key={item.plugin.name}
+                        key={item.header}
                         log={item}
                     />}
-                    keyExtractor={log => log.plugin.name}
+                    keyExtractor={log => log.header}
                     style={styles.list}
                 />
                 :
