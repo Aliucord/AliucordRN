@@ -1,4 +1,4 @@
-import { Theme } from "../entities";
+import { Theme } from "./entities";
 
 export enum ThemeErrors {
     NO_SETTINGS = "Themes are loaded, but settings wasn't found",

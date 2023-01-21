@@ -1,10 +1,9 @@
 import { sha } from "aliucord-version";
-import { ApplicationCommandOptionType } from "../api/Commands";
-import { plugins } from "../api/PluginManager";
-import { Plugin } from "../entities/Plugin";
+import { ApplicationCommandOptionType, plugins } from "../api";
+import { Plugin } from "../entities";
 import { getByProps, Locale, MessageActions } from "../metro";
-import { DebugInfo } from "../utils/debug/DebugInfo";
-import { makeAsyncEval } from "../utils/misc";
+import { DebugInfo } from "../utils/debug";
+import { makeAsyncEval } from "../utils";
 import { ALIUCORD_DIRECTORY } from "../utils/constants";
 
 const customBundle = AliuFS.exists(ALIUCORD_DIRECTORY + "Aliucord.js.bundle");
