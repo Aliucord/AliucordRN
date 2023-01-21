@@ -1,4 +1,4 @@
-import { Navigation, NavigationStack, NavigationNative, Styles, Constants, React } from "../metro";
+import { Constants, Navigation, NavigationNative, NavigationStack, React, Styles } from "../metro";
 import { getAssetId } from "../utils";
 import { General } from "./components";
 
@@ -38,7 +38,7 @@ const styles = Styles.createThemedStyleSheet({
 export function Page({ name, children }: Props) {
     const Settings = NavigationStack.createStackNavigator();
     const { TouchableOpacity, Image } = General;
-    
+
     return (
         <NavigationNative.NavigationContainer independent>
             <Settings.Navigator

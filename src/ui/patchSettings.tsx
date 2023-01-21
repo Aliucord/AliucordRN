@@ -3,11 +3,11 @@ import { getByName, Locale, React, Scenes } from "../metro";
 import { findInReactTree, getAssetId } from "../utils";
 import { after } from "../utils/patcher";
 import { Forms } from "./components";
-import AliucordPage from "./AliucordPage";
-import ErrorsPage from "./ErrorsPage";
-import PluginsPage from "./PluginsPage";
-import ThemesPage from "./ThemesPage";
-import UpdaterPage from "./UpdaterPage";
+import AliucordPage from "./pages/AliucordPage";
+import ErrorsPage from "./pages/ErrorsPage";
+import PluginsPage from "./pages/PluginsPage";
+import ThemesPage from "./pages/ThemesPage";
+import UpdaterPage from "./pages/UpdaterPage";
 
 export default function patchSettings() {
     const { FormSection, FormDivider, FormRow, FormIcon } = Forms;

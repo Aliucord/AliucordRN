@@ -1,7 +1,7 @@
-import { plugins } from "../api";
-import { Constants, React, Styles } from "../metro";
-import { getAssetId } from "../utils";
-import { Forms, General } from "./components";
+import { plugins } from "../../api";
+import { Constants, React, Styles } from "../../metro";
+import { getAssetId } from "../../utils";
+import { Forms, General } from "../components";
 
 const { Image, ScrollView, View, Text, FlatList } = General;
 const { FormRow, FormText } = Forms;
@@ -72,6 +72,17 @@ const styles = Styles.createThemedStyleSheet({
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         textAlign: "center"
     },
+
+    search: {
+        margin: 0,
+        marginBottom: 0,
+        paddingBottom: 5,
+        paddingRight: 15,
+        paddingLeft: 15,
+        backgroundColor: "none",
+        borderBottomWidth: 0,
+        background: "none"
+    }
 });
 
 function ErrorCard({ log }: { log: PluginLogs; }) {
@@ -83,8 +94,8 @@ function ErrorCard({ log }: { log: PluginLogs; }) {
                         <Text style={styles.text}>
                             {log.plugin.name} (v{log.plugin.version ?? "0.0.0"}) had an error.
                         </Text>
-                    </View>)
-                } />
+                    </View>
+                )} />
             <View style={styles.divider} />
             <View style={styles.bodyCard}>
                 <FormText style={styles.bodyText}>{log.errors}</FormText>

@@ -1,8 +1,8 @@
-import { useSettings } from "../api/Settings";
-import { React, URLOpener } from "../metro";
-import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../utils/constants";
-import { getAssetId } from "../utils/getAssetId";
-import { Forms, General } from "./components";
+import { useSettings } from "../../api/Settings";
+import { React, URLOpener } from "../../metro";
+import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../../utils/constants";
+import { getAssetId } from "../../utils/getAssetId";
+import { Forms, General } from "../components";
 
 const { FormSection, FormSwitch, FormRow, FormIcon } = Forms;
 

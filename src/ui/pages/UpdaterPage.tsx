@@ -1,6 +1,6 @@
-import { Constants, React, Styles } from "../metro";
-import { getAssetId } from "../utils";
-import { General } from "./components";
+import { Constants, React, Styles } from "../../metro";
+import { getAssetId } from "../../utils";
+import { General } from "../components";
 
 const { Image, View, Text, ScrollView } = General;
 
