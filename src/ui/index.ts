@@ -1,3 +1,3 @@
 export * as components from "./components";
-export { Page } from "./Page";
+export { Page } from "./components/Page";
 

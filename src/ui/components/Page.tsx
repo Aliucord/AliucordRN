@@ -1,6 +1,6 @@
-import { Constants, Navigation, NavigationNative, NavigationStack, React, Styles } from "../metro";
-import { getAssetId } from "../utils";
-import { General } from "./components";
+import { General } from ".";
+import { Constants, Navigation, NavigationNative, NavigationStack, React, Styles } from "../../metro";
+import { getAssetId } from "../../utils";
 
 interface Props {
     name: string;

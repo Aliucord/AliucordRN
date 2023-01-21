@@ -4,7 +4,7 @@ import { Navigation, React, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
-import { Page } from "../Page";
+import { Page } from "../components/Page";
 
 let searchQuery: string;
 let updateList: (filter?: (plugin: Plugin) => boolean) => void;
