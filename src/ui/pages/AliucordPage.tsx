@@ -1,16 +1,18 @@
 import { useSettings } from "../../api/Settings";
-import { React, URLOpener } from "../../metro";
+import { Forms, React, ReactNative } from "../../metro";
+import { URLOpener } from "../../metro/index";
 import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../../utils/constants";
+import { startDebugWs, stopDebugWs } from "../../utils/debug/DebugWS";
 import { getAssetId } from "../../utils/getAssetId";
-import { Forms, General } from "../components";
 
-const { FormSection, FormSwitch, FormRow, FormIcon } = Forms;
+const { FormSection, FormSwitch, FormRow } = Forms;
+const { ScrollView } = ReactNative;
 
 export default function AliucordPage() {
     const settings = useSettings(window.Aliucord.settings);
 
     return (<>
-        <General.ScrollView>
+        <ScrollView>
             <FormSection title="Settings" /* Nice prop name discord */ android_noDivider={true}>
                 <FormRow
                     label="Automatically disable plugins on crash"
@@ -24,27 +26,36 @@ export default function AliucordPage() {
                     label="Automatically update Plugins"
                     trailing={<FormSwitch value={settings.get("autoUpdatePlugins", false)} onValueChange={v => settings.set("autoUpdatePlugins", v)} />}
                 />
+                <FormRow
+                    label="Enable debug websocket"
+                    trailing={<FormSwitch value={settings.get("debugWS", false)} onValueChange={v => {
+                        settings.set("debugWS", v);
+                        v
+                            ? startDebugWs()
+                            : stopDebugWs();
+                    }} />}
+                />
             </FormSection>
             <FormSection title="Socials">
                 <FormRow
                     label="Source Code"
-                    leading={<FormIcon source={getAssetId("img_account_sync_github_white")} />}
+                    leading={<FormRow.Icon source={getAssetId("img_account_sync_github_white")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_GITHUB)}
                 />
                 <FormRow
                     label="Support Server"
-                    leading={<FormIcon source={getAssetId("img_help_icon")} />}
+                    leading={<FormRow.Icon source={getAssetId("img_help_icon")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_INVITE)}
                 />
                 <FormRow
                     label="Support Us"
-                    leading={<FormIcon source={getAssetId("ic_premium_perk_heart_24px")} />}
+                    leading={<FormRow.Icon source={getAssetId("ic_premium_perk_heart_24px")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_PATREON)}
                 />
             </FormSection>
-        </General.ScrollView>
+        </ScrollView>
     </>);
 }
