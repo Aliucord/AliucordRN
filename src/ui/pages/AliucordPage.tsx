@@ -1,9 +1,9 @@
-import { useSettings } from "../api/Settings";
-import { Forms, React, ReactNative } from "../metro";
-import { URLOpener } from "../metro/index";
-import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../utils/constants";
-import { startDebugWs, stopDebugWs } from "../utils/debug/DebugWS";
-import { getAssetId } from "../utils/getAssetId";
+import { useSettings } from "../../api/Settings";
+import { Forms, React, ReactNative } from "../../metro";
+import { URLOpener } from "../../metro/index";
+import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../../utils/constants";
+import { startDebugWs, stopDebugWs } from "../../utils/debug/DebugWS";
+import { getAssetId } from "../../utils/getAssetId";
 
 const { FormSection, FormSwitch, FormRow } = Forms;
 const { ScrollView } = ReactNative;

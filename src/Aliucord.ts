@@ -1,11 +1,9 @@
-import { startCorePlugins, startPlugins } from "./api/PluginManager";
-import { Settings } from "./api/Settings";
+import { Settings, startCorePlugins, startPlugins } from "./api";
 import { mkdir } from "./native/fs";
-import patchTheme from "./themer/patchTheme";
-import patchSettings from "./ui/patchSettings";
+import patchSettings from "./patches/patchSettings";
+import patchTheme from "./patches/patchTheme";
 import { PLUGINS_DIRECTORY, SETTINGS_DIRECTORY, THEME_DIRECTORY } from "./utils/constants";
-import { startDebugWs } from "./utils/debug/DebugWS";
-import { startReactDevTools } from "./utils/debug/ReactDevTools";
+import { startDebugWs, startReactDevTools } from "./utils/debug";
 import { Logger } from "./utils/Logger";
 
 interface SettingsSchema {
@@ -19,6 +17,7 @@ interface SettingsSchema {
 
 export * as pluginManager from "./api/PluginManager";
 export const logger = new Logger("Aliucord");
+export const errors = {} as Record<string, string>;
 export let settings: Settings<SettingsSchema>;
 
 let aliucordLoaded = false;
@@ -42,6 +41,7 @@ export async function load() {
         await startPlugins();
         startReactDevTools();
         startDebugWs();
+
     } catch (err) {
         logger.error("Failed to load", err);
     }

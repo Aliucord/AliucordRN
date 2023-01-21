@@ -1,4 +1,4 @@
-import { PlatformAndroidStatic } from "react-native";
+import type { PlatformAndroidStatic } from "react-native";
 import { React, ReactNative } from "../../metro";
 
 export const DebugInfo = {
