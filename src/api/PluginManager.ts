@@ -2,6 +2,7 @@ import Badges from "../core-plugins/Badges";
 import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
+import ChatGuard from "../core-plugins/ChatGuard";
 import { Plugin, PluginManifest } from "../entities";
 import { Toasts } from "../metro";
 import { deleteFile, exists, readdir } from "../native/fs";
@@ -88,6 +89,7 @@ export async function startCorePlugins() {
         CommandHandler,
         CoreCommands,
         NoTrack,
+        ChatGuard
     ];
 
     for (const pluginClass of pluginClasses) {
