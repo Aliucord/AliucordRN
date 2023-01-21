@@ -17,6 +17,7 @@ interface SettingsSchema {
 
 export * as pluginManager from "./api/PluginManager";
 export const logger = new Logger("Aliucord");
+export const errors = {} as Record<string, string>;
 export let settings: Settings<SettingsSchema>;
 
 let aliucordLoaded = false;

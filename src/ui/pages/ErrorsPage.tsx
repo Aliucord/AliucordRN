@@ -22,10 +22,17 @@ function ErrorCard({ log }: { log: ErrorCardProps; }) {
 }
 
 export default function ErrorsPage() {
-    const errors = Object.values(plugins).filter(plugin => plugin.errors.length).map(plugin => ({
+    // Aliucord errors
+    const errors = Object.entries(window.Aliucord.errors).map(([source, error]) => ({
+        header: source,
+        error: error
+    })) as ErrorCardProps[];
+
+    // Loaded plugin errors
+    errors.concat(Object.values(plugins).filter(plugin => plugin.errors.length).map(plugin => ({
         header: `${plugin.name} v${plugin.manifest.version} had an error.`,
         error: plugin.errors.join("\n")
-    })) as ErrorCardProps[];
+    }))) as ErrorCardProps[];
 
     return (<>
         <ScrollView style={styles.container}>

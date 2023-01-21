@@ -9,6 +9,7 @@ import { getAssetId, Logger } from "../utils";
 import { PLUGINS_DIRECTORY } from "../utils/constants";
 
 const logger = new Logger("PluginManager");
+
 export const plugins = {} as Record<string, Plugin>;
 export const corePlugins = {} as Record<string, Plugin>;
 
@@ -169,6 +170,7 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
 
         return loadedPlugin;
     } catch (err: any) {
+        window.Aliucord.errors[`Error loading plugin ${pluginName} from ${pluginZip}`] = err?.stack ?? err;
         logger.error(`Error loading plugin ${pluginName} from ${pluginZip}`, err);
         Toasts.open({
             content: `Error trying to load plugin ${pluginName}`,
