@@ -1,12 +1,11 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
 import { Plugin, PluginManifest } from "../../entities";
-import { Dialog, Navigation, React, URLOpener } from "../../metro";
+import { Constants, Dialog, Navigation, React, Styles, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
-import { Forms, General, Search, styles } from "../components";
+import { Forms, General, Search, styles, Page } from "../components";
 import Card from "../components/Card";
-import { Page } from "../components/Page";
 
-let searchQuery: string;
+let searchQuery: string, changelogsPage: () => JSX.Element[];
 let updateList: (filter?: (plugin: Plugin) => boolean) => void;
 
 const { View, Text, FlatList, Image, ScrollView, Pressable, LayoutAnimation } = General;
@@ -29,6 +28,46 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     const buttons = [] as any[];
+    changelogsPage = () => {
+        const changelogs = [] as JSX.Element[];
+        const pageStyles = Styles.createThemedStyleSheet({
+            description: {
+                marginLeft: 25,
+                marginRight: 25,
+                color: Styles.ThemeColorMap.TEXT_NORMAL,
+            },
+            title: {
+                fontSize: 20,
+                color: Styles.ThemeColorMap.TEXT_NORMAL,
+                fontFamily: Constants.Fonts.PRIMARY_BOLD,
+                marginBottom: 5,
+                marginLeft: 15,
+                marginRight: 15
+            },
+            viewStyle: {
+                marginBottom: 15
+            },
+            divider: {
+                marginTop: 20,
+                width: "50%",
+                alignSelf: "center",
+                height: 2,
+                borderBottomWidth: 1,
+                borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
+            }
+        });
+        for (const key in plugin.changelog) {
+            const ChangelogsView = (
+                <View style={pageStyles.viewStyle}>
+                    <Text style={pageStyles.title}>v{key}</Text>
+                    <Text style={pageStyles.description}>{plugin.changelog[key]}</Text>
+                    <View style={pageStyles.divider}></View>
+                </View>
+            );
+            changelogs.push(ChangelogsView);
+        }
+        return changelogs;
+    };
 
     if (plugins[plugin.name].getSettingsPage) {
         buttons.push({
@@ -90,6 +129,11 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                         <Image source={getAssetId("img_account_sync_github_white")} />
                     </Pressable>
                 ] : []),
+                ...(plugin.changelog ? [
+                    <Pressable key="changelog" style={styles.icons} onPress={() => Navigation.push(Page, { name: `${plugin.name} Changelog`, children: changelogsPage })}>
+                        <Image source={getAssetId("ic_help_24px")} />
+                    </Pressable>
+                ]: [])
             ]}
             buttons={buttons}
         />
