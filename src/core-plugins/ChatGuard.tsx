@@ -53,7 +53,7 @@ export default class ChatGuard extends Plugin {
                                                 body: this.MESSAGE,
                                                 confirmText: "I understand",
                                                 isDismissable: false,
-                                                onConfirm: settings.set("AcknowlegedNoSupportChannels", true)
+                                                onConfirm: () => settings.set("AcknowlegedNoSupportChannels", true)
                                             });
                                         }
                                         }/>
