@@ -79,9 +79,12 @@ export default function Card({ header, subLabel, leading, trailing, description,
                 { /* Actions container */
                     !!(icons?.length || buttons?.length) &&
                     <View style={styles.actions}>
-                        {!!icons?.length && <View style={styles.icons}>
-                            {icons}
-                        </View>}
+                        { /* Icons container */}
+                        {!!icons?.length && (
+                            <View style={styles.iconsContainer}>
+                                {icons}
+                            </View>
+                        )}
                         { /* Buttons container */}
                         <View style={{ marginLeft: "auto" }}>
                             <View style={{ flexDirection: "row" }}>

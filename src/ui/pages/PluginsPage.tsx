@@ -2,7 +2,7 @@ import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin 
 import { Plugin, PluginManifest } from "../../entities";
 import { Constants, Dialog, Navigation, React, Styles, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
-import { Forms, General, Search, styles, Page } from "../components";
+import { Forms, General, Page, Search, styles } from "../components";
 import Card from "../components/Card";
 
 let searchQuery: string, changelogsPage: () => JSX.Element[];
@@ -130,10 +130,15 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     </Pressable>
                 ] : []),
                 ...(plugin.changelog ? [
-                    <Pressable key="changelog" style={styles.icons} onPress={() => Navigation.push(Page, { name: `${plugin.name} Changelog`, children: changelogsPage })}>
-                        <Image source={getAssetId("ic_help_24px")} />
+                    <Pressable key="changelog" style={styles.icons} onPress={() => (
+                        Navigation.push(Page, {
+                            name: `${plugin.name} Changelog`,
+                            children: changelogsPage
+                        })
+                    )}>
+                        <Image source={getAssetId("ic_information_filled_24px")} />
                     </Pressable>
-                ]: [])
+                ] : [])
             ]}
             buttons={buttons}
         />

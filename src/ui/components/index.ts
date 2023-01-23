@@ -44,9 +44,14 @@ export const styles = Styles.createThemedStyleSheet({
         paddingRight: 12,
         paddingBottom: 10
     },
+    iconsContainer: {
+        flexDirection: "row",
+        justifyContent: "flex-start"
+    },
     icons: {
         width: 24,
         height: 24,
+        marginHorizontal: 2,
         tintColor: Styles.ThemeColorMap.INTERACTIVE_NORMAL
     },
     headerText: {
