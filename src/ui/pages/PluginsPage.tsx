@@ -35,6 +35,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                 marginLeft: 25,
                 marginRight: 25,
                 color: Styles.ThemeColorMap.TEXT_NORMAL,
+                fontFamily: Constants.Fonts.PRIMARY_NORMAL
             },
             title: {
                 fontSize: 20,

@@ -51,7 +51,7 @@ export const styles = Styles.createThemedStyleSheet({
     icons: {
         width: 24,
         height: 24,
-        marginHorizontal: 2,
+        marginHorizontal: 4,
         tintColor: Styles.ThemeColorMap.INTERACTIVE_NORMAL
     },
     headerText: {
