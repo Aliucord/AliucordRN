@@ -1,5 +1,5 @@
 import { Plugin } from "../entities";
-import { React, ReactNative, Dialog, Forms, Styles, getByName } from "../metro";
+import { Dialog, Forms, getByName, React, ReactNative, Styles } from "../metro";
 import { getAssetId } from "../utils";
 
 const { FormRow, FormIcon } = Forms;
@@ -34,12 +34,12 @@ export default class ChatGuard extends Plugin {
         this.patcher.after(ChatInputGuard.default.prototype, "render", (_, component: any) => {
             const chatInput = component.props.children.find(c => c?.props?.accessibilityLabel != undefined);
             const channelId = chatInput?.props?.channel?.id;
-            if(this.CHANNEL_IDS.includes(channelId.toString())){
+            if (+channelId && this.CHANNEL_IDS.includes(String(channelId))) {
                 component.props.children = [
                     <>
                         {
                             settings.get("AcknowlegedNoSupportChannels", false) ? component.props.children :
-                        
+
                                 <ReactNative.View
                                     style={styles.chatbox}>
                                     <FormRow
@@ -47,7 +47,7 @@ export default class ChatGuard extends Plugin {
                                         leading={<FormIcon source={getAssetId("ic_warning_24px")} />}
                                         trailing={FormRow.Arrow}
 
-                                        onPress={()=>{
+                                        onPress={() => {
                                             Dialog.show({
                                                 title: "PLEASE READ",
                                                 body: this.MESSAGE,
@@ -55,8 +55,8 @@ export default class ChatGuard extends Plugin {
                                                 isDismissable: false,
                                                 onConfirm: () => settings.set("AcknowlegedNoSupportChannels", true)
                                             });
-                                        }
-                                        }/>
+                                        }}
+                                    />
                                 </ReactNative.View>
                         }
                     </>
