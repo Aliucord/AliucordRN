@@ -5,7 +5,7 @@ import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Page, Search, styles } from "../components";
 import Card from "../components/Card";
 
-let searchQuery: string, changelogsPage: () => JSX.Element[];
+let searchQuery: string;
 let updateList: (filter?: (plugin: Plugin) => boolean) => void;
 
 const { View, Text, FlatList, Image, ScrollView, Pressable, LayoutAnimation } = General;
@@ -28,8 +28,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     const buttons = [] as any[];
-    changelogsPage = () => {
-        const changelogs = [] as JSX.Element[];
+    function changelogsPage(): JSX.Element {
         const pageStyles = Styles.createThemedStyleSheet({
             description: {
                 marginLeft: 25,
@@ -57,18 +56,17 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                 borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
             }
         });
-        for (const key in plugin.changelog) {
-            const ChangelogsView = (
-                <View style={pageStyles.viewStyle}>
-                    <Text style={pageStyles.title}>v{key}</Text>
-                    <Text style={pageStyles.description}>{plugin.changelog[key]}</Text>
+
+        return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
+            {Object.entries(plugin.changelog).reverse().map(([version, desc]) => (
+                <View key={version}>
+                    <Text style={pageStyles.title}>v{version}</Text>
+                    <Text style={pageStyles.description}>{desc}</Text>
                     <View style={pageStyles.divider}></View>
                 </View>
-            );
-            changelogs.push(ChangelogsView);
-        }
-        return changelogs;
-    };
+            ))}
+        </ScrollView>);
+    }
 
     if (plugins[plugin.name].getSettingsPage) {
         buttons.push({
@@ -131,12 +129,11 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     </Pressable>
                 ] : []),
                 ...(plugin.changelog ? [
-                    <Pressable key="changelog" style={styles.icons} onPress={() => (
-                        Navigation.push(Page, {
-                            name: `${plugin.name} Changelog`,
-                            children: changelogsPage
-                        })
-                    )}>
+                    <Pressable key="changelog" style={styles.icons} onPress={() => Navigation.push(Page, {
+                        name: `${plugin.name} Changelog`,
+                        children: changelogsPage
+                    })
+                    }>
                         <Image source={getAssetId("ic_information_filled_24px")} />
                     </Pressable>
                 ] : [])
