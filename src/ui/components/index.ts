@@ -5,7 +5,7 @@ export const General = getByProps("Button", "Text", "View") as typeof import("re
 export const Search = getByName("StaticSearchBarContainer", { default: false }).default;
 export const Button = getByName("Button", { default: false }).default;
 
-export * from "./Card";
+export * from "./Page";
 
 export const styles = Styles.createThemedStyleSheet({
     container: {
@@ -44,9 +44,14 @@ export const styles = Styles.createThemedStyleSheet({
         paddingRight: 12,
         paddingBottom: 10
     },
+    iconsContainer: {
+        flexDirection: "row",
+        justifyContent: "flex-start"
+    },
     icons: {
-        width: 22,
-        height: 22,
+        width: 24,
+        height: 24,
+        marginHorizontal: 4,
         tintColor: Styles.ThemeColorMap.INTERACTIVE_NORMAL
     },
     headerText: {
