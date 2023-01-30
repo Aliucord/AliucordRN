@@ -1,6 +1,6 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
 import { Plugin, PluginManifest } from "../../entities";
-import { Constants, Dialog, Navigation, React, Styles, URLOpener } from "../../metro";
+import { Constants, Dialog, Navigation, React, SemVer, Styles, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Page, Search, styles } from "../components";
 import Card from "../components/Card";
@@ -57,11 +57,13 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             }
         });
 
+        const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f))).map(f => f);
+
         return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
-            {Object.entries(plugin.changelog).reverse().map(([version, desc]) => (
-                <View key={version}>
-                    <Text style={pageStyles.title}>v{version}</Text>
-                    <Text style={pageStyles.description}>{desc}</Text>
+            {sortedVersions.map(v => (
+                <View key={v}>
+                    <Text style={pageStyles.title}>v{v}</Text>
+                    <Text style={pageStyles.description}>{plugin.changelog[v]}</Text>
                     <View style={pageStyles.divider}></View>
                 </View>
             ))}
@@ -115,7 +117,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             trailing={<FormSwitch
                 value={isEnabled}
                 style={{ marginVertical: -15 }}
-                onValueChange={v => {
+                onValueChange={(v: boolean | ((prevState: boolean) => boolean)) => {
                     v ? enablePlugin(plugin.name)
                         : disablePlugin(plugin.name);
                     setIsEnabled(v);
@@ -161,7 +163,7 @@ export default function PluginsPage() {
         <Search
             style={styles.search}
             placeholder='Search plugins...'
-            onChangeText={v => {
+            onChangeText={(v: string) => {
                 searchQuery = v;
                 updateList();
             }}
