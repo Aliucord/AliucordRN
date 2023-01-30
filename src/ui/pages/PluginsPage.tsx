@@ -28,7 +28,8 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     const buttons = [] as any[];
-    function changelogsPage(): JSX.Element {
+    function changelogsPage(): JSX.Element | undefined {
+        if (!plugin.changelog) return;
         const pageStyles = Styles.createThemedStyleSheet({
             description: {
                 marginLeft: 25,
@@ -57,7 +58,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             }
         });
 
-        const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog as Record<string, string>).filter(f => SemVer.valid(f)));
+        const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f)));
 
         return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
             {sortedVersions.map(v => (
