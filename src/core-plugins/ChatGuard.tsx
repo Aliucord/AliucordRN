@@ -34,11 +34,11 @@ export default class ChatGuard extends Plugin {
         this.patcher.after(ChatInputGuard.default.prototype, "render", (_, component: any) => {
             const chatInput = component.props.children.find(c => c?.props?.accessibilityLabel != undefined);
             const channelId = chatInput?.props?.channel?.id;
-            if (+channelId && this.CHANNEL_IDS.includes(String(channelId))) {
+            if (this.CHANNEL_IDS.includes(channelId)) {
                 component.props.children = [
                     <>
                         {
-                            settings.get("AcknowlegedNoSupportChannels", false) ? component.props.children :
+                            settings.get("acknowlegedNoSupportChannels", false) ? component.props.children :
 
                                 <ReactNative.View
                                     style={styles.chatbox}>
@@ -53,7 +53,7 @@ export default class ChatGuard extends Plugin {
                                                 body: this.MESSAGE,
                                                 confirmText: "I understand",
                                                 isDismissable: false,
-                                                onConfirm: () => settings.set("AcknowlegedNoSupportChannels", true)
+                                                onConfirm: () => settings.set("acknowlegedNoSupportChannels", true)
                                             });
                                         }}
                                     />

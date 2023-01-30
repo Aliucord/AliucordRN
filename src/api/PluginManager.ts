@@ -103,7 +103,7 @@ export async function startCorePlugins() {
                 description: "",
                 version: "1.0.0",
                 repo: "https://github.com/Aliucord/AliucordRN",
-                changelog: {},
+                changelog: null,
                 authors: [{ name: "Aliucord", id: "000000000000000000" }]
             });
 

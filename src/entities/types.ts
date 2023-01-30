@@ -3,7 +3,7 @@ export interface PluginManifest {
     description: string;
     version: string;
     repo: string;
-    changelog: Record<string, string>
+    changelog: Record<string, string> | null
     authors?: Author[];
 }
 

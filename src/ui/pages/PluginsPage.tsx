@@ -57,13 +57,13 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             }
         });
 
-        const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f))).map(f => f);
+        const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog as Record<string, string>).filter(f => SemVer.valid(f)));
 
         return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
             {sortedVersions.map(v => (
                 <View key={v}>
                     <Text style={pageStyles.title}>v{v}</Text>
-                    <Text style={pageStyles.description}>{plugin.changelog[v]}</Text>
+                    <Text style={pageStyles.description}>{plugin.changelog?.[v]}</Text>
                     <View style={pageStyles.divider}></View>
                 </View>
             ))}
@@ -126,16 +126,23 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             description={plugin.description ?? "No description provided."}
             icons={[
                 ...(plugin.repo ? [
-                    <Pressable key='repo' style={styles.icons} onPress={() => URLOpener.openURL(plugin.repo)}>
+                    <Pressable
+                        key="repo"
+                        style={styles.icons}
+                        onPress={() => URLOpener.openURL(plugin.repo)
+                        }>
                         <Image source={getAssetId("img_account_sync_github_white")} />
                     </Pressable>
                 ] : []),
                 ...(plugin.changelog ? [
-                    <Pressable key="changelog" style={styles.icons} onPress={() => Navigation.push(Page, {
-                        name: `${plugin.name} Changelog`,
-                        children: changelogsPage
-                    })
-                    }>
+                    <Pressable
+                        key="changelog"
+                        style={styles.icons}
+                        onPress={() => Navigation.push(Page, {
+                            name: `${plugin.name} Changelog`,
+                            children: changelogsPage
+                        })
+                        }>
                         <Image source={getAssetId("ic_information_filled_24px")} />
                     </Pressable>
                 ] : [])
