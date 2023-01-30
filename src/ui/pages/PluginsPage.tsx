@@ -28,8 +28,8 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
     const buttons = [] as any[];
-    function changelogsPage(): JSX.Element | undefined {
-        if (!plugin.changelog) return;
+    function changelogsPage(): JSX.Element {
+        if (!plugin.changelog) return (<></>);
         const pageStyles = Styles.createThemedStyleSheet({
             description: {
                 marginLeft: 25,
