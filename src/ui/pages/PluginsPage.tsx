@@ -24,7 +24,7 @@ function getPlugins(): Plugin[] {
     }) : Object.values(plugins);
 }
 
-function ChangelogsPage({ plugin }: { plugin: PluginManifest; }): JSX.Element {
+function PluginChangelogsPage({ plugin }: { plugin: PluginManifest; }): JSX.Element {
     if (!plugin.changelog) return (<></>);
 
     const pageStyles = Styles.createThemedStyleSheet({
@@ -58,17 +58,15 @@ function ChangelogsPage({ plugin }: { plugin: PluginManifest; }): JSX.Element {
     // sort versions and filter out invalid ones
     const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f)));
 
-    return (
-        <ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
-            {sortedVersions.map(v => (
-                <View key={v}>
-                    <Text style={pageStyles.title}>v{v}</Text>
-                    <Text style={pageStyles.description}>{plugin.changelog?.[v]}</Text>
-                    <View style={pageStyles.divider}></View>
-                </View>
-            ))}
-        </ScrollView>
-    );
+    return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
+        {sortedVersions.map(v => (
+            <View key={v}>
+                <Text style={pageStyles.title}>v{v}</Text>
+                <Text style={pageStyles.description}>{plugin.changelog?.[v]}</Text>
+                <View style={pageStyles.divider}></View>
+            </View>
+        ))}
+    </ScrollView>);
 }
 
 function PluginCard({ plugin }: { plugin: PluginManifest; }) {
@@ -121,7 +119,8 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                 value={isEnabled}
                 style={{ marginVertical: -15 }}
                 onValueChange={(v: boolean | ((prevState: boolean) => boolean)) => {
-                    v ? enablePlugin(plugin.name)
+                    v
+                        ? enablePlugin(plugin.name)
                         : disablePlugin(plugin.name);
                     setIsEnabled(v);
                 }} />
@@ -132,8 +131,8 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     <Pressable
                         key="repo"
                         style={styles.icons}
-                        onPress={() => URLOpener.openURL(plugin.repo)
-                        }>
+                        onPress={() => URLOpener.openURL(plugin.repo)}
+                    >
                         <Image source={getAssetId("img_account_sync_github_white")} />
                     </Pressable>
                 ] : []),
@@ -144,9 +143,10 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                         onPress={() => (
                             navigation.push("AliucordCustomPage", {
                                 title: `${plugin.name}'s Changelogs`,
-                                render: () => <ChangelogsPage plugin={plugin} />,
+                                render: () => <PluginChangelogsPage plugin={plugin} />,
                             })
-                        )}>
+                        )}
+                    >
                         <Image source={getAssetId("ic_information_filled_24px")} />
                     </Pressable>
                 ] : [])
