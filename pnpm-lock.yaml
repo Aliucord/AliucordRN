@@ -14,7 +14,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.19.0
   eslint: ^8.13.0
   eslint-plugin-react: ^7.29.4
-  hermes-engine: 0.11.0
+  hermes-engine: npm:hermes-engine-cli@^0.12.0
   rollup: ^2.70.2
   typescript: ^4.6.3
 
@@ -23,7 +23,7 @@ dependencies:
   '@swc/helpers': 0.3.13
 
 devDependencies:
-  '@aliucord/rollup-plugin': 0.1.1_eyifcpdotnlh4b6mr6kb6ii2rq
+  '@aliucord/rollup-plugin': 0.1.1_yy4zlln5ivjlspkr6srr64a7me
   '@rollup/plugin-commonjs': 22.0.0_rollup@2.72.0
   '@rollup/plugin-node-resolve': 13.3.0_rollup@2.72.0
   '@rollup/plugin-typescript': 8.3.2_s6zbpzdkhlvcqzhawas6jkergu
@@ -34,7 +34,7 @@ devDependencies:
   '@typescript-eslint/parser': 5.22.0_hcfsmds2fshutdssjqluwm76uu
   eslint: 8.15.0
   eslint-plugin-react: 7.29.4_eslint@8.15.0
-  hermes-engine: 0.11.0
+  hermes-engine: /hermes-engine-cli/0.12.0
   rollup: 2.72.0
   typescript: 4.6.4
 
@@ -61,12 +61,12 @@ packages:
       rollup: 2.72.0
     dev: true
 
-  /@aliucord/rollup-plugin/0.1.1_eyifcpdotnlh4b6mr6kb6ii2rq:
+  /@aliucord/rollup-plugin/0.1.1_yy4zlln5ivjlspkr6srr64a7me:
     resolution: {integrity: sha512-4v6XrCdjS37Z1KRUDHXIGRVmQbBSiceQ4lqQ6wkR1vSDXOTiWkLlCPGLr95mgFU+CpKIBM1j1rU1CIWChghdaQ==}
     dependencies:
       '@aliucord/rollup-plugin-swc': 0.2.2_y64hket5wuietnlfvz4mcgqzeu
       '@swc/core': 1.2.178
-      rollup-plugin-hermes: 1.0.0_hermes-engine@0.11.0
+      rollup-plugin-hermes: 1.0.0_hermes-engine-cli@0.12.0
     transitivePeerDependencies:
       - hermes-engine
       - rollup
@@ -1077,8 +1077,8 @@ packages:
       function-bind: 1.1.1
     dev: true
 
-  /hermes-engine/0.11.0:
-    resolution: {integrity: sha512-7aMUlZja2IyLYAcZ69NBnwJAR5ZOYlSllj0oMpx08a8HzxHOys0eKCzfphrf6D0vX1JGO1QQvVsQKe6TkYherw==}
+  /hermes-engine-cli/0.12.0:
+    resolution: {integrity: sha512-72a5yvwSC2qWtxJ80nlcoCCfNTkpYI8VVAfOro4FL9O105NM8Vpigz/A5Nq1rECKdP7M1N81HHiYL6jU5N1gYw==}
     dev: true
 
   /ignore/5.2.0:
@@ -1501,12 +1501,12 @@ packages:
       glob: 7.2.0
     dev: true
 
-  /rollup-plugin-hermes/1.0.0_hermes-engine@0.11.0:
+  /rollup-plugin-hermes/1.0.0_hermes-engine-cli@0.12.0:
     resolution: {integrity: sha512-O9IQdOt/OD9vU8Z+ys8pLk7Laabp0hRQMyZmTPUWGCaEhBBy6St6upOsU55METdHcAMWQvd6oM7eW5MoDtaKeQ==}
     peerDependencies:
       hermes-engine: 0.x
     dependencies:
-      hermes-engine: 0.11.0
+      hermes-engine: /hermes-engine-cli/0.12.0
     dev: true
 
   /rollup/2.72.0:
