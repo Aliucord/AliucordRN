@@ -140,12 +140,12 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     <Pressable
                         key="changelog"
                         style={styles.icons}
-                        onPress={() => (
+                        onPress={() => {
                             navigation.push("AliucordCustomPage", {
                                 title: `${plugin.name}'s Changelogs`,
                                 render: () => <PluginChangelogsPage plugin={plugin} />,
-                            })
-                        )}
+                            });
+                        }}
                     >
                         <Image source={getAssetId("ic_information_filled_24px")} />
                     </Pressable>
