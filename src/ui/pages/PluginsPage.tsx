@@ -118,7 +118,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             trailing={<FormSwitch
                 value={isEnabled}
                 style={{ marginVertical: -15 }}
-                onValueChange={(v: boolean | ((prevState: boolean) => boolean)) => {
+                onValueChange={(v: boolean) => {
                     v
                         ? enablePlugin(plugin.name)
                         : disablePlugin(plugin.name);
