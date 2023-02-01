@@ -8,30 +8,36 @@ import { insteadDoNothing } from "../utils/patcher";
 
 export default class NoTrack extends Plugin {
     public start() {
-        const Analytics = getByProps("getSuperPropertiesBase64", "track");
-        const Snitch = getByProps("submitLiveCrashReport");
-        const { AnalyticsActionHandlers } = getByProps("AnalyticsActionHandlers");
+        const Reporter = getByProps("submitLiveCrashReport");
+        const Metadata = getByProps("trackWithMetadata");
+        const Analytics = getByProps("AnalyticsActionHandlers");
+        const Properties = getByProps("encodeProperties", "track");
 
-        insteadDoNothing(Analytics, "track");
-        insteadDoNothing(Snitch, "submitLiveCrashReport");
-        insteadDoNothing(AnalyticsActionHandlers, "handleTrack");
+        if (Properties) insteadDoNothing(Properties, "track");
+        if (Reporter) insteadDoNothing(Reporter, "submitLiveCrashReport");
+        if (Analytics) insteadDoNothing(Analytics.AnalyticsActionHandlers, "handleTrack");
+        if (Metadata) insteadDoNothing(Metadata, "trackWithMetadata");
 
-        const sentry = (window as any).__SENTRY__;
-        const hub = sentry.hub;
+        const Sentry = {
+            main: window.__SENTRY__?.hub,
+            client: window.__SENTRY__?.hub?.getClient(),
+            logger: window.__SENTRY__?.logger
+        };
 
-        sentry.logger.disable();
+        if (Sentry.main && Sentry.client) {
+            Sentry.client.close();
+            Sentry.logger.disable();
+            Sentry.main.getStackTop().scope.clear();
+            Sentry.main.getScope().clear();
+            insteadDoNothing(Sentry.main, "addBreadcrumb");
 
-        insteadDoNothing(hub, "addBreadcrumb");
-
-        hub.getClient().close(0);
-        hub.getScope().clear();
-
-        const c = console as any;
-        for (const method in c) {
-            if (c[method].__sentry_original__)
-                c[method] = c[method].__sentry_original__;
-            if (c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__?.__sentry_original__)
-                c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__ = c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__.__sentry_original__;
+            const c = console as any;
+            for (const method in c) {
+                if (c[method].__sentry_original__)
+                    c[method] = c[method].__sentry_original__;
+                if (c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__?.__sentry_original__)
+                    c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__ = c[method].__REACT_DEVTOOLS_ORIGINAL_METHOD__.__sentry_original__;
+            }
         }
     }
 }
