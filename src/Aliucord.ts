@@ -1,5 +1,6 @@
 import { Settings, startCorePlugins, startPlugins } from "./api";
 import { mkdir } from "./native/fs";
+import patchNavigator from "./patches/patchNavigator";
 import patchSettings from "./patches/patchSettings";
 import patchTheme from "./patches/patchTheme";
 import { PLUGINS_DIRECTORY, SETTINGS_DIRECTORY, THEME_DIRECTORY } from "./utils/constants";
@@ -36,12 +37,12 @@ export async function load() {
         settings = new Settings("Aliucord");
         patchSettings();
         patchTheme();
+        patchNavigator();
 
         await startCorePlugins();
         await startPlugins();
         startReactDevTools();
         startDebugWs();
-
     } catch (err) {
         logger.error("Failed to load", err);
     }

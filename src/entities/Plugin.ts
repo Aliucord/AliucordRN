@@ -41,8 +41,8 @@ export class Plugin<SettingsSchema = any> {
     }
 
     /**
-     * This fetches the settings page that the plugin has defined.
-     * 
+     * When defined, a settings button will be added to the plugin's card in the plugin list. \
+     * `metro/Navigation.push` will be called with this function as an argument when the button is pressed.
      */
-    public getSettingsPage?(): React.ReactElement;
+    public SettingsModal?(): React.ReactElement;
 }

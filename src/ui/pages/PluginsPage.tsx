@@ -4,7 +4,6 @@ import { Dialog, Navigation, React, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
-import { Page } from "../components/Page";
 
 let searchQuery: string;
 let updateList: (filter?: (plugin: Plugin) => boolean) => void;
@@ -30,15 +29,11 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
 
     const buttons = [] as any[];
 
-    if (plugins[plugin.name].getSettingsPage) {
+    const { SettingsModal } = plugins[plugin.name];
+    if (SettingsModal) {
         buttons.push({
             text: "Settings",
-            onPress: () => {
-                Navigation.push(Page, {
-                    name: plugin.name,
-                    children: plugins[plugin.name].getSettingsPage,
-                });
-            },
+            onPress: () => Navigation.push(SettingsModal),
             size: "small",
             color: "brand",
             icon: "ic_settings_white_24px"
