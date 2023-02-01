@@ -16,6 +16,7 @@ function ErrorCard({ log }: { log: ErrorCardProps; }) {
         <Card
             header={log.header}
             description={log.error}
+            expandableDescription
             leading={<Image source={getAssetId("Small")} />}
         />
     );
@@ -30,7 +31,7 @@ export default function ErrorsPage() {
 
     // Loaded plugin errors
     errors.concat(Object.values(plugins).filter(plugin => plugin.errors.length).map(plugin => ({
-        header: `${plugin.name} v${plugin.manifest.version} had an error.`,
+        header: `${plugin.name} v${plugin.manifest.version} errored.`,
         error: plugin.errors.join("\n")
     }))) as ErrorCardProps[];
 

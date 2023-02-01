@@ -158,10 +158,12 @@ async function loadPlugin(pluginZip: string): Promise<Plugin | null> {
 
         return loadedPlugin;
     } catch (err: any) {
-        window.Aliucord.errors[`Error loading plugin ${pluginName} from ${pluginZip}`] = err?.stack ?? err;
+        window.Aliucord.errors[`Plugin load: ${pluginName ?? pluginZip}`]
+            = "Error occured while loading the plugin: \n" + err?.stack ?? err;
+
         logger.error(`Error loading plugin ${pluginName} from ${pluginZip}`, err);
         Toasts.open({
-            content: `Error trying to load plugin ${pluginName}`,
+            content: `Error trying to load plugin ${pluginName ?? pluginZip}`,
             source: getAssetId("Small")
         });
         return null;

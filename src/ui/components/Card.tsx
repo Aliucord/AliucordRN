@@ -21,6 +21,7 @@ type Buttons = {
 type CardProps = {
     header: HeaderTextProps | string,
     description: Text | string,
+    expandableDescription?: boolean,
     subLabel?: JSX.Element | null,
     leading?: JSX.Element | null,
     trailing?: JSX.Element | null,
@@ -60,9 +61,12 @@ function HeaderText({ title, version, authors }: HeaderTextProps) {
     );
 }
 
-export default function Card({ header, subLabel, leading, trailing, description, icons, buttons }: CardProps) {
+export default function Card({ header, subLabel, leading, trailing, description, expandableDescription, icons, buttons }: CardProps) {
     const { View, Image } = General;
-    const { FormRow, FormText } = Forms;
+    const { FormRow, FormText, FormIcon } = Forms;
+
+    const [expanded, setExpanded] = React.useState(false);
+    const shouldExpand = expandableDescription && typeof description === "string" && description.length > 100;
 
     return (
         <View style={styles.card}>
@@ -74,8 +78,15 @@ export default function Card({ header, subLabel, leading, trailing, description,
             />
             <View style={styles.bodyCard}>
                 <FormText style={styles.bodyText} adjustsFontSizeToFit={true}>
-                    {description}
+                    {shouldExpand && !expanded && `${description.slice(0, 100)}...` || description}
                 </FormText>
+                {shouldExpand &&
+                    <FormRow
+                        label={!expanded ? "Show more" : "Show less"}
+                        leading={<FormIcon source={getAssetId(!expanded ? "ic_arrow_down" : "section_header_arrow_up")} />}
+                        onPress={() => setExpanded(!expanded)}
+                    />
+                }
                 { /* Actions container */
                     !!(icons?.length || buttons?.length) &&
                     <View style={styles.actions}>
