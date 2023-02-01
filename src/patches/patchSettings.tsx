@@ -42,7 +42,7 @@ export default function patchSettings() {
                 title: "Errors",
                 render: ErrorsPage
             },
-            // Render custom page dynamically, some props from https://reactnavigation.org/docs/native-stack-navigator#options is valid
+            // Render custom page dynamically. For options, some props from https://reactnavigation.org/docs/native-stack-navigator#options are valid
             AliucordCustomPage: {
                 key: "AliucordCustomPage",
                 title: "Aliucord Page",

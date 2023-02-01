@@ -143,8 +143,8 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                         style={styles.icons}
                         onPress={() => (
                             navigation.push("AliucordCustomPage", {
-                                name: `${plugin.name}'s Changelogs`,
-                                render: ChangelogsPage,
+                                title: `${plugin.name}'s Changelogs`,
+                                render: () => <ChangelogsPage plugin={plugin} />,
                             })
                         )}>
                         <Image source={getAssetId("ic_information_filled_24px")} />

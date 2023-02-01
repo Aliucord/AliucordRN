@@ -5,8 +5,6 @@ export const General = getByProps("Button", "Text", "View") as typeof import("re
 export const Search = getByName("StaticSearchBarContainer", { default: false }).default;
 export const Button = getByName("Button", { default: false }).default;
 
-export * from "./Page";
-
 export const styles = Styles.createThemedStyleSheet({
     container: {
         flex: 1
