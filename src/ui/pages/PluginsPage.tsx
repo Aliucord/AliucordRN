@@ -1,8 +1,8 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
 import { Plugin, PluginManifest } from "../../entities";
-import { Constants, Dialog, Navigation, React, SemVer, Styles, URLOpener } from "../../metro";
+import { Constants, Dialog, Navigation, NavigationNative, React, SemVer, Styles, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
-import { Forms, General, Page, Search, styles } from "../components";
+import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
 
 let searchQuery: string;
@@ -24,43 +24,42 @@ function getPlugins(): Plugin[] {
     }) : Object.values(plugins);
 }
 
-function PluginCard({ plugin }: { plugin: PluginManifest; }) {
-    const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
+function ChangelogsPage({ plugin }: { plugin: PluginManifest; }): JSX.Element {
+    if (!plugin.changelog) return (<></>);
 
-    const buttons = [] as any[];
-    function changelogsPage(): JSX.Element {
-        if (!plugin.changelog) return (<></>);
-        const pageStyles = Styles.createThemedStyleSheet({
-            description: {
-                marginLeft: 25,
-                marginRight: 25,
-                color: Styles.ThemeColorMap.TEXT_NORMAL,
-                fontFamily: Constants.Fonts.PRIMARY_NORMAL
-            },
-            title: {
-                fontSize: 20,
-                color: Styles.ThemeColorMap.TEXT_NORMAL,
-                fontFamily: Constants.Fonts.PRIMARY_BOLD,
-                marginBottom: 5,
-                marginLeft: 15,
-                marginRight: 15
-            },
-            viewStyle: {
-                marginBottom: 15
-            },
-            divider: {
-                marginTop: 20,
-                width: "50%",
-                alignSelf: "center",
-                height: 2,
-                borderBottomWidth: 1,
-                borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
-            }
-        });
+    const pageStyles = Styles.createThemedStyleSheet({
+        description: {
+            marginLeft: 25,
+            marginRight: 25,
+            color: Styles.ThemeColorMap.TEXT_NORMAL,
+            fontFamily: Constants.Fonts.PRIMARY_NORMAL
+        },
+        title: {
+            fontSize: 20,
+            color: Styles.ThemeColorMap.TEXT_NORMAL,
+            fontFamily: Constants.Fonts.PRIMARY_BOLD,
+            marginBottom: 5,
+            marginLeft: 15,
+            marginRight: 15
+        },
+        viewStyle: {
+            marginBottom: 15
+        },
+        divider: {
+            marginTop: 20,
+            width: "50%",
+            alignSelf: "center",
+            height: 2,
+            borderBottomWidth: 1,
+            borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
+        }
+    });
 
-        const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f)));
+    // sort versions and filter out invalid ones
+    const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f)));
 
-        return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
+    return (
+        <ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
             {sortedVersions.map(v => (
                 <View key={v}>
                     <Text style={pageStyles.title}>v{v}</Text>
@@ -68,8 +67,15 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     <View style={pageStyles.divider}></View>
                 </View>
             ))}
-        </ScrollView>);
-    }
+        </ScrollView>
+    );
+}
+
+function PluginCard({ plugin }: { plugin: PluginManifest; }) {
+    const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
+
+    const navigation = NavigationNative.useNavigation();
+    const buttons = [] as any[];
 
     const { SettingsModal } = plugins[plugin.name];
     if (SettingsModal) {
@@ -135,11 +141,12 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     <Pressable
                         key="changelog"
                         style={styles.icons}
-                        onPress={() => Navigation.push(Page, {
-                            name: `${plugin.name} Changelog`,
-                            children: changelogsPage
-                        })
-                        }>
+                        onPress={() => (
+                            navigation.push("AliucordCustomPage", {
+                                name: `${plugin.name}'s Changelogs`,
+                                render: ChangelogsPage,
+                            })
+                        )}>
                         <Image source={getAssetId("ic_information_filled_24px")} />
                     </Pressable>
                 ] : [])

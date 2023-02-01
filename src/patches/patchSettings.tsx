@@ -1,5 +1,5 @@
 import { sha } from "aliucord-version";
-import { getByName, Locale, React, Scenes } from "../metro";
+import { getByName, Locale, NavigationNative, React, Scenes } from "../metro";
 import { findInReactTree, getAssetId } from "../utils";
 import { after } from "../utils/patcher";
 
@@ -41,6 +41,20 @@ export default function patchSettings() {
                 key: "AliucordErrors",
                 title: "Errors",
                 render: ErrorsPage
+            },
+            // Render custom page dynamically, some props from https://reactnavigation.org/docs/native-stack-navigator#options is valid
+            AliucordCustomPage: {
+                key: "AliucordCustomPage",
+                title: "Aliucord Page",
+                render: ({ render: PageView, ...options }) => {
+                    const navigation = NavigationNative.useNavigation();
+
+                    React.useEffect(() => {
+                        options && navigation.setOptions({ ...options });
+                    }, []);
+
+                    return <PageView />;
+                }
             }
         };
     });
