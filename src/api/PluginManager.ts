@@ -1,8 +1,8 @@
 import Badges from "../core-plugins/Badges";
+import ChatGuard from "../core-plugins/ChatGuard";
 import CommandHandler from "../core-plugins/CommandHandler";
 import CoreCommands from "../core-plugins/CoreCommands";
 import NoTrack from "../core-plugins/NoTrack";
-import ChatGuard from "../core-plugins/ChatGuard";
 import { Plugin, PluginManifest } from "../entities";
 import { Toasts } from "../metro";
 import { deleteFile, exists, readdir } from "../native/fs";
@@ -103,6 +103,7 @@ export async function startCorePlugins() {
                 description: "",
                 version: "1.0.0",
                 repo: "https://github.com/Aliucord/AliucordRN",
+                changelog: null,
                 authors: [{ name: "Aliucord", id: "000000000000000000" }]
             });
 

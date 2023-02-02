@@ -11,6 +11,7 @@ interface SettingsSchema {
     autoUpdatePlugins: boolean;
     debugWS: boolean;
     disablePluginsOnCrash: boolean;
+    acknowlegedNoSupportChannels: boolean;
     plugins: Record<string, boolean>;
     theme: string;
 }
