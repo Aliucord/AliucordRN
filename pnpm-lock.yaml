@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@aliucord/hermesc': ^0.70.6-aliucord-1
+  '@aliucord/hermesc': latest
   '@aliucord/react-devtools-core': ^4.24.4-aliucord.1
   '@aliucord/rollup-plugin': ^1.0.3
   '@rollup/plugin-commonjs': ^24.0.1
