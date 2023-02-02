@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@aliucord/hermesc': latest
   '@aliucord/react-devtools-core': ^4.24.4-aliucord.1
-  '@aliucord/rollup-plugin': ^1.0.3
+  '@aliucord/rollup-plugin': latest
   '@rollup/plugin-commonjs': ^24.0.1
   '@rollup/plugin-node-resolve': ^15.0.1
   '@rollup/plugin-typescript': ^11.0.0
@@ -24,7 +24,7 @@ dependencies:
 
 devDependencies:
   '@aliucord/hermesc': 0.70.6-aliucord-1
-  '@aliucord/rollup-plugin': 1.0.3_rollup@3.12.1
+  '@aliucord/rollup-plugin': 1.0.4_jucwofmxdjjwoeo5orv5yvptiy
   '@rollup/plugin-commonjs': 24.0.1_rollup@3.12.1
   '@rollup/plugin-node-resolve': 15.0.1_rollup@3.12.1
   '@rollup/plugin-typescript': 11.0.0_6obmv22rvtpvvjwvy2ncneqrsu
@@ -65,14 +65,15 @@ packages:
       rollup: 3.12.1
     dev: true
 
-  /@aliucord/rollup-plugin/1.0.3_rollup@3.12.1:
-    resolution: {integrity: sha512-DMMSFYlKRuyAwqLGdKhbK08GzXFOo8NCDdMjfacyL5J66yBCf9E8dedqeVIj6fbSqVMF+ZG9UP0Oap7noIB29Q==}
+  /@aliucord/rollup-plugin/1.0.4_jucwofmxdjjwoeo5orv5yvptiy:
+    resolution: {integrity: sha512-l5V+Eau37quWNxlnDgXJ1RPkTisH3xdsB4xjbzyBNvEPXZWYxKZcuW9cpKVoQjAo0eMj/k2GnUWukRd9+1ULRA==}
     peerDependencies:
-      hermes-engine: ^0.11.0
+      '@aliucord/hermesc': latest
     dependencies:
+      '@aliucord/hermesc': 0.70.6-aliucord-1
       '@aliucord/rollup-plugin-swc': 0.2.2_g7up2sgne3cyh3fkoewlfdjh6m
       '@swc/core': 1.2.189
-      rollup-plugin-hermes: 1.0.1
+      rollup-plugin-hermes: 1.0.3_tt3epa2p4nt3aarqsmpfpneyja
       yazl: 2.5.1
     transitivePeerDependencies:
       - rollup
@@ -1707,10 +1708,12 @@ packages:
       glob: 7.2.0
     dev: true
 
-  /rollup-plugin-hermes/1.0.1:
-    resolution: {integrity: sha512-JV+steSAPzx/aQ9cn1O9RFcxZjujWiClVuDboUlAmDaNAojM4w/RUuRG/rgVyLSEfknZcJHTyCmwvj/+mWBlIQ==}
+  /rollup-plugin-hermes/1.0.3_tt3epa2p4nt3aarqsmpfpneyja:
+    resolution: {integrity: sha512-cSkKFMWDT+Ot1SsUdukr69DkhJZz9UCBnN+ktOrZHURYuP/vzN9nF6IEDp1O/DuCAgw3bs5TUfovnH9LDCrnEg==}
     peerDependencies:
-      hermes-engine: 0.x
+      '@aliucord/hermesc': '*'
+    dependencies:
+      '@aliucord/hermesc': 0.70.6-aliucord-1
     dev: true
 
   /rollup/3.12.1:
