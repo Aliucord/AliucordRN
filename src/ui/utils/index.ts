@@ -1,1 +1,1 @@
-export * as createPage from "./createPage";
+export { default as createScreen } from "./createScreen";
