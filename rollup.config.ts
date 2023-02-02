@@ -18,7 +18,7 @@ export default defineConfig([
             commonjs(),
             aliucord({
                 autoDeploy: process.env.ROLLUP_WATCH !== undefined,
-                hermesPath: "./node_modules/@aliucord/hermesc"
+                hermesPath: "node_modules/@aliucord/hermesc"
             })
         ],
         onwarn: (warning, next) => {
