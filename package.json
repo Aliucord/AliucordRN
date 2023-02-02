@@ -24,7 +24,7 @@
   },
   "homepage": "https://aliucord.com",
   "devDependencies": {
-    "@aliucord/hermesc": "0.70.6-aliucord-1",
+    "@aliucord/hermesc": "^0.70.6-aliucord-1",
     "@aliucord/rollup-plugin": "^1.0.3",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
