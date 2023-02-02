@@ -3,6 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { defineConfig } from "rollup";
 
+// @ts-ignore --TODO
 export default defineConfig([
     {
         input: "src/index.ts",
@@ -16,7 +17,10 @@ export default defineConfig([
         plugins: [
             nodeResolve(),
             commonjs(),
-            aliucord({ autoDeploy: process.env.ROLLUP_WATCH !== undefined })
+            aliucord({
+                autoDeploy: process.env.ROLLUP_WATCH !== undefined,
+                hermesPath: "./node_modules/@aliucord/hermesc"
+            })
         ],
         onwarn: (warning, next) => {
             if (
