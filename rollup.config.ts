@@ -16,10 +16,7 @@ export default defineConfig([
         plugins: [
             nodeResolve(),
             commonjs(),
-            aliucord({
-                autoDeploy: process.env.ROLLUP_WATCH !== undefined,
-                hermesPath: "node_modules/@aliucord/hermesc"
-            })
+            aliucord({ autoDeploy: process.env.ROLLUP_WATCH !== undefined })
         ],
         onwarn: (warning, next) => {
             if (
