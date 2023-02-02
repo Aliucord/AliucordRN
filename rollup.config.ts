@@ -3,7 +3,6 @@ import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { defineConfig } from "rollup";
 
-// @ts-ignore --TODO
 export default defineConfig([
     {
         input: "src/index.ts",
