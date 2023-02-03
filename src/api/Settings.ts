@@ -25,7 +25,7 @@ export function useSettings<T>(settings: Settings<T>) {
         },
         set<K extends keyof T, V extends T[K]>(key: K, value: V) {
             settings.set(key, value);
-            update(x => x + 1); 
+            update(x => x + 1);
         }
     }), []);
 }
@@ -49,7 +49,7 @@ export class Settings<Schema> {
             const data = JSON.parse(fileSnapshot);
             if (typeof data !== "object")
                 throw new Error("JSON data was not an object.");
-            this.snapshot = data;  
+            this.snapshot = data;
         } catch (err: any) {
             window.Aliucord.logger.error(`[SettingsAPI] Settings of module ${module} are corrupt and were cleared.`);
             this.snapshot = {} as Schema;
@@ -82,7 +82,7 @@ export class Settings<Schema> {
      * @param key Key
      */
     public delete<K extends keyof Schema>(key: K) {
-        if (key in this.snapshot) {
+        if (Object.getOwnPropertyDescriptor(this.snapshot, key)) {
             delete this.snapshot[key];
             return this._persist();
         }

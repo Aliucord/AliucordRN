@@ -24,24 +24,24 @@
   },
   "homepage": "https://aliucord.com",
   "devDependencies": {
-    "@aliucord/rollup-plugin": "^0.1.1",
-    "@rollup/plugin-commonjs": "^22.0.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-typescript": "^8.3.2",
-    "@types/node": "^17.0.24",
-    "@types/react": "^17.0.39",
-    "@types/react-native": "^0.67.4",
-    "@typescript-eslint/eslint-plugin": "^5.19.0",
-    "@typescript-eslint/parser": "^5.19.0",
-    "eslint": "^8.13.0",
-    "eslint-plugin-react": "^7.29.4",
-    "hermes-engine": "0.11.0",
-    "rollup": "^2.70.2",
-    "typescript": "^4.6.3"
+    "@aliucord/hermesc": "latest",
+    "@aliucord/rollup-plugin": "latest",
+    "@rollup/plugin-commonjs": "^24.0.1",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@types/node": "^18.11.18",
+    "@types/react": "^18.0.27",
+    "@types/react-native": "^0.70.10",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
+    "eslint": "^8.33.0",
+    "eslint-plugin-react": "^7.32.2",
+    "rollup": "^3.12.1",
+    "typescript": "^4.9.5"
   },
   "dependencies": {
     "@aliucord/react-devtools-core": "^4.24.4-aliucord.1",
-    "@swc/helpers": "^0.3.9"
+    "@swc/helpers": "^0.4.14"
   },
   "pnpm": {
     "peerDependencyRules": {
