@@ -31,9 +31,7 @@ jobs:
       run: pnpm install
       
     - name: Build aliucord
-      run: |
-        chmod +rwx /home/runner/work/AliucordRN/AliucordRN/node_modules/.pnpm/rollup-plugin-hermes@1.0.4_tt3epa2p4nt3aarqsmpfpneyja/node_modules/@aliucord/hermesc/linux64-bin/hermesc
-        pnpm lint && pnpm build
+      run: pnpm lint && pnpm build
       
     - name: Upload dist folder as artifact
       uses: actions/upload-artifact@v3
