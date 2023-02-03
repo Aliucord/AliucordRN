@@ -37,7 +37,7 @@ export function startReactDevTools() {
             logger.warn("Connection error: " + (e as ErrorEvent).message)
         );
 
-        const viewConfig = getModule(m => m.uiViewClassName == "RCTView");
+        const viewConfig = getModule(m => m.validAttributes?.style);
         const { flattenStyle } = getModule(m => m.flattenStyle);
 
         logger.info("Connecting to devtools");
