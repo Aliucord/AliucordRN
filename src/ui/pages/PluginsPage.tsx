@@ -1,8 +1,8 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
 import { Plugin, PluginManifest } from "../../entities";
-import { Constants, Dialog, Navigation, React, SemVer, Styles, URLOpener } from "../../metro";
+import { Constants, Dialog, Navigation, NavigationNative, React, SemVer, Styles, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
-import { Forms, General, Page, Search, styles } from "../components";
+import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
 
 let searchQuery: string;
@@ -24,62 +24,62 @@ function getPlugins(): Plugin[] {
     }) : Object.values(plugins);
 }
 
+function PluginChangelogsPage({ plugin }: { plugin: PluginManifest; }): JSX.Element {
+    if (!plugin.changelog) return (<></>);
+
+    const pageStyles = Styles.createThemedStyleSheet({
+        description: {
+            marginLeft: 25,
+            marginRight: 25,
+            color: Styles.ThemeColorMap.TEXT_NORMAL,
+            fontFamily: Constants.Fonts.PRIMARY_NORMAL
+        },
+        title: {
+            fontSize: 20,
+            color: Styles.ThemeColorMap.TEXT_NORMAL,
+            fontFamily: Constants.Fonts.PRIMARY_BOLD,
+            marginBottom: 5,
+            marginLeft: 15,
+            marginRight: 15
+        },
+        viewStyle: {
+            marginBottom: 15
+        },
+        divider: {
+            marginTop: 20,
+            width: "50%",
+            alignSelf: "center",
+            height: 2,
+            borderBottomWidth: 1,
+            borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
+        }
+    });
+
+    // sort versions and filter out invalid ones
+    const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f)));
+
+    return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
+        {sortedVersions.map(v => (
+            <View key={v}>
+                <Text style={pageStyles.title}>v{v}</Text>
+                <Text style={pageStyles.description}>{plugin.changelog?.[v]}</Text>
+                <View style={pageStyles.divider}></View>
+            </View>
+        ))}
+    </ScrollView>);
+}
+
 function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const [isEnabled, setIsEnabled] = React.useState(isPluginEnabled(plugin.name));
 
+    const navigation = NavigationNative.useNavigation();
     const buttons = [] as any[];
-    function changelogsPage(): JSX.Element {
-        if (!plugin.changelog) return (<></>);
-        const pageStyles = Styles.createThemedStyleSheet({
-            description: {
-                marginLeft: 25,
-                marginRight: 25,
-                color: Styles.ThemeColorMap.TEXT_NORMAL,
-                fontFamily: Constants.Fonts.PRIMARY_NORMAL
-            },
-            title: {
-                fontSize: 20,
-                color: Styles.ThemeColorMap.TEXT_NORMAL,
-                fontFamily: Constants.Fonts.PRIMARY_BOLD,
-                marginBottom: 5,
-                marginLeft: 15,
-                marginRight: 15
-            },
-            viewStyle: {
-                marginBottom: 15
-            },
-            divider: {
-                marginTop: 20,
-                width: "50%",
-                alignSelf: "center",
-                height: 2,
-                borderBottomWidth: 1,
-                borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
-            }
-        });
 
-        const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f)));
-
-        return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
-            {sortedVersions.map(v => (
-                <View key={v}>
-                    <Text style={pageStyles.title}>v{v}</Text>
-                    <Text style={pageStyles.description}>{plugin.changelog?.[v]}</Text>
-                    <View style={pageStyles.divider}></View>
-                </View>
-            ))}
-        </ScrollView>);
-    }
-
-    if (plugins[plugin.name].getSettingsPage) {
+    const { SettingsModal } = plugins[plugin.name];
+    if (SettingsModal) {
         buttons.push({
             text: "Settings",
-            onPress: () => {
-                Navigation.push(Page, {
-                    name: plugin.name,
-                    children: plugins[plugin.name].getSettingsPage,
-                });
-            },
+            onPress: () => Navigation.push(SettingsModal),
             size: "small",
             color: "brand",
             icon: "ic_settings_white_24px"
@@ -118,8 +118,9 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
             trailing={<FormSwitch
                 value={isEnabled}
                 style={{ marginVertical: -15 }}
-                onValueChange={(v: boolean | ((prevState: boolean) => boolean)) => {
-                    v ? enablePlugin(plugin.name)
+                onValueChange={(v: boolean) => {
+                    v
+                        ? enablePlugin(plugin.name)
                         : disablePlugin(plugin.name);
                     setIsEnabled(v);
                 }} />
@@ -130,8 +131,8 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     <Pressable
                         key="repo"
                         style={styles.icons}
-                        onPress={() => URLOpener.openURL(plugin.repo)
-                        }>
+                        onPress={() => URLOpener.openURL(plugin.repo)}
+                    >
                         <Image source={getAssetId("img_account_sync_github_white")} />
                     </Pressable>
                 ] : []),
@@ -139,11 +140,13 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
                     <Pressable
                         key="changelog"
                         style={styles.icons}
-                        onPress={() => Navigation.push(Page, {
-                            name: `${plugin.name} Changelog`,
-                            children: changelogsPage
-                        })
-                        }>
+                        onPress={() => {
+                            navigation.push("AliucordCustomPage", {
+                                title: `${plugin.name}'s Changelogs`,
+                                render: () => <PluginChangelogsPage plugin={plugin} />,
+                            });
+                        }}
+                    >
                         <Image source={getAssetId("ic_information_filled_24px")} />
                     </Pressable>
                 ] : [])

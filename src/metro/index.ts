@@ -343,9 +343,11 @@ export const Forms = getByProps("FormSection");
 export const Scenes = getByName("getScreens", { default: false });
 export const ThemeManager = getByProps("updateTheme", "overrideTheme");
 export const SemVer = getByProps("SemVer");
+
 export const Navigation = getByProps("pushLazy");
 export const NavigationStack = getByProps("createStackNavigator");
 export const NavigationNative = getByProps("NavigationContainer");
+export const DiscordNavigator = getByName("Navigator");
 
 // Abandon all hope, ye who enter here
 type Style = ViewStyle & ImageStyle & TextStyle;
