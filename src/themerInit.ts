@@ -60,8 +60,7 @@ export function overwriteThemeColors({ SemanticColorsByThemeTable: table }) {
         const theme = loadedThemes[themeState.currentTheme];
 
         // returns a 0xRRGGBBAA 32bit int
-        const processColor = (color: string | undefined): number => {
-            if (!color) return -1;
+        const processColor = (color: string): number => {
             const processed = window.ReactNative.processColor(color) >>> 0;
             return (((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0);
         };
