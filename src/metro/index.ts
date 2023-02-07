@@ -1,5 +1,5 @@
 import type { EmitterSubscription, ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { themerInit } from "../themerInit";
+import { overwriteThemeColors, themerInit } from "../themerInit";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -30,15 +30,28 @@ function blacklist(id: number) {
     });
 }
 
-let themeModuleFound = false;
+let constantsModuleFound = false;
+let colorsModuleFound = false;
 let nullProxyFound = false;
 
 for (const key in modules) {
     const id = Number(key);
     const module = modules[id];
 
+    // React module
+    if (module.isInitialized && ["createElement", "useState"].every(x => module.publicModule.exports?.[x])) {
+        window.React = module.publicModule.exports;
+        continue;
+    }
+
+    // React Native module
+    if (module.isInitialized && ["View", "processColor"].every(x => module.publicModule.exports?.[x])) {
+        window.ReactNative = module.publicModule.exports;
+        continue;
+    }
+
+    // Blacklist the stupid proxy that returns null to everything
     if (!nullProxyFound && module.isInitialized && module.publicModule && module.publicModule.exports) {
-        // Blacklist the stupid proxy that returns null to everything
         if (module.publicModule.exports["get defeated by your own weapon nerd"] === null) {
             blacklist(id);
             nullProxyFound = true;
@@ -46,11 +59,18 @@ for (const key in modules) {
         }
     }
 
-    if (!themeModuleFound && module?.publicModule?.exports?.ThemeColorMap) {
-        // Theme colors are overwritten here
+    // Theme colors are overwritten here
+    if (!constantsModuleFound && module?.publicModule?.exports?.ThemeColorMap) {
         themerInit(module.publicModule.exports);
 
-        themeModuleFound = true;
+        constantsModuleFound = true;
+        continue;
+    }
+
+    if (!colorsModuleFound && module?.publicModule?.exports?.SemanticColorsByThemeTable) {
+        overwriteThemeColors(module.publicModule.exports);
+
+        colorsModuleFound = true;
         continue;
     }
 
@@ -69,8 +89,8 @@ if (!nullProxyFound) {
     console.warn("Null proxy not found, expect problems");
 }
 
-if (!themeModuleFound) {
-    logger.error("Discord theme module wasn't found. Themes will be disabled.");
+if (!constantsModuleFound || !colorsModuleFound) {
+    console.warn("Discord modules needed for theming wasn't found, expect weird behaviours.");
 }
 
 /**
@@ -333,10 +353,11 @@ export const Toasts = getModule(m => (
     [k: PropertyKey]: any;
 };
 
+export const React = window.React as typeof import("react");
+export const ReactNative = window.ReactNative as typeof import("react-native");
+
 export const RestAPI = getByProps("getAPIBaseURL", "get");
 export const Flux = getByProps("connectStores");
-export const React = getByProps("createElement") as typeof import("react");
-export const ReactNative = getByProps("Text", "Image") as typeof import("react-native");
 export const Constants = getByProps("Fonts") as import("./constants").default;
 export const URLOpener = getByProps("openURL", "handleSupportedURL");
 export const Forms = getByProps("FormSection");
@@ -347,7 +368,7 @@ export const SemVer = getByProps("SemVer");
 export const Navigation = getByProps("pushLazy");
 export const NavigationStack = getByProps("createStackNavigator");
 export const NavigationNative = getByProps("NavigationContainer");
-export const DiscordNavigator = getByName("Navigator");
+export const DiscordNavigator = getByName("Navigator", { default: false });
 
 // Abandon all hope, ye who enter here
 type Style = ViewStyle & ImageStyle & TextStyle;

@@ -51,7 +51,40 @@ export function themerInit(constants: ThemeConstants) {
     handleThemeApply();
 }
 
-export function handleThemeApply() {
+export function overwriteThemeColors({ SemanticColorsByThemeTable: table }) {
+    try {
+        if (!themeState.isApplied) {
+            return;
+        }
+
+        const theme = loadedThemes[themeState.currentTheme];
+
+        // returns a 0xRRGGBBAA 32bit int
+        const processColor = (color: string | undefined): number => {
+            if (!color) return -1;
+            const processed = window.ReactNative.processColor(color) >>> 0;
+            return (((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0);
+        };
+
+        Object.keys(Constants.ThemeColorMap).forEach((key, index) => {
+            const colors = theme.theme_color_map?.[key];
+            if (!colors) return;
+
+            for (let i = 0; i < colors.length; i++) {
+                table[i][index] = processColor(colors[i]);
+            }
+        });
+    } catch (err) {
+        themeState = {
+            isApplied: false,
+            anError: true,
+            reason: ThemeErrors.UNEXPECTED_ERROR,
+            errorArgs: [err]
+        };
+    }
+}
+
+function handleThemeApply() {
     try {
         const { ThemeColorMap, Colors, UNSAFE_Colors } = Constants;
 
@@ -178,7 +211,7 @@ function loadThemes(): boolean {
 }
 
 function unfreezeThemeConstants() {
-    for (const key of ["ThemeColorMap", "Colors", "UNSAFE_Colors"]) {
+    for (const key of ["Colors", "UNSAFE_Colors"]) {
         Constants[key] && AliuHermes.unfreeze(Constants[key]);
     }
 }
