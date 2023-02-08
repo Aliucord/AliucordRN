@@ -61,7 +61,7 @@ export function overwriteThemeColors({ SemanticColorsByThemeTable: table }) {
 
         // returns a 0xRRGGBBAA 32bit int
         const normalizeColor = (color: string): number => {
-            const processed = window.ReactNative.processColor(color) >>> 0;
+            const processed = Number(window.ReactNative.processColor(color));
             return ((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0;
         };
 
