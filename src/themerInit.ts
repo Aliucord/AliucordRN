@@ -60,9 +60,9 @@ export function overwriteThemeColors({ SemanticColorsByThemeTable: table }) {
         const theme = loadedThemes[themeState.currentTheme];
 
         // returns a 0xRRGGBBAA 32bit int
-        const processColor = (color: string): number => {
+        const normalizeColor = (color: string): number => {
             const processed = window.ReactNative.processColor(color) >>> 0;
-            return (((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0);
+            return ((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0;
         };
 
         Object.keys(Constants.ThemeColorMap).forEach((key, index) => {
@@ -70,7 +70,8 @@ export function overwriteThemeColors({ SemanticColorsByThemeTable: table }) {
             if (!colors) return;
 
             for (let i = 0; i < colors.length; i++) {
-                table[i][index] = processColor(colors[i]);
+                const isNumber = typeof table[i][index] === "number";
+                table[i][index] = isNumber ? normalizeColor(colors[i]) : colors[i];
             }
         });
     } catch (err) {
