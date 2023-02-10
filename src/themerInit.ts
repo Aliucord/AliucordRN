@@ -93,7 +93,7 @@ function handleThemeApply() {
             currentTheme: themeName,
             isApplied: true,
             // Check if AMOLED is not supported. If so, automatically turn off AMOLED.
-            noAMOLED: theme.theme_color_map && !Object.values(theme.theme_color_map)[0][2]
+            noAMOLED: !!theme.theme_color_map && !Object.values(theme.theme_color_map)[0][2]
         };
     } catch (error) {
         themeState = {
