@@ -76,7 +76,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const buttons = [] as any[];
 
     const { SettingsModal } = plugins[plugin.name];
-    if (SettingsModal) {
+    if (SettingsModal && isEnabled) {
         buttons.push({
             text: "Settings",
             onPress: () => Navigation.push(SettingsModal),
