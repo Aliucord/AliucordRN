@@ -14,7 +14,14 @@ type ThemeConstants = {
     UNSAFE_Colors: Record<string, string>;
 };
 
+type ColorMap = {
+    RawColor: Record<string, string>;
+    SemanticColor: Record<string, string>; // (position -> color), (color -> position)
+    SemanticColorsByThemeTable: [Record<number, string>, Record<number, string>, Record<number, string>]; // [light, dark, amoled?]
+};
+
 let Constants: ThemeConstants;
+let DiscordColorMap: ColorMap;
 
 const { externalStorageDirectory } = window.nativeModuleProxy.AliucordNative;
 const SETTINGS_DIRECTORY = externalStorageDirectory + "/AliucordRN/settings/";
@@ -45,43 +52,11 @@ export let themeState = {} as {
 
 export const loadedThemes: Theme[] = [];
 
-export function themerInit(constants: ThemeConstants) {
+export function themerInit(constants: ThemeConstants, colorMap: ColorMap) {
     Constants = constants;
+    DiscordColorMap = colorMap;
     unfreezeThemeConstants();
     handleThemeApply();
-}
-
-export function overwriteThemeColors({ SemanticColorsByThemeTable: table }) {
-    try {
-        if (!themeState.isApplied) {
-            return;
-        }
-
-        const theme = loadedThemes[themeState.currentTheme];
-
-        // returns a 0xRRGGBBAA 32bit int
-        const normalizeColor = (color: string): number => {
-            const processed = Number(window.ReactNative.processColor(color));
-            return ((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0;
-        };
-
-        Object.keys(Constants.ThemeColorMap).forEach((key, index) => {
-            const colors = theme.theme_color_map?.[key];
-            if (!colors) return;
-
-            for (let i = 0; i < colors.length; i++) {
-                const isNumber = typeof table[i][index] === "number";
-                table[i][index] = isNumber ? normalizeColor(colors[i]) : colors[i];
-            }
-        });
-    } catch (err) {
-        themeState = {
-            isApplied: false,
-            anError: true,
-            reason: ThemeErrors.UNEXPECTED_ERROR,
-            errorArgs: [err]
-        };
-    }
 }
 
 function handleThemeApply() {
@@ -105,9 +80,14 @@ function handleThemeApply() {
             return;
         }
 
+        // overwrite constants
         overwriteColors(ThemeColorMap, theme.theme_color_map);
         overwriteColors(Colors, theme.colors ?? theme.colours);
         overwriteColors(UNSAFE_Colors, theme.unsafe_colors);
+
+        // overwrite color map
+        overwriteColors(DiscordColorMap.SemanticColorsByThemeTable, theme.theme_color_map);
+        overwriteColors(DiscordColorMap.RawColor, theme.colors ?? theme.colours);
 
         themeState = {
             currentTheme: themeName,
@@ -216,12 +196,28 @@ function unfreezeThemeConstants() {
     }
 }
 
+// returns a 0xRRGGBBAA 32bit int
+function normalizeColor(color: string): number {
+    const processed = Number(window.ReactNative.processColor(color));
+    return ((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0;
+}
+
 function overwriteColors(target, source) {
     if (!target || !source) return;
 
     // Enmity compatibility for chat background
-    if (typeof source === "object") {
-        source["CHAT_BACKGROUND"] ??= source["BACKGROUND_PRIMARY"];
+    source["BACKGROUND_PRIMARY"] && (source["CHAT_BACKGROUND"] ??= source["BACKGROUND_PRIMARY"]);
+
+    if (Array.isArray(target)) {
+        for (const key in source) { // ex: "CHAT_BACKGROUND"
+            const index = Number(DiscordColorMap.SemanticColor[key]) >>> 0; // ex: 25
+
+            for (let i = 0; i < source[key].length; i++) {
+                const isNumeric = typeof target[i][index] === "number";
+                target[i][index] = isNumeric ? normalizeColor(source[key][i]) : source[key][i];
+            }
+        }
+        return;
     }
 
     for (const key in source) {

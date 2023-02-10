@@ -1,5 +1,5 @@
 import type { EmitterSubscription, ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { overwriteThemeColors, themerInit } from "../themerInit";
+import { themerInit } from "../themerInit";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -30,8 +30,7 @@ function blacklist(id: number) {
     });
 }
 
-let constantsModuleFound = false;
-let colorsModuleFound = false;
+let constantsModule, colorMapModule;
 let nullProxyFound = false;
 
 for (const key in modules) {
@@ -60,17 +59,13 @@ for (const key in modules) {
     }
 
     // Theme colors are overwritten here
-    if (!constantsModuleFound && module?.publicModule?.exports?.ThemeColorMap) {
-        themerInit(module.publicModule.exports);
-
-        constantsModuleFound = true;
+    if (!constantsModule && module?.publicModule?.exports?.ThemeColorMap) {
+        constantsModule = module.publicModule.exports;
         continue;
     }
 
-    if (!colorsModuleFound && module?.publicModule?.exports?.SemanticColorsByThemeTable) {
-        overwriteThemeColors(module.publicModule.exports);
-
-        colorsModuleFound = true;
+    if (!colorMapModule && module?.publicModule?.exports?.SemanticColorsByThemeTable) {
+        colorMapModule = module.publicModule.exports;
         continue;
     }
 
@@ -89,8 +84,11 @@ if (!nullProxyFound) {
     console.warn("Null proxy not found, expect problems");
 }
 
-if (!constantsModuleFound || !colorsModuleFound) {
-    console.warn("Discord modules needed for theming wasn't found, expect weird behaviours.");
+// Initialize themer
+if (constantsModule && colorMapModule) {
+    themerInit(constantsModule, colorMapModule);
+} else {
+    console.warn("Discord modules needed for theming wasn't found, themes will not load.");
 }
 
 /**
