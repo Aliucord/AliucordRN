@@ -1,10 +1,10 @@
-import { sha } from "aliucord-version";
 import { ApplicationCommandOptionType, plugins } from "../api";
 import { Plugin } from "../entities";
 import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug";
 import { makeAsyncEval } from "../utils";
 import { ALIUCORD_DIRECTORY } from "../utils/constants";
+import { version } from "../Aliucord";
 
 const customBundle = AliuFS.exists(ALIUCORD_DIRECTORY + "Aliucord.js.bundle");
 
@@ -32,8 +32,8 @@ export default class CoreCommands extends Plugin {
             description: "Lists all installed Aliucord plugins",
             options: [],
             execute: (args, ctx) => {
-                const enabledplugins = Object.values(plugins).filter(p => p.enabled === true).map(p => p.manifest.name);
-                const disabledplugins = Object.values(plugins).filter(p => p.enabled === false).map(p => p.manifest.name);
+                const enabledplugins = Object.values(plugins).filter(p => p.enabled).map(p => p.manifest.name);
+                const disabledplugins = Object.values(plugins).filter(p => !p.enabled).map(p => p.manifest.name);
 
                 const message = `
                 **Total plugins**: **${Object.keys(plugins).length}**
@@ -85,7 +85,7 @@ export default class CoreCommands extends Plugin {
                 MessageActions.sendMessage(ctx.channel.id, {
                     content: `**Debug Info:**
                         > Discord: ${DebugInfo.discordVersion}
-                        > Aliucord: ${sha} (${Object.keys(plugins).length} plugins)
+                        > Aliucord: ${version} (${Object.keys(plugins).length} plugins)
                         > Custom Bundle: ${customBundle}
                         > System: ${DebugInfo.system}
                         > React: ${DebugInfo.reactVersion}

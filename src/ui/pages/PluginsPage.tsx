@@ -105,7 +105,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
         },
         size: "small",
         color: "red",
-        icon: "ic_trash_24px"   
+        icon: "trash"   
     });
 
     return (

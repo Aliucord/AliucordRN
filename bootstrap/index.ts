@@ -37,7 +37,7 @@ import "./arrayBuffer.js";
             }
         }
 
-        if (Number(nativeModuleProxy.InfoDictionaryManager.Build) == 165015) {
+        if (Number(nativeModuleProxy.InfoDictionaryManager.Build) !== 167209) {
             nativeModuleProxy.DialogManagerAndroid.showAlert({
                 title: "Unsupported Discord version",
                 message: `Aliucord does not support this version of Discord: ${nativeModuleProxy.InfoDictionaryManager.Version} (${nativeModuleProxy.InfoDictionaryManager.Build}). Things might break on this version, use at your own risk.`,

@@ -55,7 +55,7 @@ export const styles = Styles.createThemedStyleSheet({
     headerText: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontSize: 18
+        fontSize: 16
     },
     link: {
         color: Styles.ThemeColorMap.TEXT_LINK
@@ -89,8 +89,8 @@ export const styles = Styles.createThemedStyleSheet({
         marginLeft: 6
     },
     buttonIcon: {
-        width: 14,
-        height: 14,
+        width: 20,
+        height: 20,
         marginRight: 6,
         color: Styles.ThemeColorMap.TEXT_NORMAL
     },

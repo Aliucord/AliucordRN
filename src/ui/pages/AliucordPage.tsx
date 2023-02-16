@@ -47,13 +47,13 @@ export default function AliucordPage() {
             <FormSection title="Socials">
                 <FormRow
                     label="Source Code"
-                    leading={<FormRow.Icon source={getAssetId("img_account_sync_github_white")} />}
+                    leading={<FormRow.Icon source={getAssetId("debug")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_GITHUB)}
                 />
                 <FormRow
                     label="Support Server"
-                    leading={<FormRow.Icon source={getAssetId("img_help_24px")} />}
+                    leading={<FormRow.Icon source={getAssetId("ic_help_24px")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_INVITE)}
                 />

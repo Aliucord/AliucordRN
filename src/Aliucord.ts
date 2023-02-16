@@ -49,6 +49,5 @@ export async function load() {
         startDebugWs();
     } catch (err) {
         logger.error("Failed to load Aliucord", err);
-        
     }
 }
