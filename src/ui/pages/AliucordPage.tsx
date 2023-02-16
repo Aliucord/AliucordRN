@@ -13,7 +13,7 @@ export default function AliucordPage() {
 
     return (<>
         <ScrollView>
-            <FormSection title="Settings" /* Nice prop name discord */ android_noDivider={true}>
+            <FormSection title="Settings" titleStyleType="no_border">
                 <FormRow
                     label="Automatically disable plugins on crash"
                     trailing={<FormSwitch value={settings.get("disablePluginsOnCrash", true)} onValueChange={v => settings.set("disablePluginsOnCrash", v)} />}
