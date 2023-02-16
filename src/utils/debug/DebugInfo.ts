@@ -12,9 +12,9 @@ export const DebugInfo = {
 
     get discordBuild(): string {
         try {
-            return `${ReactNative.NativeModules.InfoDictionaryManager.Build}`
+            return `${ReactNative.NativeModules.InfoDictionaryManager.Build}`;
         } catch {
-            return "unknown"
+            return "unknown";
         }
     },
 
