@@ -37,6 +37,15 @@ import "./arrayBuffer.js";
             }
         }
 
+        if (Number(nativeModuleProxy.InfoDictionaryManager.Build) == 165015) {
+            nativeModuleProxy.DialogManagerAndroid.showAlert({
+                title: "Unsupported Discord version",
+                message: `Aliucord does not support this version of Discord: ${nativeModuleProxy.InfoDictionaryManager.Version} (${nativeModuleProxy.InfoDictionaryManager.Build}). Things might break on this version, use at your own risk.`,
+                cancelable: true,
+                buttonPositive: "Ok"
+            }, () => null, () => null);
+        }
+
         const aliucordDir = `${externalStorageDirectory}/AliucordRN`;
         AliuFS.mkdir(aliucordDir);
 
@@ -108,7 +117,8 @@ import "./arrayBuffer.js";
 
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
-            message: "Something went wrong while loading Aliucord! Please check the logs for more details.",
+            message: "Something went wrong while loading Aliucord! Please check the logs for more details."
+                + (error as Error)?.message ? ` Error message: ${(error as Error).message}` : "",
             cancelable: true,
             buttonPositive: "Ok"
         }, () => null, () => null);

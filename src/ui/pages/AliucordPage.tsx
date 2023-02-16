@@ -2,6 +2,7 @@ import { useSettings } from "../../api/Settings";
 import { Forms, React, ReactNative } from "../../metro";
 import { URLOpener } from "../../metro/index";
 import { ALIUCORD_GITHUB, ALIUCORD_INVITE, ALIUCORD_PATREON } from "../../utils/constants";
+import { startReactDevTools } from "../../utils/debug";
 import { startDebugWs, stopDebugWs } from "../../utils/debug/DebugWS";
 import { getAssetId } from "../../utils/getAssetId";
 
@@ -35,6 +36,13 @@ export default function AliucordPage() {
                             : stopDebugWs();
                     }} />}
                 />
+                <FormRow
+                    label="Enable React DevTools"
+                    trailing={<FormSwitch value={settings.get("reactDevTools", false)} onValueChange={v => {
+                        settings.set("reactDevTools", v);
+                        if (v) startReactDevTools();
+                    }} />}
+                />
             </FormSection>
             <FormSection title="Socials">
                 <FormRow
@@ -45,13 +53,13 @@ export default function AliucordPage() {
                 />
                 <FormRow
                     label="Support Server"
-                    leading={<FormRow.Icon source={getAssetId("img_help_icon")} />}
+                    leading={<FormRow.Icon source={getAssetId("img_help_24px")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_INVITE)}
                 />
                 <FormRow
                     label="Support Us"
-                    leading={<FormRow.Icon source={getAssetId("ic_premium_perk_heart_24px")} />}
+                    leading={<FormRow.Icon source={getAssetId("heart")} />}
                     trailing={FormRow.Arrow}
                     onPress={() => URLOpener.openURL(ALIUCORD_PATREON)}
                 />

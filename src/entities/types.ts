@@ -3,7 +3,7 @@ export interface PluginManifest {
     description: string;
     version: string;
     repo: string;
-    changelog: Record<string, string> | null
+    changelog: Record<string, string> | null;
     authors?: Author[];
 }
 
@@ -15,12 +15,12 @@ export interface Author {
 export type Theme = {
     name: string;
     authors?: Author[];
-    description: string;
-    version: string;
+    description?: string;
+    version?: string;
     updater_url?: string;
-    theme_color_map: string[];
-    colors: string[];
-    unsafe_colors: string[];
+    theme_color_map?: Record<string, [string, string, string?]>;
+    colors?: Record<string, string>;
+    unsafe_colors?: Record<string, string>;
     // Enmity colors object
-    colours?: string[];
+    colours?: Record<string, string>;
 };

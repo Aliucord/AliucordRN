@@ -32,6 +32,10 @@ declare global {
                 onAction: (action: string, key: number) => any
             ) => void;
         };
+        InfoDictionaryManager: {
+            Build: string;
+            Version: string;
+        }
     };
 }
 

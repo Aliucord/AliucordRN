@@ -5,7 +5,7 @@ import { getAssetId } from "../../utils";
 
 type HeaderTextProps = {
     title: string,
-    version: string,
+    version?: string,
     authors?: Author[];
 };
 
