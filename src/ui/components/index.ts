@@ -89,8 +89,8 @@ export const styles = Styles.createThemedStyleSheet({
         marginLeft: 6
     },
     buttonIcon: {
-        width: 20,
-        height: 20,
+        width: 14,
+        height: 14,
         marginRight: 6,
         color: Colors.SemanticColor.TEXT_NORMAL
     },
