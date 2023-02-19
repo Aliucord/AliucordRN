@@ -118,7 +118,7 @@ import "./arrayBuffer.js";
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
             message: "Something went wrong while running Aliucord! Please check the logs for more details."
-                + `${(error as Error)?.message ? ` Error message: ${(error as Error).message.slice(0, 30)}` : "" }`,
+                + `${(error as Error)?.message ? ` Error message: ${(error as Error).message.slice(0, 60)}` : "" }`,
             cancelable: true,
             buttonPositive: "Ok"
         }, () => null, () => null);
