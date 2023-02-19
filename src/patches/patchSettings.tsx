@@ -1,4 +1,4 @@
-import { sha } from "aliucord-version";
+import { version } from "../Aliucord";
 import { getByName, Locale, NavigationNative, React, Scenes } from "../metro";
 import { findInReactTree, getAssetId } from "../utils";
 import { after } from "../utils/patcher";
@@ -78,7 +78,7 @@ export default function patchSettings() {
             const index = children.findIndex(x => searchable.includes(x.props.title));
 
             children.splice(index === -1 ? 4 : index, 0, <>
-                <FormSection key="AliucordSection" title={`Aliucord (${sha})`} >
+                <FormSection key="AliucordSection" title={`Aliucord (${version})`} >
                     <FormRow
                         leading={<FormIcon source={getAssetId("Discord")} />}
                         label="Aliucord"

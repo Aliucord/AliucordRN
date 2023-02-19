@@ -5,7 +5,15 @@ export const DebugInfo = {
     get discordVersion(): string {
         try {
             return `${ReactNative.NativeModules.InfoDictionaryManager.Version} (${ReactNative.NativeModules.InfoDictionaryManager.ReleaseChannel})`;
-        } catch (ex) {
+        } catch {
+            return "unknown";
+        }
+    },
+
+    get discordBuild(): string {
+        try {
+            return `${ReactNative.NativeModules.InfoDictionaryManager.Build}`;
+        } catch {
             return "unknown";
         }
     },
@@ -14,7 +22,7 @@ export const DebugInfo = {
         try {
             const platform = ReactNative.Platform as PlatformAndroidStatic;
             return `${platform.OS} ${platform.constants.Release} (SDK v${platform.Version}) ${ReactNative.NativeModules.DCDDeviceManager.device} ${platform.constants.uiMode}`;
-        } catch (ex) {
+        } catch {
             return "unknown";
         }
     },
@@ -23,7 +31,7 @@ export const DebugInfo = {
         try {
             const native = ReactNative.Platform.constants.reactNativeVersion;
             return `${React.version}, Native: ${native.major || 0}.${native.minor || 0}.${native.patch || 0}`;
-        } catch (ex) {
+        } catch {
             return "unknown";
         }
     },
@@ -33,7 +41,7 @@ export const DebugInfo = {
             if (HermesInternal === undefined) return "N/A";
             const runtimeProps = (HermesInternal as any).getRuntimeProperties();
             return `${runtimeProps["OSS Release Version"]} ${runtimeProps["Build"]} (v${runtimeProps["Bytecode Version"]})`;
-        } catch (ex) {
+        } catch {
             return "unknown";
         }
     }

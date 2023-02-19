@@ -1,7 +1,9 @@
 import { aliucord } from "@aliucord/rollup-plugin";
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
 import { defineConfig } from "rollup";
+import dataFile from "./data.json" assert { type: "json" };
 
 export default defineConfig([
     {
@@ -34,6 +36,7 @@ export default defineConfig([
             compact: true
         }],
         plugins: [
+            replace({ preventAssignment: true, __SUPPORTED_VER__: dataFile.targetDiscordVersion }),
             aliucord({ internalHelpers: true, hermesPath: "" }),
             {
                 name: "escaper",

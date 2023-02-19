@@ -1,6 +1,6 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
 import { Plugin, PluginManifest } from "../../entities";
-import { Constants, Dialog, Navigation, NavigationNative, React, SemVer, Styles, URLOpener } from "../../metro";
+import { Colors, Constants, Dialog, Navigation, NavigationNative, React, SemVer, Styles, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
@@ -10,6 +10,34 @@ let updateList: (filter?: (plugin: Plugin) => boolean) => void;
 
 const { View, Text, FlatList, Image, ScrollView, Pressable, LayoutAnimation } = General;
 const { FormSwitch } = Forms;
+
+const changelogStyles = Styles.createThemedStyleSheet({
+    description: {
+        marginLeft: 25,
+        marginRight: 25,
+        color: Colors.SemanticColor.TEXT_NORMAL,
+        fontFamily: Constants.Fonts.PRIMARY_NORMAL
+    },
+    title: {
+        fontSize: 20,
+        color: Colors.SemanticColor.TEXT_NORMAL,
+        fontFamily: Constants.Fonts.PRIMARY_BOLD,
+        marginBottom: 5,
+        marginLeft: 15,
+        marginRight: 15
+    },
+    viewStyle: {
+        marginBottom: 15
+    },
+    divider: {
+        marginTop: 20,
+        width: "50%",
+        alignSelf: "center",
+        height: 2,
+        borderBottomWidth: 1,
+        borderColor: Colors.SemanticColor.BACKGROUND_MODIFIER_ACCENT
+    }
+});
 
 function getPlugins(): Plugin[] {
     return searchQuery ? Object.values(plugins).filter(({ manifest }) => {
@@ -27,43 +55,15 @@ function getPlugins(): Plugin[] {
 function PluginChangelogsPage({ plugin }: { plugin: PluginManifest; }): JSX.Element {
     if (!plugin.changelog) return (<></>);
 
-    const pageStyles = Styles.createThemedStyleSheet({
-        description: {
-            marginLeft: 25,
-            marginRight: 25,
-            color: Styles.ThemeColorMap.TEXT_NORMAL,
-            fontFamily: Constants.Fonts.PRIMARY_NORMAL
-        },
-        title: {
-            fontSize: 20,
-            color: Styles.ThemeColorMap.TEXT_NORMAL,
-            fontFamily: Constants.Fonts.PRIMARY_BOLD,
-            marginBottom: 5,
-            marginLeft: 15,
-            marginRight: 15
-        },
-        viewStyle: {
-            marginBottom: 15
-        },
-        divider: {
-            marginTop: 20,
-            width: "50%",
-            alignSelf: "center",
-            height: 2,
-            borderBottomWidth: 1,
-            borderColor: Styles.ThemeColorMap.BACKGROUND_MODIFIER_ACCENT
-        }
-    });
-
     // sort versions and filter out invalid ones
     const sortedVersions = SemVer.rsort(Object.keys(plugin.changelog).filter(f => SemVer.valid(f)));
 
-    return (<ScrollView key="ChangelogView" style={pageStyles.viewStyle}>
+    return (<ScrollView key="ChangelogView" style={changelogStyles.viewStyle}>
         {sortedVersions.map(v => (
             <View key={v}>
-                <Text style={pageStyles.title}>v{v}</Text>
-                <Text style={pageStyles.description}>{plugin.changelog?.[v]}</Text>
-                <View style={pageStyles.divider}></View>
+                <Text style={changelogStyles.title}>v{v}</Text>
+                <Text style={changelogStyles.description}>{plugin.changelog?.[v]}</Text>
+                <View style={changelogStyles.divider}></View>
             </View>
         ))}
     </ScrollView>);
@@ -76,7 +76,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
     const buttons = [] as any[];
 
     const { SettingsModal } = plugins[plugin.name];
-    if (SettingsModal) {
+    if (SettingsModal && isEnabled) {
         buttons.push({
             text: "Settings",
             onPress: () => Navigation.push(SettingsModal),
@@ -105,7 +105,7 @@ function PluginCard({ plugin }: { plugin: PluginManifest; }) {
         },
         size: "small",
         color: "red",
-        icon: "ic_trash_filled_16px"
+        icon: "trash"
     });
 
     return (
