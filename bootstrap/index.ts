@@ -37,7 +37,7 @@ import "./arrayBuffer.js";
             }
         }
 
-        if (Number(nativeModuleProxy.InfoDictionaryManager.Build) < 167211) {
+        if (Number(nativeModuleProxy.InfoDictionaryManager.Build) < Number("__SUPPORTED_VER__")) {
             nativeModuleProxy.DialogManagerAndroid.showAlert({
                 title: "Unsupported Discord version",
                 message: `Aliucord does not support this version of Discord: ${nativeModuleProxy.InfoDictionaryManager.Version} (${nativeModuleProxy.InfoDictionaryManager.Build}). Things might break on this version, use at your own risk.`,
@@ -117,8 +117,8 @@ import "./arrayBuffer.js";
 
         nativeModuleProxy.DialogManagerAndroid.showAlert({
             title: "Error",
-            message: "Something went wrong while loading Aliucord! Please check the logs for more details."
-                + `${(error as Error)?.message ? ` Error message: ${(error as Error).message}` : "" }`,
+            message: "Something went wrong while running Aliucord! Please check the logs for more details."
+                + `${(error as Error)?.message ? ` Error message: ${(error as Error).message.slice(0, 30)}` : "" }`,
             cancelable: true,
             buttonPositive: "Ok"
         }, () => null, () => null);
