@@ -1,4 +1,5 @@
 import { Settings, startCorePlugins, startPlugins } from "./api";
+import { sha } from "aliucord-version";
 import { mkdir } from "./native/fs";
 import patchNavigator from "./patches/patchNavigator";
 import patchSettings from "./patches/patchSettings";
@@ -11,6 +12,7 @@ interface SettingsSchema {
     autoUpdateAliucord: boolean;
     autoUpdatePlugins: boolean;
     debugWS: boolean;
+    reactDevTools: boolean;
     disablePluginsOnCrash: boolean;
     acknowlegedNoSupportChannels: boolean;
     plugins: Record<string, boolean>;
@@ -21,6 +23,7 @@ export * as pluginManager from "./api/PluginManager";
 export const logger = new Logger("Aliucord");
 export const errors = {} as Record<string, string>;
 export let settings: Settings<SettingsSchema>;
+export const version = sha;
 
 let aliucordLoaded = false;
 
@@ -45,6 +48,6 @@ export async function load() {
         startReactDevTools();
         startDebugWs();
     } catch (err) {
-        logger.error("Failed to load", err);
+        logger.error("Failed to load Aliucord", err);
     }
 }

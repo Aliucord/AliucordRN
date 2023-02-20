@@ -1,4 +1,5 @@
 import { connectToDevTools, installHook } from "@aliucord/react-devtools-core";
+import { settings } from "../../Aliucord";
 import { getModule } from "../../metro";
 import { Logger } from "../Logger";
 
@@ -25,6 +26,7 @@ function fixHook() {
 export function startReactDevTools() {
     try {
         if (socket) throw "no";
+        if (!settings.get("reactDevTools", false)) return;
         socket = new WebSocket("ws://localhost:8097");
 
         fixHook();

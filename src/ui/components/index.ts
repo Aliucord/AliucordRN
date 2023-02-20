@@ -1,4 +1,4 @@
-import { Constants, getByName, getByProps, Styles } from "../../metro";
+import { Colors, Constants, getByName, getByProps, Styles } from "../../metro";
 
 export const Forms = getByProps("FormSection");
 export const General = getByProps("Button", "Text", "View") as typeof import("react-native");
@@ -16,19 +16,19 @@ export const styles = Styles.createThemedStyleSheet({
     card: {
         borderRadius: 10,
         margin: 5,
-        backgroundColor: Styles.ThemeColorMap.BACKGROUND_TERTIARY,
+        backgroundColor: Colors.SemanticColor.BACKGROUND_TERTIARY,
     },
     header: {
         flexDirection: "row",
         flexWrap: "wrap"
     },
     bodyCard: {
-        backgroundColor: Styles.ThemeColorMap.BACKGROUND_SECONDARY,
+        backgroundColor: Colors.SemanticColor.BACKGROUND_SECONDARY,
         borderBottomLeftRadius: 10,
         borderBottomRightRadius: 10
     },
     bodyText: {
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
+        color: Colors.SemanticColor.TEXT_NORMAL,
         paddingHorizontal: 16,
         paddingTop: 10,
         paddingBottom: 18,
@@ -50,15 +50,15 @@ export const styles = Styles.createThemedStyleSheet({
         width: 24,
         height: 24,
         marginHorizontal: 4,
-        tintColor: Styles.ThemeColorMap.INTERACTIVE_NORMAL
+        tintColor: Colors.SemanticColor.INTERACTIVE_NORMAL
     },
     headerText: {
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
-        fontSize: 18
+        color: Colors.SemanticColor.TEXT_NORMAL,
+        fontSize: 16
     },
     link: {
-        color: Styles.ThemeColorMap.TEXT_LINK
+        color: Colors.SemanticColor.TEXT_LINK
     },
     emptyPageImage: {
         display: "flex",
@@ -69,7 +69,7 @@ export const styles = Styles.createThemedStyleSheet({
     },
     emptyPageText: {
         marginTop: 10,
-        color: Styles.ThemeColorMap.TEXT_NORMAL,
+        color: Colors.SemanticColor.TEXT_NORMAL,
         fontFamily: Constants.Fonts.PRIMARY_SEMIBOLD,
         textAlign: "center"
     },
@@ -92,19 +92,19 @@ export const styles = Styles.createThemedStyleSheet({
         width: 14,
         height: 14,
         marginRight: 6,
-        color: Styles.ThemeColorMap.TEXT_NORMAL
+        color: Colors.SemanticColor.TEXT_NORMAL
     },
     invalidHeader: {
         flexDirection: "column",
         flexWrap: "wrap"
     },
     invalidInfoText: {
-        color: Styles.ThemeColorMap.TEXT_MUTED,
+        color: Colors.SemanticColor.TEXT_MUTED,
         fontSize: 12,
         fontWeight: "400"
     },
     warningText: {
-        color: Styles.ThemeColorMap.TEXT_WARNING,
+        color: Colors.SemanticColor.TEXT_WARNING,
         fontFamily: Constants.Fonts.PRIMARY_NORMAL,
         fontSize: 12,
         paddingTop: 5

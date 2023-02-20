@@ -1,9 +1,7 @@
-import { getByProps } from "../metro";
+import { AssetRegistry } from "../metro";
 import { after } from "./patcher";
 
 export const assetMap = {};
-
-const AssetRegistry = getByProps("registerAsset");
 
 after(AssetRegistry, "registerAsset", (_, id, asset) => {
     assetMap[asset.name] = id;
