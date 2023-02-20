@@ -1,7 +1,7 @@
 import { setTheme } from "../../api/Themer";
 import { Theme } from "../../entities";
 import { React, URLOpener } from "../../metro";
-import { excludedThemes, InvalidTheme, loadedThemes, themeState } from "../../themerInit";
+import { excludedThemes, InvalidTheme, loadedThemes, ThemeErrors, themeState } from "../../themerInit";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
@@ -92,13 +92,13 @@ function ThemeCard({ theme }: { theme: Theme; }) {
 export default function ThemesPage() {
     const [entities, setEntities] = React.useState(getThemes());
 
-    if (!themeState.isApplied && themeState.anError) {
+    if (!themeState.isApplied && themeState.reason === ThemeErrors.MODULES_NOT_FOUND) {
         return (
             <View style={styles.container}>
                 <View style={styles.emptyPageImage}>
-                    <Image source={getAssetId("img_connection_empty_dark")} />
+                    <Image source={getAssetId("link_failure")} />
                     <Text style={styles.emptyPageText}>
-                        An error occurred while loading themes:{"\n" + themeState.reason}
+                        Unable to apply theme, modules needed to apply themes were not found.
                     </Text>
                 </View>
             </View>
