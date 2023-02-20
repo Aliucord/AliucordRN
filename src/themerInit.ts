@@ -55,14 +55,13 @@ export const loadedThemes: Theme[] = [];
 export function themerInit(constants: ThemeConstants, colorMap: ColorMap) {
     Constants = constants;
     DiscordColorMap = colorMap;
+
     unfreezeThemeConstants();
     handleThemeApply();
 }
 
 function handleThemeApply() {
     try {
-        const { ThemeColorMap, Colors, UNSAFE_Colors } = Constants;
-
         if (!loadThemes()) return;
         const themeName = getTheme();
 
@@ -80,14 +79,10 @@ function handleThemeApply() {
             return;
         }
 
-        // overwrite constants
-        overwriteColors(ThemeColorMap, theme.theme_color_map);
-        overwriteColors(Colors, theme.colors ?? theme.colours);
-        overwriteColors(UNSAFE_Colors, theme.unsafe_colors);
-
         // overwrite color map
         overwriteColors(DiscordColorMap.SemanticColorsByThemeTable, theme.theme_color_map);
         overwriteColors(DiscordColorMap.RawColor, theme.colors ?? theme.colours);
+        overwriteColors(Constants.UNSAFE_Colors, theme.unsafe_colors);
 
         themeState = {
             currentTheme: themeName,
@@ -191,9 +186,7 @@ function loadThemes(): boolean {
 }
 
 function unfreezeThemeConstants() {
-    for (const key of ["Colors", "UNSAFE_Colors"]) {
-        Constants[key] && AliuHermes.unfreeze(Constants[key]);
-    }
+    Constants.UNSAFE_Colors && AliuHermes.unfreeze(Constants.UNSAFE_Colors);
 }
 
 // returns a 0xRRGGBBAA 32bit int
@@ -205,11 +198,13 @@ function normalizeColor(color: string): number {
 function overwriteColors(target, source) {
     if (!target || !source) return;
 
-    // Enmity compatibility for chat background
-    source["BACKGROUND_PRIMARY"] && (source["CHAT_BACKGROUND"] ??= source["BACKGROUND_PRIMARY"]);
-
+    // target is SemanticColorsByThemeTable
     if (Array.isArray(target)) {
+        // Enmity compatibility for chat background
+        source["BACKGROUND_PRIMARY"] && (source["CHAT_BACKGROUND"] ??= source["BACKGROUND_PRIMARY"]);
+
         for (const key in source) { // ex: "CHAT_BACKGROUND"
+            if (!DiscordColorMap.SemanticColor[key]) continue; // skip if key doesn't exist in SemanticColor (ex: "BACKGROUND_PRIMARY"
             const index = Number(DiscordColorMap.SemanticColor[key]) >>> 0; // ex: 25
 
             for (let i = 0; i < source[key].length; i++) {
@@ -220,19 +215,9 @@ function overwriteColors(target, source) {
         return;
     }
 
+    // target is RawColor or UNSAFE_Colors
     for (const key in source) {
-        // Skip if property doesn't exist in target
-        if (!target[key]) continue;
-
-        // target is ThemeColorMap
-        if (typeof target[key] === "object") {
-            for (const i in source[key]) {
-                target[key][i] = source[key][i];
-            }
-        }
-
-        // target is Colors or UNSAFE_Colors
-        else if (typeof target[key] === "string") {
+        if (typeof target[key] === "string") {
             target[key] = source[key];
         }
     }

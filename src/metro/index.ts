@@ -59,7 +59,7 @@ for (const key in modules) {
     }
 
     // Theme colors are overwritten here
-    if (!constantsModule && module?.publicModule?.exports?.ThemeColorMap) {
+    if (!constantsModule && module?.publicModule?.exports?.NODE_SIZE) {
         constantsModule = module.publicModule.exports;
         continue;
     }
@@ -360,7 +360,7 @@ export const Constants = getByProps("Fonts") as import("./constants").default;
 export const URLOpener = getByProps("openURL", "handleSupportedURL");
 export const Forms = getByProps("FormSection");
 export const Scenes = getByName("getScreens", { default: false });
-export const Colors = getByProps("SemanticColorsByThemeTable");
+export const ColorMap = getByProps("SemanticColorsByThemeTable");
 export const ThemeManager = getByProps("updateTheme", "overrideTheme");
 export const AssetRegistry = getByProps("registerAsset");
 export const SemVer = getByProps("SemVer");
