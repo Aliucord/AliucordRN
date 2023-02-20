@@ -6,6 +6,7 @@ export enum ThemeErrors {
     UNEXPECTED_ERROR = "Unexpected error",
     THEME_UNSET = "Theme is unset",
     NO_THEME_DIRECTORY = "Theme directory not found",
+    MODULES_NOT_FOUND = "Modules needed was not found"
 }
 
 type ThemeConstants = {

@@ -1,5 +1,5 @@
 import type { EmitterSubscription, ImageSourcePropType, ImageStyle, TextStyle, ViewStyle } from "react-native";
-import { themerInit } from "../themerInit";
+import { ThemeErrors, themerInit, themeState } from "../themerInit";
 import { Logger } from "../utils/Logger";
 
 declare const __r: (moduleId: number) => any;
@@ -58,7 +58,6 @@ for (const key in modules) {
         }
     }
 
-    // Theme colors are overwritten here
     if (!constantsModule && module?.publicModule?.exports?.NODE_SIZE) {
         constantsModule = module.publicModule.exports;
         continue;
@@ -88,6 +87,11 @@ if (!nullProxyFound) {
 if (constantsModule && colorMapModule) {
     themerInit(constantsModule, colorMapModule);
 } else {
+    const state = themeState as any;
+    state.isApplied = false;
+    state.anError = true;
+    state.reason = ThemeErrors.MODULES_NOT_FOUND;
+
     console.warn("Discord modules needed for theming wasn't found, themes will not load.");
 }
 

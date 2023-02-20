@@ -92,6 +92,19 @@ function ThemeCard({ theme }: { theme: Theme; }) {
 export default function ThemesPage() {
     const [entities, setEntities] = React.useState(getThemes());
 
+    if (!themeState.isApplied && themeState.anError) {
+        return (
+            <View style={styles.container}>
+                <View style={styles.emptyPageImage}>
+                    <Image source={getAssetId("img_connection_empty_dark")} />
+                    <Text style={styles.emptyPageText}>
+                        An error occurred while loading themes:{"\n" + themeState.reason}
+                    </Text>
+                </View>
+            </View>
+        );
+    }
+
     updateList = (filter = () => true) => {
         setEntities(getThemes().filter(filter));
 
