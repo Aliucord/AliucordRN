@@ -1,6 +1,6 @@
 import { disablePlugin, enablePlugin, isPluginEnabled, plugins, uninstallPlugin } from "../../api/PluginManager";
 import { Plugin, PluginManifest } from "../../entities";
-import { Colors, Constants, Dialog, Navigation, NavigationNative, React, SemVer, Styles, URLOpener } from "../../metro";
+import { ColorMap, Constants, Dialog, Navigation, NavigationNative, React, SemVer, Styles, URLOpener } from "../../metro";
 import { getAssetId } from "../../utils/getAssetId";
 import { Forms, General, Search, styles } from "../components";
 import Card from "../components/Card";
@@ -15,12 +15,12 @@ const changelogStyles = Styles.createThemedStyleSheet({
     description: {
         marginLeft: 25,
         marginRight: 25,
-        color: Colors.SemanticColor.TEXT_NORMAL,
+        color: ColorMap.SemanticColor.TEXT_NORMAL,
         fontFamily: Constants.Fonts.PRIMARY_NORMAL
     },
     title: {
         fontSize: 20,
-        color: Colors.SemanticColor.TEXT_NORMAL,
+        color: ColorMap.SemanticColor.TEXT_NORMAL,
         fontFamily: Constants.Fonts.PRIMARY_BOLD,
         marginBottom: 5,
         marginLeft: 15,
@@ -35,7 +35,7 @@ const changelogStyles = Styles.createThemedStyleSheet({
         alignSelf: "center",
         height: 2,
         borderBottomWidth: 1,
-        borderColor: Colors.SemanticColor.BACKGROUND_MODIFIER_ACCENT
+        borderColor: ColorMap.SemanticColor.BACKGROUND_MODIFIER_ACCENT
     }
 });
 

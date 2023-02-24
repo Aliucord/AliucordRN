@@ -18,7 +18,10 @@ export default defineConfig([
         plugins: [
             nodeResolve(),
             commonjs(),
-            aliucord({ autoDeploy: process.env.ROLLUP_WATCH !== undefined })
+            aliucord({
+                autoDeploy: process.env.ROLLUP_WATCH !== undefined,
+                packageName: "com.aliucord"
+            })
         ],
         onwarn: (warning, next) => {
             if (

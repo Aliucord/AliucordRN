@@ -4,7 +4,7 @@ import { DiscordNavigator, ReactNative } from "../metro";
 import { before } from "../utils/patcher";
 
 /**
- * Anything that was pushed from Navigator.push() will be popped when the back button is pressed
+ * Anything that was pushed from Navigation.push() will be popped when the back button is pressed
  * This is a workaround so that page navigation works properly.
  * 
  * Navigator with 'goBackOnBackPress' prop will be patched to add a back button listener
@@ -36,14 +36,14 @@ export default function patchNavigator() {
                 }
             };
 
-            // If the screen has an onWillFocus prop, we need to patch it instead of overwriting it
-            if (props.onWillFocus) {
-                before(props, "onWillFocus", (ctx, arg) => {
-                    patchBackPress(arg);
-                });
-            } else {
-                props.onWillFocus = patchBackPress;
-            }
+            // Add back press event every page focus
+            const orig = props.onWillFocus;
+            props.onWillFocus = (...args) => {
+                patchBackPress(args[0]);
+
+                props.onWillFocus = orig;
+                props.onWillFocus?.(...args);
+            };
         });
     } catch (err) {
         window.Aliucord.errors["Navigator"] = "Failed to patch navigator\n" + err;

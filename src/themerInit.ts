@@ -6,6 +6,7 @@ export enum ThemeErrors {
     UNEXPECTED_ERROR = "Unexpected error",
     THEME_UNSET = "Theme is unset",
     NO_THEME_DIRECTORY = "Theme directory not found",
+    MODULES_NOT_FOUND = "Modules needed was not found"
 }
 
 type ThemeConstants = {
@@ -14,7 +15,14 @@ type ThemeConstants = {
     UNSAFE_Colors: Record<string, string>;
 };
 
+type ColorMap = {
+    RawColor: Record<string, string>;
+    SemanticColor: Record<string, string>; // (position -> color), (color -> position)
+    SemanticColorsByThemeTable: [Record<number, string>, Record<number, string>, Record<number, string>]; // [light, dark, amoled?]
+};
+
 let Constants: ThemeConstants;
+let DiscordColorMap: ColorMap;
 
 const { externalStorageDirectory } = window.nativeModuleProxy.AliucordNative;
 const SETTINGS_DIRECTORY = externalStorageDirectory + "/AliucordRN/settings/";
@@ -45,16 +53,16 @@ export let themeState = {} as {
 
 export const loadedThemes: Theme[] = [];
 
-export function themerInit(constants: ThemeConstants) {
+export function themerInit(constants: ThemeConstants, colorMap: ColorMap) {
     Constants = constants;
+    DiscordColorMap = colorMap;
+
     unfreezeThemeConstants();
     handleThemeApply();
 }
 
-export function handleThemeApply() {
+function handleThemeApply() {
     try {
-        const { ThemeColorMap, Colors, UNSAFE_Colors } = Constants;
-
         if (!loadThemes()) return;
         const themeName = getTheme();
 
@@ -72,9 +80,10 @@ export function handleThemeApply() {
             return;
         }
 
-        overwriteColors(ThemeColorMap, theme.theme_color_map);
-        overwriteColors(Colors, theme.colors ?? theme.colours);
-        overwriteColors(UNSAFE_Colors, theme.unsafe_colors);
+        // overwrite color map
+        overwriteColors(DiscordColorMap.SemanticColorsByThemeTable, theme.theme_color_map);
+        overwriteColors(DiscordColorMap.RawColor, theme.colors ?? theme.colours);
+        overwriteColors(Constants.UNSAFE_Colors, theme.unsafe_colors);
 
         themeState = {
             currentTheme: themeName,
@@ -178,32 +187,38 @@ function loadThemes(): boolean {
 }
 
 function unfreezeThemeConstants() {
-    for (const key of ["ThemeColorMap", "Colors", "UNSAFE_Colors"]) {
-        Constants[key] && AliuHermes.unfreeze(Constants[key]);
-    }
+    Constants.UNSAFE_Colors && AliuHermes.unfreeze(Constants.UNSAFE_Colors);
+}
+
+// returns a 0xRRGGBBAA 32bit int
+function normalizeColor(color: string): number {
+    const processed = Number(window.ReactNative.processColor(color));
+    return ((processed & 0x00ffffff) << 8 | processed >>> 24) >>> 0;
 }
 
 function overwriteColors(target, source) {
     if (!target || !source) return;
 
-    // Enmity compatibility for chat background
-    if (typeof source === "object") {
-        source["CHAT_BACKGROUND"] ??= source["BACKGROUND_PRIMARY"];
-    }
+    // target is SemanticColorsByThemeTable
+    if (Array.isArray(target)) {
+        // Enmity compatibility for chat background
+        source["BACKGROUND_PRIMARY"] && (source["CHAT_BACKGROUND"] ??= source["BACKGROUND_PRIMARY"]);
 
-    for (const key in source) {
-        // Skip if property doesn't exist in target
-        if (!target[key]) continue;
+        for (const key in source) { // ex: "CHAT_BACKGROUND"
+            if (!DiscordColorMap.SemanticColor[key]) continue; // skip if key doesn't exist in SemanticColor (ex: "BACKGROUND_PRIMARY"
+            const index = Number(DiscordColorMap.SemanticColor[key]) >>> 0; // ex: 25
 
-        // target is ThemeColorMap
-        if (typeof target[key] === "object") {
-            for (const i in source[key]) {
-                target[key][i] = source[key][i];
+            for (let i = 0; i < source[key].length; i++) {
+                const isNumeric = typeof target[i][index] === "number";
+                target[i][index] = isNumeric ? normalizeColor(source[key][i]) : source[key][i];
             }
         }
+        return;
+    }
 
-        // target is Colors or UNSAFE_Colors
-        else if (typeof target[key] === "string") {
+    // target is RawColor or UNSAFE_Colors
+    for (const key in source) {
+        if (typeof target[key] === "string") {
             target[key] = source[key];
         }
     }
