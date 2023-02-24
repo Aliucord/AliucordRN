@@ -140,13 +140,14 @@ function loadThemes(): boolean {
         return false;
     }
 
+    const decoder = new TextDecoder("utf-8");
+
     for (const file of AliuFS.readdir(THEME_DIRECTORY)) {
         // Check if file is a json file
         if (!file.name.endsWith(".json")) continue;
 
         // Read the file
-        const content = AliuFS.readFile(THEME_DIRECTORY + file.name, "text");
-
+        const content = decoder.decode(AliuFS.readFile(THEME_DIRECTORY + file.name, "binary") as ArrayBuffer);
         let json: Theme;
         try {
             json = JSON.parse(content as string);
