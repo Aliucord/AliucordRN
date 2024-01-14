@@ -2,7 +2,7 @@ import { ApplicationCommandOptionType, plugins } from "../api";
 import { Plugin } from "../entities";
 import { getByProps, Locale, MessageActions } from "../metro";
 import { DebugInfo } from "../utils/debug";
-import { makeAsyncEval } from "../utils";
+import { makeAsyncEval, sendBotMessage } from "../utils";
 import { ALIUCORD_DIRECTORY } from "../utils/constants";
 import { version } from "../Aliucord";
 
@@ -10,7 +10,6 @@ const customBundle = AliuFS.exists(ALIUCORD_DIRECTORY + "Aliucord.js.bundle");
 
 export default class CoreCommands extends Plugin {
     start() {
-        const ClydeUtils = getByProps("sendBotMessage");
         this.commands.registerCommand({
             name: "echo",
             description: "Creates a Clyde message",
@@ -23,7 +22,7 @@ export default class CoreCommands extends Plugin {
                 }
             ],
             execute: (args, ctx) => {
-                ClydeUtils.sendBotMessage(ctx.channel.id, args[0].value);
+                sendBotMessage(ctx.channel.id, args[0].value);
             }
         });
 
@@ -46,7 +45,8 @@ export default class CoreCommands extends Plugin {
                 **Disabled plugins**: **${disabledPlugins.length}**
                 > ${disabledPlugins.join(", ") || "None."}`;
 
-                ClydeUtils.sendBotMessage(ctx.channel.id, message.replaceAll("    ", ""));
+
+                sendBotMessage(ctx.channel.id, message.replaceAll("    ", "").trimStart());
             }
         });
 
@@ -72,9 +72,9 @@ export default class CoreCommands extends Plugin {
                         result = (0, eval)(code);
                     }
 
-                    ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(String(result)));
+                    sendBotMessage(ctx.channel.id, this.codeblock(String(result)));
                 } catch (err: any) {
-                    ClydeUtils.sendBotMessage(ctx.channel.id, this.codeblock(err?.stack ?? err?.message ?? String(err)));
+                    sendBotMessage(ctx.channel.id, this.codeblock(err?.stack ?? err?.message ?? String(err)));
                 }
             }
         });
